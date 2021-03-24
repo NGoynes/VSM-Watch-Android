@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">VSM Watch Android Application</string>
+    <string name="title_chart">Chart</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_logging">Logging</string>
+    <string name="title_settings">Settings</string>
+</resources>

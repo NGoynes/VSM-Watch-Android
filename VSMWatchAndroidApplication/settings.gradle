@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name = "VSM Watch Android Application"
