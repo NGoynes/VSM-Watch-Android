@@ -17,6 +17,57 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.579" />
+
+    <Switch
+        android:id="@+id/EDAswitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EDA"
+        app:layout_constraintBottom_toTopOf="@+id/switch2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.589" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ECG"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.489" />
+
+    <Switch
+        android:id="@+id/switch5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PPG"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch2"
+        app:layout_constraintVertical_bias="0.397" />
+
+    <TextView
+        android:id="@+id/EDAtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="on/off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
+        app:layout_constraintStart_toEndOf="@+id/switch1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.273" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
