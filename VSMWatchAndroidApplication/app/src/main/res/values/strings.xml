@@ -2,6 +2,16 @@
     <string name="app_name">VSM Watch Android Application</string>
     <string name="title_chart">Chart</string>
     <string name="title_dashboard">Dashboard</string>
+
+    <!-- Logging Strings -->
     <string name="title_logging">Logging</string>
+    <string name="logging_startLogging">Start Logging</string>
+    <string name="logging_PPG">PPG</string>
+    <string name="logging_ECG">ECG</string>
+    <string name="logging_EDA">EDA</string>
+    <string name="logging_Accelerometer">Accelerometer</string>
+    <string name="logging_Pedometer">Pedometer</string>
+    <string name="logging_Temperature">Temperature</string>
+
     <string name="title_settings">Settings</string>
 </resources>
