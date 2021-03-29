@@ -19,13 +19,13 @@ class LoggingFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        loggingViewModel =
-                ViewModelProvider(this).get(LoggingViewModel::class.java)
+        // loggingViewModel =
+                // ViewModelProvider(this).get(LoggingViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_logging, container, false)
-        val textView: TextView = root.findViewById(R.id.text_logging)
-        loggingViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        // val textView: TextView = root.findViewById(R.id.text_logging)
+        // loggingViewModel.text.observe(viewLifecycleOwner, Observer {
+            // textView.text = it
+        // })
         return root
     }
 }
