@@ -19,7 +19,6 @@ import java.io.InputStream
 class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-    //private lateinit var lineChart: LineChart
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -29,18 +28,8 @@ class ChartFragment : Fragment() {
         chartViewModel =
                 ViewModelProvider(this).get(ChartViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_chart, container, false)
-        /*val textView: TextView = root.findViewById(R.id.text_chart)
-        chartViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })*/
         val lineChart: LineChart = root.findViewById((R.id.lineChart))
-        readHealthData()
         return root
     }
 
-    private fun readHealthData() {
-        val file: InputStream = resources.openRawResource(R.raw.eda)
-        val rows: List<List<String>> = csvReader().readAll(file)
-        print(rows)
-    }
 }
