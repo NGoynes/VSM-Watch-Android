@@ -14,21 +14,9 @@
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.757"
+        app:layout_constraintHorizontal_bias="0.752"
         app:layout_constraintStart_toEndOf="@+id/dbtemp_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbpedo_data" />
-
-    <TextView
-        android:id="@+id/dbpedo_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.775"
-        app:layout_constraintStart_toEndOf="@+id/dbpedo_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbaccel_data" />
+        app:layout_constraintTop_toBottomOf="@+id/dbeda_data" />
 
     <TextView
         android:id="@+id/dbtemp_text"
@@ -38,21 +26,9 @@
         android:text="Temperature"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toEndOf="@+id/dbtemp_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbpedo_text" />
-
-    <TextView
-        android:id="@+id/dbpedo_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Pedometer"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toEndOf="@+id/dbpedo_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbaccel_text" />
+        app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
 
     <TextView
         android:id="@+id/dbecg_text"
@@ -67,15 +43,15 @@
         app:layout_constraintTop_toBottomOf="@+id/dbppg_text" />
 
     <TextView
-        android:id="@+id/dbaccel_text"
+        android:id="@+id/dbeda_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:text="Accelerometer"
+        android:text="EDA"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toEndOf="@+id/dbaccel_switch"
+        app:layout_constraintStart_toEndOf="@+id/dbeda_switch"
         app:layout_constraintTop_toBottomOf="@+id/dbecg_text" />
 
     <Switch
@@ -96,21 +72,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbpedo_switch"
-        app:layout_constraintVertical_bias="0.091" />
+        app:layout_constraintTop_toBottomOf="@+id/dbeda_switch"
+        app:layout_constraintVertical_bias="0.079" />
 
     <Switch
-        android:id="@+id/dbpedo_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbaccel_switch" />
-
-    <Switch
-        android:id="@+id/dbaccel_switch"
+        android:id="@+id/dbeda_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -154,15 +120,15 @@
         app:layout_constraintTop_toBottomOf="@+id/dbppg_data" />
 
     <TextView
-        android:id="@+id/dbaccel_data"
+        android:id="@+id/dbeda_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.735"
-        app:layout_constraintStart_toEndOf="@+id/dbaccel_text"
+        app:layout_constraintHorizontal_bias="0.824"
+        app:layout_constraintStart_toEndOf="@+id/dbeda_text"
         app:layout_constraintTop_toBottomOf="@+id/dbecg_data" />
 
     <TextView
