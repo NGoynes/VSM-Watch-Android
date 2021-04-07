@@ -93,7 +93,7 @@ class ChartFragment : Fragment() {
         ecgChart.viewport.setMinY(ecgSeries.lowestValueY)
         ecgChart.viewport.setMaxY(ecgSeries.highestValueY)
         ecgChart.viewport.setMinX(ecgSeries.lowestValueX)
-        ecgChart.viewport.setMaxX(ecgSeries.highestValueX / 1.5)
+        ecgChart.viewport.setMaxX(ecgSeries.highestValueX)
         ecgChart.viewport.isScrollable = true
         ecgChart.addSeries(ecgSeries)
 
