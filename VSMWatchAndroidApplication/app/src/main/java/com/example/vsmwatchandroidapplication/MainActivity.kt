@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         readHealthData()
     }
 
-    private fun readHealthData() {
+    fun readHealthData() {
         //read ppg
         var file: InputStream = resources.openRawResource(R.raw.adpd)
         var rows: List<List<String>> = csvReader().readAll(file)
