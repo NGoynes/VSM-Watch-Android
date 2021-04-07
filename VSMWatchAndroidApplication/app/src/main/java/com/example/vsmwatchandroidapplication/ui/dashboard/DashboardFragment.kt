@@ -78,6 +78,21 @@ class DashboardFragment : Fragment() {
             else
                 temptxt.setText("----")
         }
+
+
+        val Accfile: InputStream = resources.openRawResource(R.raw.adxl)
+        val Accrows: List<List<String>> = csvReader().readAll(Accfile)
+        val AccValx = Accrows[Accrows.size - 1][1]
+        val AccValy = Accrows[Accrows.size - 1][2]
+        val AccValz = Accrows[Accrows.size - 1][3]
+        val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
+        val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
+        Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            if(onSwitch)
+                Acctxt.setText("x:" + AccValx + ",y:" + AccValy + ",z:" + AccValz)
+            else
+                Acctxt.setText("----")
+        }
         return root
     }
 

@@ -3,6 +3,7 @@
     <string name="title_chart">Chart</string>
     <string name="title_dashboard">Dashboard</string>
 
+
     <!-- Logging Strings -->
     <string name="title_logging">Logging</string>
     <string name="logging_startLogging">Start Logging</string>
