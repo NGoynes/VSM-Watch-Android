@@ -1,19 +1,14 @@
 package com.example.vsmwatchandroidapplication.ui.logging
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Switch
-import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.example.vsmwatchandroidapplication.R
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -35,6 +30,21 @@ class LoggingFragment : Fragment() {
 
             startActivity(intent)
         }
+
+        val DriveButton: Button = root.findViewById(R.id.DriveButton)
+        DriveButton.setOnClickListener{
+            buttonShareText()
+        }
         return root
+    }
+    fun buttonShareText() {
+        val intentShare = Intent(Intent.ACTION_SEND)
+        intentShare.type = "text/plain"
+        intentShare.putExtra(Intent.EXTRA_SUBJECT, "Logging Files")
+        intentShare.putExtra(
+            Intent.EXTRA_TEXT,
+            ".csv of logged data"
+        )
+        startActivity(Intent.createChooser(intentShare, "Shared the text ..."))
     }
 }
