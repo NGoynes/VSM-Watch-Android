@@ -16,7 +16,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/ppgChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="100dp"
             android:paddingBottom="30dp">
 
@@ -29,7 +29,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/ecgChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="30dp"
             android:paddingBottom="30dp">
 
@@ -42,7 +42,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/edaMagChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="30dp"
             android:paddingBottom="30dp">
 
@@ -55,7 +55,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/edaPhaseChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="30dp"
             android:paddingBottom="30dp">
 
@@ -68,7 +68,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/accChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="30dp"
             android:paddingBottom="30dp">
 
@@ -81,7 +81,7 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/tempChart"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
+            android:layout_height="175dp"
             android:paddingTop="30dp">
 
         </com.jjoe64.graphview.GraphView>
