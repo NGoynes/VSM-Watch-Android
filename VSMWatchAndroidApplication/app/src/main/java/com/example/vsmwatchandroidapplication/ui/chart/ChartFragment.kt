@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.jjoe64.graphview.GraphView
@@ -19,16 +21,7 @@ import java.lang.Double.min
         class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-    private var ppgSeries1 = LineGraphSeries<DataPoint>()
-    private var ppgSeries2 = LineGraphSeries<DataPoint>()
-    private var ecgSeries = LineGraphSeries<DataPoint>()
-    private var edaSeriesMag = LineGraphSeries<DataPoint>()
-    private var edaSeriesPhase = LineGraphSeries<DataPoint>()
-    private var accSeriesX = LineGraphSeries<DataPoint>()
-    private var accSeriesY = LineGraphSeries<DataPoint>()
-    private var accSeriesZ = LineGraphSeries<DataPoint>()
-    private var accSeriesMag = LineGraphSeries<DataPoint>()
-    private var tempSeries = LineGraphSeries<DataPoint>()
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -39,6 +32,16 @@ import java.lang.Double.min
                 ViewModelProvider(this).get(ChartViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_chart, container, false)
 
+        val ppgSeries1 = (activity as MainActivity).ppgSeries1
+        val ppgSeries2 = (activity as MainActivity).ppgSeries2
+        val ecgSeries = (activity as MainActivity).ecgSeries
+        val edaSeriesMag = (activity as MainActivity).edaSeriesMag
+        val edaSeriesPhase = (activity as MainActivity).edaSeriesPhase
+        val accSeriesX = (activity as MainActivity).accSeriesX
+        val accSeriesY = (activity as MainActivity).accSeriesY
+        val accSeriesZ = (activity as MainActivity).accSeriesZ
+        val accSeriesMag = (activity as MainActivity).accSeriesMag
+        val tempSeries = (activity as MainActivity).tempSeries
 
         val ppgChart: GraphView = root.findViewById((R.id.ppgChart))
         val ecgChart: GraphView = root.findViewById((R.id.ecgChart))
@@ -47,7 +50,6 @@ import java.lang.Double.min
         val accChart: GraphView = root.findViewById((R.id.accChart))
         val tempChart: GraphView = root.findViewById((R.id.tempChart))
 
-        readHealthData()
 
         //PPG PLOT
         ppgSeries1.color = Color.rgb(255, 51, 0)
@@ -174,62 +176,5 @@ import java.lang.Double.min
         tempChart.addSeries(tempSeries)
 
         return root
-    }
-
-    private fun readHealthData() {
-        //read ppg
-        var file: InputStream = resources.openRawResource(R.raw.adpd)
-        var rows: List<List<String>> = csvReader().readAll(file)
-        var end = rows.size - 1
-        rows = rows.slice(3..end)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            ppgSeries1.appendData(DataPoint(time, rows[i][2].toDouble()),true, rows.size)
-            ppgSeries2.appendData(DataPoint(time, rows[i][4].toDouble()),true, rows.size)
-        }
-
-        //read ecg
-        file = resources.openRawResource(R.raw.ecg)
-        rows = csvReader().readAll(file)
-        end = rows.size - 1
-        rows = rows.slice(3..end)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            ecgSeries.appendData(DataPoint(time, rows[i][2].toDouble()),true, rows.size)
-        }
-
-        //read eda
-        file = resources.openRawResource(R.raw.eda)
-        rows = csvReader().readAll(file)
-        end = rows.size - 1
-        rows = rows.slice(3..end)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            edaSeriesMag.appendData(DataPoint(time, rows[i][3].toDouble()),true, rows.size)
-            edaSeriesPhase.appendData(DataPoint(time, rows[i][4].toDouble()),true, rows.size)
-        }
-
-        //read acc
-        file = resources.openRawResource(R.raw.adxl)
-        rows = csvReader().readAll(file)
-        end = rows.size - 1
-        rows = rows.slice(3..end)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            accSeriesX.appendData(DataPoint(time, rows[i][1].toDouble()),true, rows.size)
-            accSeriesY.appendData(DataPoint(time, rows[i][2].toDouble()),true, rows.size)
-            accSeriesZ.appendData(DataPoint(time, rows[i][3].toDouble()),true, rows.size)
-            accSeriesMag.appendData(DataPoint(time, rows[i][4].toDouble()),true, rows.size)
-        }
-
-        //read temp
-        file = resources.openRawResource(R.raw.temp)
-        rows = csvReader().readAll(file)
-        end = rows.size - 1
-        rows = rows.slice(3..end)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            tempSeries.appendData(DataPoint(time, rows[i][1].toDouble()),true, rows.size)
-        }
     }
 }
