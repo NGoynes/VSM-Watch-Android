@@ -7,7 +7,7 @@
     tools:context=".ui.settings.PPGSetting">
 
     <TextView
-        android:id="@+id/ECG_Frequency"
+        android:id="@+id/PPG_ADPD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -37,10 +37,10 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ECG_Frequency" />
+        app:layout_constraintTop_toBottomOf="@+id/PPG_ADPD" />
 
     <TextView
-        android:id="@+id/ECG_Type"
+        android:id="@+id/PPG_x"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -70,10 +70,10 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ECG_Type" />
+        app:layout_constraintTop_toBottomOf="@+id/PPG_x" />
 
     <TextView
-        android:id="@+id/ECG_Decimation"
+        android:id="@+id/PPG_ADXL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -103,10 +103,10 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ECG_Decimation" />
+        app:layout_constraintTop_toBottomOf="@+id/PPG_ADXL" />
 
     <TextView
-        android:id="@+id/ECG_Duration"
+        android:id="@+id/PPG_ACG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -136,23 +136,23 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ECG_Duration" />
+        app:layout_constraintTop_toBottomOf="@+id/PPG_ACG" />
 
     <TextView
-        android:id="@+id/ECG_HR_Duration"
+        android:id="@+id/PPG_Decimation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="@string/PPG_Decimation"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/ECG_Frequency_EditText"
+        app:layout_constraintEnd_toStartOf="@+id/PPG_Decimation_EditText"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/subdivider4" />
 
     <EditText
-        android:id="@+id/ECG_Frequency_EditText"
+        android:id="@+id/PPG_Decimation_EditText"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -161,7 +161,8 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subdivider4" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider4"
+        tools:ignore="LabelFor" />
 
     <View
         android:id="@+id/subdivider5"
@@ -171,7 +172,7 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ECG_HR_Duration" />
+        app:layout_constraintTop_toBottomOf="@+id/PPG_Decimation" />
 
     <TextView
         android:id="@+id/PPG_Duration"
@@ -196,7 +197,8 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subdivider5" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider5"
+        tools:ignore="LabelFor" />
 
     <View
         android:id="@+id/subdivider6"
@@ -231,6 +233,7 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subdivider6" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider6"
+        tools:ignore="LabelFor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
