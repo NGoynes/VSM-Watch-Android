@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.vsmwatchandroidapplication">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -43,6 +49,12 @@
             android:name=".ui.chart.PPGActivity"
             android:screenOrientation="landscape"
             android:label="PPG Graph">
+        </activity>
+        <activity
+            android:name=".ui.dashboard.ScanFragment">
+        </activity>
+        <activity
+            android:name=".ui.logging.ShareActivity">
         </activity>
         <activity
             android:name=".MainActivity"
