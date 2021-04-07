@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="faaafc73-a062-4020-8d11-3d31498252a7" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1qMf9GZ9bnQL26tfOfkuPWlSAoi" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/VSMWatchAndroidApplication" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="faaafc73-a062-4020-8d11-3d31498252a7" name="Default Changelist" comment="" />
+      <created>1616894226383</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616894226383</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="734" y="374" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1616894918115">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="734" y="374" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1440/-1680.378.1680.1050@0.0.2560.1440" timestamp="1616894918115" />
+    <state x="92" y="92" width="2376" height="1256" key="AVDManager" timestamp="1616894947071">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="92" y="92" width="2376" height="1256" key="AVDManager/0.0.2560.1440/-1680.378.1680.1050@0.0.2560.1440" timestamp="1616894947071" />
+    <state x="92" y="92" width="2376" height="1256" key="DiffContextDialog" timestamp="1616894947071">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="92" y="92" width="2376" height="1256" key="DiffContextDialog/0.0.2560.1440/-1680.378.1680.1050@0.0.2560.1440" timestamp="1616894947071" />
+    <state x="1060" y="474" key="FileChooserDialogImpl" timestamp="1616894942599">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="1060" y="474" key="FileChooserDialogImpl/0.0.2560.1440/-1680.378.1680.1050@0.0.2560.1440" timestamp="1616894942599" />
+  </component>
+</project>

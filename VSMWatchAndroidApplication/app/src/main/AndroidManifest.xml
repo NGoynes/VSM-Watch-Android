@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VSMWatchAndroidApplication">
-        <activity
-            android:name=".ui.logging.TemperatureLog">
-        </activity>
+        <activity android:name=".ui.settings.SystemSetting"></activity>
+        <activity android:name=".ui.settings.EDASetting" />
+        <activity android:name=".ui.settings.ECGSetting" />
+        <activity android:name=".ui.settings.PPGSetting" />
+        <activity android:name=".ui.logging.TemperatureLog" />
         <activity
             android:name=".ui.chart.TempActivity"
             android:screenOrientation="landscape"
