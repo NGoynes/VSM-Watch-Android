@@ -13,5 +13,24 @@
     <string name="logging_Pedometer">Pedometer</string>
     <string name="logging_Temperature">Temperature</string>
 
+    <!-- Setting Strings -->
+        <!-- PPG Strings -->
+            <string name="PPG_LoadADPD">Load ADPD_x.dcfg</string>
+            <string name="PPG_LoadPPG">Load PPG_x.lcfg</string>
+            <string name="PPG_LoadADXL">Load ADXL_x.dcfg</string>
+            <string name="PPG_AGC">AGC</string>
+            <string name="PPG_Decimation">Decimation</string>
+            <string name="PPG_Duration">PPG Duration</string>
+            <string name="PPG_HR_Duration">HR Duration</string>
+        <!-- ECG Strings -->
+            <string name="ECG_Frequency">Frequency</string>
+            <string name="ECG_Type">Type</string>
+            <string name="ECG_Decimation">Decimation</string>
+            <string name="ECG_Duration">ECG Duration</string>
+            <string name="ECG_HR_Duration">HR Duration</string>
+        <!-- EDA Strings -->
+            <string name="EDA_Duration">EDA Duration</string>
+            <string name="EDA_Filter">Filter</string>
+
     <string name="title_settings">Settings</string>
 </resources>
