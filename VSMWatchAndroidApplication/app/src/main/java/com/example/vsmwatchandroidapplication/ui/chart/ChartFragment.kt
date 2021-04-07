@@ -63,13 +63,14 @@ import java.lang.Double.min
         ppgChart.title = "PPG"
         ppgChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
         ppgChart.gridLabelRenderer.verticalAxisTitle = "PPG"
+        ppgChart.gridLabelRenderer.numVerticalLabels = 3
         ppgChart.legendRenderer.isVisible = true
         ppgChart.viewport.isYAxisBoundsManual = true
         ppgChart.viewport.isXAxisBoundsManual = true
         ppgChart.viewport.setMinY(min(ppgSeries1.lowestValueY, ppgSeries2.lowestValueY))
         ppgChart.viewport.setMaxY(max(ppgSeries1.highestValueY, ppgSeries2.highestValueY))
         ppgChart.viewport.setMinX(min(ppgSeries1.lowestValueX, ppgSeries2.lowestValueX))
-        ppgChart.viewport.setMaxX(max(ppgSeries1.highestValueX / 5, ppgSeries2.highestValueX / 5))
+        ppgChart.viewport.setMaxX(max(ppgSeries1.highestValueX, ppgSeries2.highestValueX))
         ppgChart.viewport.isScrollable = true
         ppgChart.addSeries(ppgSeries2)
         ppgChart.addSeries(ppgSeries1)
@@ -82,6 +83,7 @@ import java.lang.Double.min
         ecgChart.title = "ECG"
         ecgChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
         ecgChart.gridLabelRenderer.verticalAxisTitle = "ECG"
+        ecgChart.gridLabelRenderer.numVerticalLabels = 3
         ecgChart.viewport.isYAxisBoundsManual = true
         ecgChart.viewport.isXAxisBoundsManual = true
         ecgChart.viewport.setMinY(ecgSeries.lowestValueY)
@@ -98,13 +100,14 @@ import java.lang.Double.min
         edaSeriesMag.thickness = 10
         edaMagChart.title = "EDA MAGNITUDE"
         edaMagChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        edaMagChart.gridLabelRenderer.verticalAxisTitle = "Impedance Magnitude (Ohms)"
+        edaMagChart.gridLabelRenderer.verticalAxisTitle = "Imp. Mag. (Ohms)"
+        edaMagChart.gridLabelRenderer.numVerticalLabels = 3
         edaMagChart.viewport.isYAxisBoundsManual = true
         edaMagChart.viewport.isXAxisBoundsManual = true
         edaMagChart.viewport.setMinY(edaSeriesMag.lowestValueY)
         edaMagChart.viewport.setMaxY(edaSeriesMag.highestValueY)
         edaMagChart.viewport.setMinX(edaSeriesMag.lowestValueX)
-        edaMagChart.viewport.setMaxX(edaSeriesMag.highestValueX / 5)
+        edaMagChart.viewport.setMaxX(edaSeriesMag.highestValueX)
         edaMagChart.viewport.isScrollable = true
         edaMagChart.addSeries(edaSeriesMag)
 
@@ -115,13 +118,14 @@ import java.lang.Double.min
         edaSeriesPhase.thickness = 10
         edaPhaseChart.title = "EDA PHASE"
         edaPhaseChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        edaPhaseChart.gridLabelRenderer.verticalAxisTitle = "Impedance Phase (Rad)"
+        edaPhaseChart.gridLabelRenderer.verticalAxisTitle = "Imp. Phase (Rad)"
+        edaPhaseChart.gridLabelRenderer.numVerticalLabels = 3
         edaPhaseChart.viewport.isYAxisBoundsManual = true
         edaPhaseChart.viewport.isXAxisBoundsManual = true
         edaPhaseChart.viewport.setMinY(edaSeriesPhase.lowestValueY)
         edaPhaseChart.viewport.setMaxY(edaSeriesPhase.highestValueY)
         edaPhaseChart.viewport.setMinX(edaSeriesPhase.lowestValueX)
-        edaPhaseChart.viewport.setMaxX(edaSeriesPhase.highestValueX / 5)
+        edaPhaseChart.viewport.setMaxX(edaSeriesPhase.highestValueX)
         edaPhaseChart.viewport.isScrollable = true
         edaPhaseChart.addSeries(edaSeriesPhase)
 
@@ -138,13 +142,14 @@ import java.lang.Double.min
         accChart.title = "ACCELEROMETER"
         accChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
         accChart.gridLabelRenderer.verticalAxisTitle = "Accelerometer"
+        accChart.gridLabelRenderer.numVerticalLabels = 3
         accChart.legendRenderer.isVisible = true
         accChart.viewport.isYAxisBoundsManual = true
         accChart.viewport.isXAxisBoundsManual = true
         accChart.viewport.setMinY(min(min(accSeriesX.lowestValueY, accSeriesY.lowestValueY), accSeriesZ.lowestValueY))
         accChart.viewport.setMaxY(max(max(accSeriesX.highestValueY, accSeriesY.highestValueY), accSeriesZ.highestValueY))
         accChart.viewport.setMinX(min(min(accSeriesX.lowestValueX, accSeriesY.lowestValueX), accSeriesZ.lowestValueX))
-        accChart.viewport.setMaxX(max(max(accSeriesX.highestValueX / 5, accSeriesY.highestValueX / 5), accSeriesY.highestValueX / 5))
+        accChart.viewport.setMaxX(max(max(accSeriesX.highestValueX, accSeriesY.highestValueX), accSeriesY.highestValueX))
         accChart.viewport.isScrollable = true
         accChart.addSeries(accSeriesX)
         accChart.addSeries(accSeriesY)
@@ -158,12 +163,13 @@ import java.lang.Double.min
         tempChart.title = "TEMPERATURE"
         tempChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
         tempChart.gridLabelRenderer.verticalAxisTitle = "Temperature (C)"
+        tempChart.gridLabelRenderer.numVerticalLabels = 3
         tempChart.viewport.isYAxisBoundsManual = true
         tempChart.viewport.isXAxisBoundsManual = true
         tempChart.viewport.setMinY(tempSeries.lowestValueY)
         tempChart.viewport.setMaxY(tempSeries.highestValueY)
         tempChart.viewport.setMinX(tempSeries.lowestValueX)
-        tempChart.viewport.setMaxX(tempSeries.highestValueX / 5)
+        tempChart.viewport.setMaxX(tempSeries.highestValueX)
         tempChart.viewport.isScrollable = true
         tempChart.addSeries(tempSeries)
 
