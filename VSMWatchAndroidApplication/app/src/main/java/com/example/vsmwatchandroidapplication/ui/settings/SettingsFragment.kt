@@ -17,18 +17,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.nfc.Tag
 import android.util.Log
+import com.example.vsmwatchandroidapplication.MainActivity
 
 class SettingsFragment : Fragment() {
 
     private lateinit var settingsViewModel: SettingsViewModel
 
-    //private lateinit var br: BroadcastReceiver
-//    override fun onReceive(context: Context, intent: Intent){
-//        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-//        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-//        val batteryPct = level / scale.toDouble()
-//        println(batteryPct)
-//    }
+
     override fun onCreateView(
             //context: Context,
             // intent: Intent
@@ -42,7 +37,7 @@ class SettingsFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
         settingsViewModel.text.observe(viewLifecycleOwner, Observer {
         })
-        super.onCreate(savedInstanceState)
+        (activity as MainActivity)?.supportActionBar?.title = "Setting"
         val batterytxt: TextView = root.findViewById(R.id.batteryView)
         val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
             context?.registerReceiver(null, ifilter)
@@ -55,18 +50,6 @@ class SettingsFragment : Fragment() {
         batterytxt.setText(batteryPct.toString() + "%")
         return root
     }
-
-//    private val batteryBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver(){
-//        override fun onReceive(context: Context?, intent: Intent?){
-//            if(intent?.action == "android.intent.action.BATTERY_CHANGED"){
-//                val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-//                Log.d(TAG, "onReceive: battery level $level")
-//                batterytxt?.post{
-//                    batterytxt?.text = level.toString().plus(" ").plus("%")
-//                }
-//            }
-//        }
-//    }
 
 
 }

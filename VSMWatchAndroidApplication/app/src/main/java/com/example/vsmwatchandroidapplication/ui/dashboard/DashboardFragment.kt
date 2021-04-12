@@ -1,11 +1,14 @@
 package com.example.vsmwatchandroidapplication.ui.dashboard
 
+import android.app.ActionBar
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Switch
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,11 +24,11 @@ import java.io.InputStream
 class DashboardFragment : Fragment() {
 
     private lateinit var dashboardViewModel: DashboardViewModel
-
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
+
     ): View? {
         val latTempSeries = (activity as MainActivity).latTempSeries
         val latAccSeriesX = (activity as MainActivity).latAccSeriesX
@@ -38,7 +41,7 @@ class DashboardFragment : Fragment() {
         val latEdaSeries = (activity as MainActivity).latEdaSeries
 
 
-
+        (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)

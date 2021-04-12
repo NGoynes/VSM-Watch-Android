@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -27,7 +28,7 @@ class LoggingFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_logging, container, false)
-
+        (activity as MainActivity)?.supportActionBar?.title = "Logging"
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
         switchTemperature.setOnClickListener{
