@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartViewModel
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.jjoe64.graphview.series.DataPoint
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     var accSeriesZ = LineGraphSeries<DataPoint>()
     var accSeriesMag = LineGraphSeries<DataPoint>()
     var tempSeries = LineGraphSeries<DataPoint>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

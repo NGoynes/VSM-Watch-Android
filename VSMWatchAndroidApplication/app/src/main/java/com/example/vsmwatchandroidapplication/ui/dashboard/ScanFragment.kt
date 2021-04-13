@@ -1,8 +1,10 @@
+
 package com.example.vsmwatchandroidapplication.ui.dashboard
 
 import android.Manifest
 import android.app.Activity
-import android.bluetooth.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
@@ -11,8 +13,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,19 +20,27 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.analog.study_watch_sdk.StudyWatch
+import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
+import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
 import com.example.vsmwatchandroidapplication.R
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
-import java.util.*
 
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
+var watchSdk // sdk reference variable
+        : SDK? = null
 class ScanFragment : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
+        }
         scan_button.setOnClickListener {
             if (isScanning) {
                 stopBleScan()
@@ -52,106 +60,24 @@ class ScanFragment : AppCompatActivity() {
             }
             with(result.device) {
                 Log.w("ScanResultAdapter", "Connecting to $address")
-                connectGatt(null, false, gattCallback)
+                StudyWatch.connectBLE("EB:81:4E:95:53:06", applicationContext, object : StudyWatchCallback {
+                    override fun onSuccess(sdk: SDK) {
+                        Log.d("Connection", "onSuccess: SDK Ready")
+                        watchSdk = sdk // store this sdk reference to be used for creating applications
+                        readBatter()
+                    }
+                    override fun onFailure(message: String, state: Int) {
+                        Log.d("Connection", "onError: $message")
+                    }
+                })
             }
         }
     }
-
-    private val gattCallback = object : BluetoothGattCallback() {
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            val deviceAddress = gatt.device.address
-
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.w("BluetoothGattCallback", "Successfully connected to $deviceAddress")
-                    var bluetoothGatt = gatt
-                    Handler(Looper.getMainLooper()).post {
-                        //bluetoothGatt?.discoverServices()
-                        readBatteryLevel(bluetoothGatt)
-                    }
-
-
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    Log.w("BluetoothGattCallback", "Successfully disconnected from $deviceAddress")
-                    gatt.close()
-                }
-            } else {
-                Log.w("BluetoothGattCallback", "Error $status encountered for $deviceAddress! Disconnecting...")
-                gatt.close()
-            }
-        }
-        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            with(gatt) {
-                Log.w("BluetoothGattCallback", "Discovered ${services.size} services for ${device.address}")
-                printGattTable() // See implementation just above this section
-                // Consider connection setup as complete here
-            }
-        }
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-
-            with(characteristic) {
-                when (status) {
-                    BluetoothGatt.GATT_SUCCESS -> {
-                        Log.i("BluetoothGattCallback", "Read characteristic $uuid:\n${value.toHexString()}")
-                    }
-                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> {
-                        Log.e("BluetoothGattCallback", "Read not permitted for $uuid!")
-                    }
-                    else -> {
-                        Log.e("BluetoothGattCallback", "Characteristic read failed for $uuid, error: $status")
-                    }
-                }
-            }
-        }
-        private fun readBatteryLevel(gatt: BluetoothGatt) {
-            with(gatt) {
-                val batteryServiceUuid = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb")
-                val batteryLevelCharUuid = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb")
-                val batteryLevelChar = gatt
-                    .getService(batteryServiceUuid)?.getCharacteristic(batteryLevelCharUuid)
-                Log.w("test", "test")
-                if (batteryLevelChar?.isReadable() == true) {
-
-                    gatt.readCharacteristic(batteryLevelChar)
-                }
-            }
-        }
-
-        fun BluetoothGattCharacteristic.isReadable(): Boolean =
-            containsProperty(BluetoothGattCharacteristic.PROPERTY_READ)
-
-        fun BluetoothGattCharacteristic.isWritable(): Boolean =
-            containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE)
-
-        fun BluetoothGattCharacteristic.isWritableWithoutResponse(): Boolean =
-            containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)
-
-        fun BluetoothGattCharacteristic.containsProperty(property: Int): Boolean {
-            return properties and property != 0
-        }
+    private fun readBatter(){
+        val pmApp = watchSdk!!.pmApplication
+        val battInfo = pmApp.batteryInfo.payload.batteryLevel
+        Log.w("Battery", "Battery Info: $battInfo")
     }
-    fun ByteArray.toHexString(): String =
-        joinToString(separator = " ", prefix = "0x") { String.format("%02X", it) }
-
-    private fun BluetoothGatt.printGattTable() {
-        if (services.isEmpty()) {
-            Log.i("printGattTable", "No service and characteristic available, call discoverServices() first?")
-            return
-        }
-        services.forEach { service ->
-            val characteristicsTable = service.characteristics.joinToString(
-                separator = "\n|--",
-                prefix = "|--"
-            ) { it.uuid.toString() }
-            Log.i("printGattTable", "\nService ${service.uuid}\nCharacteristics:\n$characteristicsTable"
-            )
-        }
-    }
-
     private fun setupRecyclerView() {
         scan_results_recycler_view.apply {
             adapter = scanResultAdapter
@@ -273,6 +199,7 @@ class ScanFragment : AppCompatActivity() {
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         LOCATION_PERMISSION_REQUEST_CODE
                     )
+
                 }
             }.show()
         }
