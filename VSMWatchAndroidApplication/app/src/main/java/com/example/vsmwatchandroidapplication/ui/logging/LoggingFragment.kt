@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.Switch
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.example.vsmwatchandroidapplication.MainActivity
 //import androidx.core.app.ApplicationProvider.getApplicationContext
 import com.example.vsmwatchandroidapplication.R
 import java.io.File
@@ -30,7 +29,7 @@ class LoggingFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_logging, container, false)
-        (activity as MainActivity)?.supportActionBar?.title = "Logging"
+
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
         switchTemperature.setOnClickListener{

@@ -1,18 +1,15 @@
 package com.example.vsmwatchandroidapplication
 
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-//import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartViewModel
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import java.io.InputStream
@@ -41,15 +38,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
+
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-//        val appBarConfiguration = AppBarConfiguration(setOf(
-//                R.id.navigation_dashboard, R.id.navigation_chart, R.id.navigation_logging, R.id.navigation_settings))
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-        val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
-        //supportActionBar?.setDisplayShowTitleEnabled(false)
-
+        val appBarConfiguration = AppBarConfiguration(setOf(
+                R.id.navigation_dashboard, R.id.navigation_chart, R.id.navigation_logging, R.id.navigation_settings))
+        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         readHealthData()

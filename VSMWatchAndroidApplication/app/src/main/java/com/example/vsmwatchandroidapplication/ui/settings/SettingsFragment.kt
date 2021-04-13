@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import kotlinx.coroutines.selects.select
 
@@ -20,7 +19,13 @@ class SettingsFragment : Fragment() {
     private lateinit var vitalSettings:ListView
     private var vitalStrings:ArrayList<String> = ArrayList()
 
-
+    //private lateinit var br: BroadcastReceiver
+//    override fun onReceive(context: Context, intent: Intent){
+//        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+//        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+//        val batteryPct = level / scale.toDouble()
+//        println(batteryPct)
+//    }
     override fun onCreateView(
             //context: Context,
             // intent: Intent
@@ -30,7 +35,6 @@ class SettingsFragment : Fragment() {
 
     ): View? {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
-        (activity as MainActivity)?.supportActionBar?.title = "Settings"
 
         vitalStrings.add("PPG")
         vitalStrings.add("ECG")
@@ -67,6 +71,18 @@ class SettingsFragment : Fragment() {
 
         return root
     }
+
+//    private val batteryBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver(){
+//        override fun onReceive(context: Context?, intent: Intent?){
+//            if(intent?.action == "android.intent.action.BATTERY_CHANGED"){
+//                val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+//                Log.d(TAG, "onReceive: battery level $level")
+//                batterytxt?.post{
+//                    batterytxt?.text = level.toString().plus(" ").plus("%")
+//                }
+//            }
+//        }
+//    }
 
 
 }
