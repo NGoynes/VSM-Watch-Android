@@ -29,7 +29,7 @@ class LoggingFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_logging, container, false)
-        (activity as MainActivity)?.supportActionBar?.title = "Logging"
+
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
         switchTemperature.setOnClickListener{
