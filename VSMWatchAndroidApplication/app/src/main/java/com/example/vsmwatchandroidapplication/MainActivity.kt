@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-//import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartViewModel
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.material.bottomnavigation.BottomNavigationView
