@@ -1,27 +1,29 @@
         package com.example.vsmwatchandroidapplication.ui.chart
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import java.io.InputStream
 import java.lang.Double.max
 import java.lang.Double.min
 
-        class ChartFragment : Fragment() {
+class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-
+    /*private lateinit var
+    private lateinit var
+    private lateinit var
+    private lateinit var
+    private lateinit var
+    private lateinit var*/
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -91,7 +93,7 @@ import java.lang.Double.min
         ecgChart.viewport.setMinY(ecgSeries.lowestValueY)
         ecgChart.viewport.setMaxY(ecgSeries.highestValueY)
         ecgChart.viewport.setMinX(ecgSeries.lowestValueX)
-        ecgChart.viewport.setMaxX(ecgSeries.highestValueX / 1.5)
+        ecgChart.viewport.setMaxX(ecgSeries.highestValueX)
         ecgChart.viewport.isScrollable = true
         ecgChart.addSeries(ecgSeries)
 
@@ -174,6 +176,38 @@ import java.lang.Double.min
         tempChart.viewport.setMaxX(tempSeries.highestValueX)
         tempChart.viewport.isScrollable = true
         tempChart.addSeries(tempSeries)
+
+
+        //create click listeners
+        ppgChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, PPGActivity::class.java)
+            startActivity(intent)
+        }
+
+        edaMagChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, EDAMagActivity::class.java)
+            startActivity(intent)
+        }
+
+        edaPhaseChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
+            startActivity(intent)
+        }
+
+        ecgChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, ECGActivity::class.java)
+            startActivity(intent)
+        }
+
+        tempChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, TempActivity::class.java)
+            startActivity(intent)
+        }
+
+        accChart.setOnClickListener{
+            val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
+            startActivity(intent)
+        }
 
         return root
     }
