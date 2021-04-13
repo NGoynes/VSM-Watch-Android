@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import kotlinx.coroutines.selects.select
 
@@ -29,6 +30,7 @@ class SettingsFragment : Fragment() {
 
     ): View? {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
+        (activity as MainActivity)?.supportActionBar?.title = "Settings"
 
         vitalStrings.add("PPG")
         vitalStrings.add("ECG")
