@@ -1,11 +1,17 @@
 package com.example.vsmwatchandroidapplication
 
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartViewModel
@@ -34,6 +40,9 @@ class MainActivity : AppCompatActivity() {
     var accSeriesMag = LineGraphSeries<DataPoint>()
     var tempSeries = LineGraphSeries<DataPoint>()
     var latTempSeries = String()
+    private val CHANNEL_ID = "channel_id_01"
+    private val notificationID = 101
+    var notified = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,8 +55,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_dashboard, R.id.navigation_chart, R.id.navigation_logging, R.id.navigation_settings))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
+        createNotificationChannel()
         readHealthData()
+        checkBattery()
     }
 
     fun readHealthData() {

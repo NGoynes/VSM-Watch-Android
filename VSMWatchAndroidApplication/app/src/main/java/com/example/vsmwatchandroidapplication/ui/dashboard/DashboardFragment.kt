@@ -41,7 +41,6 @@ class DashboardFragment : Fragment() {
         val latEdaSeries = (activity as MainActivity).latEdaSeries
 
 
-
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
