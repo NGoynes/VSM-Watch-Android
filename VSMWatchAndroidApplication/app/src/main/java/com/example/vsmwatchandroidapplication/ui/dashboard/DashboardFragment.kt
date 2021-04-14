@@ -95,6 +95,11 @@ class DashboardFragment : Fragment() {
             else
                 Acctxt.setText("----")
         }
+        val ScanButton: Button = root.findViewById(R.id.ScanButton)
+        ScanButton.setOnClickListener {
+            val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)
+            startActivity(intent)
+        }
         return root
     }
 
