@@ -30,6 +30,9 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+
+        (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
+
         val latTempSeries = (activity as MainActivity).latTempSeries
         val latAccSeriesX = (activity as MainActivity).latAccSeriesX
         val latAccSeriesY = (activity as MainActivity).latAccSeriesY

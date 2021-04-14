@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:src="@drawable/full_battery"
+        android:src="@drawable/low_battery"
         />
     <TextView
         android:id="@+id/battery_data"

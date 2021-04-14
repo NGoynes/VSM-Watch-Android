@@ -33,6 +33,9 @@ class ChartFragment : Fragment() {
         chartViewModel =
                 ViewModelProvider(this).get(ChartViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_chart, container, false)
+
+        (activity as MainActivity)?.supportActionBar?.title = "Chart"
+
         val ppgSeries1 = (activity as MainActivity).ppgSeries1
         val ppgSeries2 = (activity as MainActivity).ppgSeries2
         val ecgSeries = (activity as MainActivity).ecgSeries
