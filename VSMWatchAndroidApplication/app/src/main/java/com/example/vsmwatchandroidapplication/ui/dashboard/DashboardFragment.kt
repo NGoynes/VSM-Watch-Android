@@ -42,6 +42,8 @@ class DashboardFragment : Fragment() {
 
 
         (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
+
+        (activity as MainActivity).checkBattery()
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)

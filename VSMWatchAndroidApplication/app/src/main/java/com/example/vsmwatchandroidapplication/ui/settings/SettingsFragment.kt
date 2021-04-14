@@ -38,16 +38,9 @@ class SettingsFragment : Fragment() {
         settingsViewModel.text.observe(viewLifecycleOwner, Observer {
         })
         (activity as MainActivity)?.supportActionBar?.title = "Setting"
-        val batterytxt: TextView = root.findViewById(R.id.batteryView)
-        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
-            context?.registerReceiver(null, ifilter)
-        }
-        val batteryPct: Float? = batteryStatus?.let { intent ->
-            val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-            level * 100 / scale.toFloat()
-        }
-        batterytxt.setText(batteryPct.toString() + "%")
+        (activity as MainActivity).checkBattery()
+
+
         return root
     }
 

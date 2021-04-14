@@ -1,13 +1,21 @@
 package com.example.vsmwatchandroidapplication
 
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,30 +43,27 @@ class MainActivity : AppCompatActivity() {
     var accSeriesMag = LineGraphSeries<DataPoint>()
     var tempSeries = LineGraphSeries<DataPoint>()
     var latTempSeries = String()
+    private val CHANNEL_ID = "channel_id_01"
+    private val notificationID = 101
+    var notified = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        val appBarConfiguration = AppBarConfiguration(setOf(
-//                R.id.navigation_dashboard, R.id.navigation_chart, R.id.navigation_logging, R.id.navigation_settings))
-//        setupActionBarWithNavController(navController, appBarConfiguration)
+
         val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
-        //supportActionBar?.setDisplayShowTitleEnabled(false)
 
         navView.setupWithNavController(navController)
-
+        createNotificationChannel()
         readHealthData()
+        checkBattery()
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
             true
         }
-
-
         R.id.action_favorite -> {
             true
         }
@@ -66,8 +71,68 @@ class MainActivity : AppCompatActivity() {
 
             super.onOptionsItemSelected(item)
         }
-    }
 
+    }
+    fun createNotificationChannel()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            val name = "VSM Warning"
+            val descriptionText = "Watch Battery is Low"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.description= descriptionText
+
+                val notificationManager: NotificationManager =
+                        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(channel)
+
+        }
+
+    }
+    private fun sendNotification()
+    {
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setChannelId(CHANNEL_ID)
+                .setContentTitle("VSM Warning")
+                .setContentText("Watch Battery is Low")
+                .setStyle(NotificationCompat.BigPictureStyle())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(this)) {
+            notify(notificationID, builder.build())
+        }
+
+    }
+    fun checkBattery(){
+        val batterytxt: TextView = findViewById(R.id.battery_data)
+        val batteryImage: ImageView = findViewById(R.id.battery_image)
+        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+            registerReceiver(null, ifilter)
+        }
+        val batteryPct: Float? = batteryStatus?.let { intent ->
+            val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            level * 100 / scale.toFloat()
+        }
+        batterytxt.setText(batteryPct.toString() + "%")
+        if (batteryPct != null) {
+            if(batteryPct.toInt() <= 30) {
+                batteryImage.setImageResource(R.drawable.low_battery)
+                if(notified == false)
+                {
+                    sendNotification()
+                    notified = true
+                }
+            }
+            else
+            {
+                batteryImage.setImageResource(R.drawable.full_battery)
+                notified = false
+            }
+        }
+    }
     private fun readHealthData() {
         //read ppg
         var file: InputStream = resources.openRawResource(R.raw.adpd)
