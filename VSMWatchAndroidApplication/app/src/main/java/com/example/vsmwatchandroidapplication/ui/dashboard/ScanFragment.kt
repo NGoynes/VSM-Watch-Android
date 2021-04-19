@@ -26,6 +26,7 @@ import com.analog.study_watch_sdk.core.SDK
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.ui.logging.TemperatureLog
 import com.example.vsmwatchandroidapplication.watchSdk
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
@@ -78,6 +79,8 @@ class ScanFragment : AppCompatActivity() {
                         watchSdk = sdk // store this sdk reference to be used for creating applications
                         runOnUiThread {
                             test_button.setEnabled(true)
+                            val intent: Intent = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(intent)
                         }
                     }
                     override fun onFailure(message: String, state: Int) {
