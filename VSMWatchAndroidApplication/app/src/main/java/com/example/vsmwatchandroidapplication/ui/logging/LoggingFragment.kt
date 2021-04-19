@@ -30,9 +30,6 @@ import org.jetbrains.anko.alert
 class LoggingFragment : Fragment() {
 
     private lateinit var switchTemperature: Switch
-    private var mainActivity = MainActivity()
-    private var watchSDK = mainActivity.watchSdk
-    private var isConnected = mainActivity.isConnected
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -47,7 +44,7 @@ class LoggingFragment : Fragment() {
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
         switchTemperature.setOnCheckedChangeListener{ _, isChecked ->
-            if (isConnected && isChecked) {
+            if (isChecked) {
                 println("CONNECTED")
             }
             else if(isChecked){

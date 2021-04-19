@@ -10,6 +10,7 @@
     <string name="dashboard_Temperature">Temperature</string>
     <string name="dashboard_Accelerometer">Accelerometer</string>
     <string name="dashboard_Placeholder">----</string>
+    <string name="dashboard_scan">Scan For Device</string>
 
     <!-- Logging Strings -->
     <string name="title_logging">Logging</string>
