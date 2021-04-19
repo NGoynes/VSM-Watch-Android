@@ -2,6 +2,7 @@ package com.example.vsmwatchandroidapplication.ui.dashboard
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.logging.TemperatureLog
+import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
+import com.example.vsmwatchandroidapplication.watchSdk
 import com.github.doyaaaaaken.kotlincsv.client.CsvFileReader
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
@@ -23,6 +27,7 @@ import java.io.InputStream
 
 class DashboardFragment : Fragment() {
 
+
     private lateinit var dashboardViewModel: DashboardViewModel
 
     override fun onCreateView(
@@ -30,9 +35,8 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-
         (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
-
+        (activity as MainActivity).checkBattery()
         val latTempSeries = (activity as MainActivity).latTempSeries
         val latAccSeriesX = (activity as MainActivity).latAccSeriesX
         val latAccSeriesY = (activity as MainActivity).latAccSeriesY
@@ -42,17 +46,16 @@ class DashboardFragment : Fragment() {
 
         val latEcgSeries = (activity as MainActivity).latEcgSeries
         val latEdaSeries = (activity as MainActivity).latEdaSeries
-
-
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
+
 
         val PPGsw: Switch = root.findViewById(R.id.dbppg_switch)
         val PPGtxt: TextView = root.findViewById(R.id.dbppg_data)
         PPGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
             if(onSwitch)
-                PPGtxt.setText("S1:" + latPPGSeries1 + ",S2:" + latPPGSeries2)
+                PPGtxt.setText("Filler")
             else
                 PPGtxt.setText("----")
         }
@@ -71,8 +74,9 @@ class DashboardFragment : Fragment() {
          val ECGtxt: TextView = root.findViewById(R.id.dbecg_data)
 
         ECGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
-             if(onSwitch)
-                 ECGtxt.setText(latEcgSeries)
+
+            if(onSwitch)
+                 ECGtxt.setText("Filler")
              else
                  ECGtxt.setText("----")
          }

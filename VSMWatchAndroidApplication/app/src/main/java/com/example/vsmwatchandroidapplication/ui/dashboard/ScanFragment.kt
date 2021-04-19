@@ -24,17 +24,21 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.analog.study_watch_sdk.StudyWatch
 import com.analog.study_watch_sdk.core.SDK
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
+import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.watchSdk
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
+import org.mortbay.jetty.Main
 
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
-var watchSdk // sdk reference variable
-        : SDK? = null
 class ScanFragment : AppCompatActivity() {
+
+//    var watchSdk // sdk reference variable
+//    : SDK? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
@@ -83,16 +87,19 @@ class ScanFragment : AppCompatActivity() {
             }
         }
     }
-    private fun readBatter(){
-        val pma = watchSdk!!.pmApplication
-        var test = pma.batteryInfo
-        pma.setTimeout(100)
-        while (test.payload.batteryLevel == 0) {
-            test = pma.batteryInfo
-            pma.setTimeout(1)
+    fun readBatter(): Int {
+        if(watchSdk != null) {
+            val pma = watchSdk!!.pmApplication
+            var test = pma.batteryInfo
+            pma.setTimeout(100)
+            while (test.payload.batteryLevel == 0) {
+                test = pma.batteryInfo
+                pma.setTimeout(1)
+            }
+            val battlevel = test.payload.batteryLevel
+            return battlevel
         }
-        val battlevel = test.payload.batteryLevel
-        Log.d("test", "battery level: $battlevel")
+        return -1
     }
     private fun setupRecyclerView() {
         scan_results_recycler_view.apply {
