@@ -9,20 +9,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CompoundButton
 import android.widget.Switch
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.vsmwatchandroidapplication.MainActivity
+import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
 //import androidx.core.app.ApplicationProvider.getApplicationContext
 import com.example.vsmwatchandroidapplication.R
 import java.io.File
 import java.io.FileOutputStream
+import com.analog.study_watch_sdk.StudyWatch
+import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
+import kotlinx.android.synthetic.main.activity_scan.*
+import org.jetbrains.anko.alert
 
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 class LoggingFragment : Fragment() {
 
     private lateinit var switchTemperature: Switch
+    private var mainActivity = MainActivity()
+    private var watchSDK = mainActivity.watchSdk
+    private var isConnected = mainActivity.isConnected
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -35,11 +45,19 @@ class LoggingFragment : Fragment() {
 
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
-        switchTemperature.setOnClickListener{
-            val intent: Intent = Intent(context?.applicationContext, TemperatureLog::class.java)
-
-            startActivity(intent)
+        switchTemperature.setOnCheckedChangeListener{ _, isChecked ->
+            if (isConnected && isChecked) {
+                println("CONNECTED")
+            }
+            else if(isChecked){
+                println("NOT CONNECTED")
+            }
         }
+        //switchTemperature.setOnClickListener{
+            //val intent: Intent = Intent(context?.applicationContext, TemperatureLog::class.java)
+
+            //startActivity(intent)
+        //}
 
         val DriveButton: Button = root.findViewById(R.id.DriveButton)
         DriveButton.setOnClickListener{

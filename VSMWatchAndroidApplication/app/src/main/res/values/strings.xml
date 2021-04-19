@@ -3,6 +3,13 @@
     <string name="title_chart">Chart</string>
     <string name="title_dashboard">Dashboard</string>
 
+    <!-- Dashboard Strings -->
+    <string name="dashboard_PPG">PPG</string>
+    <string name="dashboard_ECG">ECG</string>
+    <string name="dashboard_EDA">EDA</string>
+    <string name="dashboard_Temperature">Temperature</string>
+    <string name="dashboard_Accelerometer">Accelerometer</string>
+    <string name="dashboard_Placeholder">----</string>
 
     <!-- Logging Strings -->
     <string name="title_logging">Logging</string>

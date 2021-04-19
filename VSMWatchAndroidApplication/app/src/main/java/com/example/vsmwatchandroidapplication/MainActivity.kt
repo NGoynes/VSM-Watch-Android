@@ -12,11 +12,15 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.analog.study_watch_sdk.StudyWatch
+import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.series.DataPoint
@@ -24,6 +28,10 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
+
+    var watchSdk // sdk reference variable
+            : SDK? = null
+    var isConnected = false
 
     var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()

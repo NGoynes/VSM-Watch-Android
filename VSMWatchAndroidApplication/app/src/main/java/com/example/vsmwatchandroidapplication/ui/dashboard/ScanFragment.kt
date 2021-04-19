@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.analog.study_watch_sdk.StudyWatch
 import com.analog.study_watch_sdk.core.SDK
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
+import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
@@ -32,9 +33,11 @@ import org.jetbrains.anko.alert
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
-var watchSdk // sdk reference variable
-        : SDK? = null
+
 class ScanFragment : AppCompatActivity() {
+
+    var mainActivity: MainActivity = MainActivity()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
@@ -71,10 +74,11 @@ class ScanFragment : AppCompatActivity() {
                 StudyWatch.connectBLE(address, applicationContext, object : StudyWatchCallback {
                     override fun onSuccess(sdk: SDK) {
                         Log.d("Connection", "onSuccess: SDK Ready")
-                        watchSdk = sdk // store this sdk reference to be used for creating applications
+                         mainActivity.watchSdk = sdk // store this sdk reference to be used for creating applications
                         runOnUiThread {
                             test_button.setEnabled(true)
                         }
+                        mainActivity.isConnected = true
                     }
                     override fun onFailure(message: String, state: Int) {
                         Log.d("Connection", "onError: $message")
@@ -84,7 +88,7 @@ class ScanFragment : AppCompatActivity() {
         }
     }
     private fun readBatter(){
-        val pma = watchSdk!!.pmApplication
+        val pma = mainActivity.watchSdk!!.pmApplication
         var test = pma.batteryInfo
         pma.setTimeout(100)
         while (test.payload.batteryLevel == 0) {
