@@ -12,27 +12,23 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.analog.study_watch_sdk.StudyWatch
 import com.analog.study_watch_sdk.core.SDK
-import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
+import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import java.io.InputStream
-
+var watchSdk // sdk reference variable
+: SDK? = null
 class MainActivity : AppCompatActivity() {
-
     var watchSdk // sdk reference variable
             : SDK? = null
-    var isConnected = false
-
     var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
     var ppgSeries2 = LineGraphSeries<DataPoint>()
@@ -116,17 +112,18 @@ class MainActivity : AppCompatActivity() {
     fun checkBattery(){
         val batterytxt: TextView = findViewById(R.id.battery_data)
         val batteryImage: ImageView = findViewById(R.id.battery_image)
-        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
-            registerReceiver(null, ifilter)
-        }
-        val batteryPct: Float? = batteryStatus?.let { intent ->
-            val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-            level * 100 / scale.toFloat()
-        }
+//        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+//            registerReceiver(null, ifilter)
+//        }
+//        val batteryPct: Float? = batteryStatus?.let { intent ->
+//            val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+//            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+//            level * 100 / scale.toFloat()
+//        }
+        var batteryPct = ScanFragment().readBatter()
         batterytxt.setText(batteryPct.toString() + "%")
         if (batteryPct != null) {
-            if(batteryPct.toInt() <= 30) {
+            if(batteryPct <= 30) {
                 batteryImage.setImageResource(R.drawable.low_battery)
                 if(notified == false)
                 {

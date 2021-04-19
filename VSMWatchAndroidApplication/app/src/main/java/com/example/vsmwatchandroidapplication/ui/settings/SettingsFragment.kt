@@ -38,6 +38,7 @@ class SettingsFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
 
         (activity as MainActivity)?.supportActionBar?.title = "Settings"
+        (activity as MainActivity).checkBattery()
 
         vitalStrings.add("PPG")
         vitalStrings.add("ECG")
