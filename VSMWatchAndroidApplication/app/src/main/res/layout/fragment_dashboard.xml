@@ -1,181 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".ui.dashboard.DashboardFragment">
 
-    <Switch
-        android:id="@+id/dbAcc_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_switch"
-        app:layout_constraintVertical_bias="0.091" />
+<Switch
+    android:id="@+id/dbAcc_switch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/dbtemp_switch" />
 
-    <TextView
-        android:id="@+id/dbtemp_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.752"
-        app:layout_constraintStart_toEndOf="@+id/dbtemp_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_data" />
+<TextView
+    android:id="@+id/dbtemp_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="----"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.752"
+    app:layout_constraintStart_toEndOf="@+id/dbtemp_text"
+    app:layout_constraintTop_toBottomOf="@+id/dbeda_data" />
 
-    <TextView
-        android:id="@+id/dbAcc_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.727"
-        app:layout_constraintStart_toEndOf="@+id/dbAcc_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_data" />
+<TextView
+    android:id="@+id/dbAcc_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="----"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.727"
+    app:layout_constraintStart_toEndOf="@+id/dbAcc_text"
+    app:layout_constraintTop_toBottomOf="@+id/dbtemp_data" />
 
-    <TextView
-        android:id="@+id/dbtemp_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Temperature"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toEndOf="@+id/dbtemp_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
+<TextView
+    android:id="@+id/dbtemp_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="Temperature"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toEndOf="@+id/dbtemp_switch"
+    app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
 
-    <TextView
-        android:id="@+id/dbAcc_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Accelerometer"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.076"
-        app:layout_constraintStart_toEndOf="@+id/dbAcc_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_text" />
+<TextView
+    android:id="@+id/dbAcc_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="Accelerometer"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.076"
+    app:layout_constraintStart_toEndOf="@+id/dbAcc_switch"
+    app:layout_constraintTop_toBottomOf="@+id/dbtemp_text" />
 
-    <TextView
-        android:id="@+id/dbecg_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="ECG"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toEndOf="@+id/dbecg_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_text" />
+<TextView
+    android:id="@+id/dbecg_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="ECG"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.053"
+    app:layout_constraintStart_toEndOf="@+id/dbecg_switch"
+    app:layout_constraintTop_toBottomOf="@+id/dbppg_text" />
 
-    <TextView
-        android:id="@+id/dbeda_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="EDA"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toEndOf="@+id/dbeda_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbecg_text" />
+<TextView
+    android:id="@+id/dbeda_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="EDA"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.053"
+    app:layout_constraintStart_toEndOf="@+id/dbeda_switch"
+    app:layout_constraintTop_toBottomOf="@+id/dbecg_text" />
 
-    <Switch
-        android:id="@+id/dbppg_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<Switch
+    android:id="@+id/dbppg_switch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-    <Switch
-        android:id="@+id/dbtemp_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_switch" />
+<Switch
+    android:id="@+id/dbtemp_switch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/dbeda_switch" />
 
-    <Switch
-        android:id="@+id/dbeda_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbecg_switch" />
+<Switch
+    android:id="@+id/dbeda_switch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/dbecg_switch" />
 
-    <Switch
-        android:id="@+id/dbecg_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_switch" />
+<Switch
+    android:id="@+id/dbecg_switch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.071"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/dbppg_switch" />
 
-    <TextView
-        android:id="@+id/dbppg_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="PPG"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toEndOf="@+id/dbppg_switch"
-        app:layout_constraintTop_toTopOf="parent" />
+<TextView
+    android:id="@+id/dbppg_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="PPG"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.053"
+    app:layout_constraintStart_toEndOf="@+id/dbppg_switch"
+    app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/dbecg_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
-        app:layout_constraintStart_toEndOf="@+id/dbecg_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_data" />
+<TextView
+    android:id="@+id/dbecg_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="----"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.823"
+    app:layout_constraintStart_toEndOf="@+id/dbecg_text"
+    app:layout_constraintTop_toBottomOf="@+id/dbppg_data" />
 
-    <TextView
-        android:id="@+id/dbeda_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.824"
-        app:layout_constraintStart_toEndOf="@+id/dbeda_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbecg_data" />
+<TextView
+    android:id="@+id/dbeda_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="----"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.824"
+    app:layout_constraintStart_toEndOf="@+id/dbeda_text"
+    app:layout_constraintTop_toBottomOf="@+id/dbecg_data" />
 
-    <TextView
-        android:id="@+id/dbppg_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
-        app:layout_constraintStart_toEndOf="@+id/dbppg_text"
-        app:layout_constraintTop_toTopOf="parent" />
+<TextView
+    android:id="@+id/dbppg_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="----"
+    android:textSize="20sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.823"
+    app:layout_constraintStart_toEndOf="@+id/dbppg_text"
+    app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ScanButton"
@@ -187,6 +187,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.939" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
