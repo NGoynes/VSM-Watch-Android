@@ -14,6 +14,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.analog.study_watch_sdk.StudyWatch
 import com.analog.study_watch_sdk.core.SDK
-import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
 import com.example.vsmwatchandroidapplication.R
 import kotlinx.android.synthetic.main.activity_scan.*
@@ -40,6 +40,14 @@ class ScanFragment : AppCompatActivity() {
         setContentView(R.layout.activity_scan)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
+        val test_button = findViewById<Button>(R.id.test_button)
+        test_button.setEnabled(false);
+        test_button.setOnClickListener {
+            readBatter()
         }
         scan_button.setOnClickListener {
             if (isScanning) {
@@ -60,11 +68,13 @@ class ScanFragment : AppCompatActivity() {
             }
             with(result.device) {
                 Log.w("ScanResultAdapter", "Connecting to $address")
-                StudyWatch.connectBLE("EB:81:4E:95:53:06", applicationContext, object : StudyWatchCallback {
+                StudyWatch.connectBLE(address, applicationContext, object : StudyWatchCallback {
                     override fun onSuccess(sdk: SDK) {
                         Log.d("Connection", "onSuccess: SDK Ready")
                         watchSdk = sdk // store this sdk reference to be used for creating applications
-                        readBatter()
+                        runOnUiThread {
+                            test_button.setEnabled(true)
+                        }
                     }
                     override fun onFailure(message: String, state: Int) {
                         Log.d("Connection", "onError: $message")
@@ -74,9 +84,15 @@ class ScanFragment : AppCompatActivity() {
         }
     }
     private fun readBatter(){
-        val pmApp = watchSdk!!.pmApplication
-        val battInfo = pmApp.batteryInfo.payload.batteryLevel
-        Log.w("Battery", "Battery Info: $battInfo")
+        val pma = watchSdk!!.pmApplication
+        var test = pma.batteryInfo
+        pma.setTimeout(100)
+        while (test.payload.batteryLevel == 0) {
+            test = pma.batteryInfo
+            pma.setTimeout(1)
+        }
+        val battlevel = test.payload.batteryLevel
+        Log.d("test", "battery level: $battlevel")
     }
     private fun setupRecyclerView() {
         scan_results_recycler_view.apply {

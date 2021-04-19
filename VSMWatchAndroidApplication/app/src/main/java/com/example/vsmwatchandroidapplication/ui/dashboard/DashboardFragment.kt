@@ -30,6 +30,9 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+
+        (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
+
         val latTempSeries = (activity as MainActivity).latTempSeries
         val latAccSeriesX = (activity as MainActivity).latAccSeriesX
         val latAccSeriesY = (activity as MainActivity).latAccSeriesY
@@ -39,7 +42,6 @@ class DashboardFragment : Fragment() {
 
         val latEcgSeries = (activity as MainActivity).latEcgSeries
         val latEdaSeries = (activity as MainActivity).latEdaSeries
-
 
 
         dashboardViewModel =
@@ -94,6 +96,11 @@ class DashboardFragment : Fragment() {
                 Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
             else
                 Acctxt.setText("----")
+        }
+        val ScanButton: Button = root.findViewById(R.id.ScanButton)
+        ScanButton.setOnClickListener {
+            val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)
+            startActivity(intent)
         }
         return root
     }
