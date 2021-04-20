@@ -1,6 +1,7 @@
 package com.example.vsmwatchandroidapplication
 
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -24,11 +26,25 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import java.io.InputStream
+
+
 var watchSdk // sdk reference variable
 : SDK? = null
+var watchConnection = false
+
+@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
+var dashboardPPGSwitch: Switch? = null
+@SuppressLint("UseSwitchCompatOrMaterialCode", "StaticFieldLeak")
+var dashboardECGSwitch: Switch? = null
+@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
+var dashboardEDASwitch: Switch? = null
+@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
+var dashboardTempSwitch: Switch? = null
+@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
+var dashboardAccelSwitch: Switch? = null
+
 class MainActivity : AppCompatActivity() {
-    var watchSdk // sdk reference variable
-            : SDK? = null
+
     var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
     var ppgSeries2 = LineGraphSeries<DataPoint>()
@@ -50,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     private val CHANNEL_ID = "channel_id_01"
     private val notificationID = 101
     var notified = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -77,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }*/
-    fun createNotificationChannel()
+    private fun createNotificationChannel()
     {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
@@ -120,22 +137,20 @@ class MainActivity : AppCompatActivity() {
 //            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
 //            level * 100 / scale.toFloat()
 //        }
-        var batteryPct = ScanFragment().readBatter()
+        val batteryPct = ScanFragment().readBatter()
         batterytxt.setText(batteryPct.toString() + "%")
-        if (batteryPct != null) {
-            if(batteryPct <= 30) {
-                batteryImage.setImageResource(R.drawable.low_battery)
-                if(notified == false)
-                {
-                    sendNotification()
-                    notified = true
-                }
-            }
-            else
+        if(batteryPct in 1..30) {
+            batteryImage.setImageResource(R.drawable.low_battery)
+            if(!notified)
             {
-                batteryImage.setImageResource(R.drawable.low_battery)
-                notified = false
+                sendNotification()
+                notified = true
             }
+        }
+        else
+        {
+            batteryImage.setImageResource(R.drawable.low_battery)
+            notified = false
         }
     }
     private fun readHealthData() {
