@@ -24,6 +24,11 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import java.io.File
 import java.io.FileReader
 import java.io.InputStream
+var ppgOn = true
+var edaOn = false
+var ecgOn = false
+var tempOn = false
+
 
 class DashboardFragment : Fragment() {
 
@@ -54,20 +59,31 @@ class DashboardFragment : Fragment() {
         val PPGsw: Switch = root.findViewById(R.id.dbppg_switch)
         val PPGtxt: TextView = root.findViewById(R.id.dbppg_data)
         PPGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch)
-                PPGtxt.setText("Filler")
-            else
+            if(onSwitch) {
+                (activity as MainActivity).readPPG()
+                ppgOn = true
+            }
+            else {
                 PPGtxt.setText("----")
+                (activity as MainActivity).stopPPG()
+                ppgOn = false
+            }
+
         }
 
         val EDAsw: Switch = root.findViewById(R.id.dbeda_switch)
         val EDAtxt: TextView = root.findViewById(R.id.dbeda_data)
 
         EDAsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch)
-                EDAtxt.setText(latEdaSeries)
-            else
+            if(onSwitch) {
+                (activity as MainActivity).readEDA()
+                edaOn = true
+            }
+            else {
                 EDAtxt.setText("----")
+                (activity as MainActivity).stopEDA()
+                edaOn = false
+            }
         }
 
          val ECGsw: Switch = root.findViewById(R.id.dbecg_switch)
@@ -75,22 +91,33 @@ class DashboardFragment : Fragment() {
 
         ECGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
 
-            if(onSwitch)
-                 ECGtxt.setText("Filler")
-             else
-                 ECGtxt.setText("----")
+            if(onSwitch) {
+                (activity as MainActivity).readECG()
+                ecgOn = true
+            }
+             else {
+                (activity as MainActivity).stopECG()
+                ECGtxt.setText("----")
+                ecgOn = false
+
+            }
          }
 
 
         val tempsw: Switch = root.findViewById(R.id.dbtemp_switch)
         val temptxt: TextView = root.findViewById(R.id.dbtemp_data)
         tempsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch)
-                temptxt.setText(latTempSeries + "C")
-            else
+            if (onSwitch) {
+                (activity as MainActivity).readTemp()
+                tempOn = true
+            }
+            else {
                 temptxt.setText("----")
-        }
+                (activity as MainActivity).stopTemp()
+                tempOn = false
 
+            }
+        }
 
 
         val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
