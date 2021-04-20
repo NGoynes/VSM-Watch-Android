@@ -24,7 +24,10 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.analog.study_watch_sdk.StudyWatch
 import com.analog.study_watch_sdk.core.SDK
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
-import com.example.vsmwatchandroidapplication.*
+import com.example.vsmwatchandroidapplication.MainActivity
+import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.ui.logging.TemperatureLog
+import com.example.vsmwatchandroidapplication.watchSdk
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
 import org.mortbay.jetty.Main
@@ -35,6 +38,8 @@ private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
 class ScanFragment : AppCompatActivity() {
 
+//    var watchSdk // sdk reference variable
+//    : SDK? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
@@ -45,7 +50,7 @@ class ScanFragment : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
         val test_button = findViewById<Button>(R.id.test_button)
-        test_button.setEnabled(false)
+        test_button.setEnabled(false);
         test_button.setOnClickListener {
             readBatter()
         }
@@ -74,8 +79,9 @@ class ScanFragment : AppCompatActivity() {
                         watchSdk = sdk // store this sdk reference to be used for creating applications
                         runOnUiThread {
                             test_button.setEnabled(true)
+                            val intent: Intent = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(intent)
                         }
-                        watchConnection = true
                     }
                     override fun onFailure(message: String, state: Int) {
                         Log.d("Connection", "onError: $message")
