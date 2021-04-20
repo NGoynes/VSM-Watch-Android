@@ -7,23 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Switch
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
-import com.example.vsmwatchandroidapplication.ui.logging.TemperatureLog
-import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
-import com.example.vsmwatchandroidapplication.watchSdk
-import com.github.doyaaaaaken.kotlincsv.client.CsvFileReader
-import com.github.doyaaaaaken.kotlincsv.client.CsvReader
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import java.io.File
-import java.io.FileReader
-import java.io.InputStream
+import org.jetbrains.anko.support.v4.runOnUiThread
+
 var ppgOn = true
 var edaOn = false
 var ecgOn = false
@@ -32,7 +23,7 @@ var tempOn = false
 
 class DashboardFragment : Fragment() {
 
-
+    var PPGtxt: TextView? = null
     private lateinit var dashboardViewModel: DashboardViewModel
 
     override fun onCreateView(
@@ -57,15 +48,14 @@ class DashboardFragment : Fragment() {
 
 
         val PPGsw: Switch = root.findViewById(R.id.dbppg_switch)
-        val PPGtxt: TextView = root.findViewById(R.id.dbppg_data)
+        PPGtxt = root.findViewById(R.id.dbppg_data)
         PPGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
             if(onSwitch) {
-                (activity as MainActivity).readPPG()
+                readPPG()
                 ppgOn = true
             }
             else {
-                PPGtxt.setText("----")
-                (activity as MainActivity).stopPPG()
+                stopPPG()
                 ppgOn = false
             }
 
@@ -92,7 +82,7 @@ class DashboardFragment : Fragment() {
         ECGsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
 
             if(onSwitch) {
-                (activity as MainActivity).readECG()
+                readECG()
                 ecgOn = true
             }
              else {
@@ -134,6 +124,53 @@ class DashboardFragment : Fragment() {
             startActivity(intent)
         }
         return root
+    }
+    fun readPPG() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+            ppg.setPPGCallback{PPGDataPacket ->
+              runOnUiThread {
+                    PPGtxt?.setText(PPGDataPacket.payload.hr.toString())
+             }
+//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.hr}")
+//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(1).ppgData}")
+//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(2).ppgData}")
+//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(3).ppgData}")
+            }
+            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
+
+            ppg.startSensor()
+            ppg.subscribeStream()
+
+        }
+
+    }
+    fun stopPPG()
+    {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            runOnUiThread {
+                PPGtxt?.setText("----")
+            }
+            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+            ppg.stopSensor()
+            ppg.stopAndUnsubscribeStream()
+        }
+    }
+
+    fun readECG() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+//        val ECGtxt: TextView = findViewById(R.id.dbecg_data)
+            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+            eda.setCallback { ECGdata ->
+                Log.d("Connection", "DATA :: ${ECGdata.payload.hr}")
+            }
+            eda.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
+
+            eda.startSensor()
+            eda.subscribeStream()
+
+        }
+
     }
 
 }
