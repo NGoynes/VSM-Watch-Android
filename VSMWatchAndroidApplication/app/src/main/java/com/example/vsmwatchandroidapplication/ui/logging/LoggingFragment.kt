@@ -58,8 +58,9 @@ class LoggingFragment : Fragment() {
 
         // Checks if PPG in Dashboard is checked
         switchPPG.setOnCheckedChangeListener { _, _ ->
-            if (dashboardPPGSwitch!!.isChecked) {
+            if (dashboardPPGSwitch) {
                 allowLogging = true
+                loggingPPGSwitch = true
             }
             else {
                 Toast.makeText(context?.applicationContext, "PPG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
@@ -69,8 +70,9 @@ class LoggingFragment : Fragment() {
 
         // Checks if ECG in Dashboard is checked
         switchECG.setOnCheckedChangeListener{ _, _ ->
-            if (dashboardECGSwitch!!.isChecked) {
+            if (dashboardECGSwitch) {
                 allowLogging = true
+                loggingECGSwitch = true
             }
             else {
                 Toast.makeText(context?.applicationContext, "ECG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
@@ -80,8 +82,9 @@ class LoggingFragment : Fragment() {
 
         // Checks if EDA in Dashboard is checked
         switchEDA.setOnCheckedChangeListener{ _, _ ->
-            if (dashboardEDASwitch!!.isChecked) {
+            if (dashboardEDASwitch) {
                 allowLogging = true
+                loggingEDASwitch = true
             }
             else {
                 Toast.makeText(context?.applicationContext, "EDA is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
@@ -91,8 +94,9 @@ class LoggingFragment : Fragment() {
 
         // Checks if Accelerometer in Dashboard is checked
         switchAccelerometer.setOnCheckedChangeListener { _, _ ->
-            if (dashboardAccelSwitch!!.isChecked) {
+            if (dashboardAccelSwitch) {
                 allowLogging = true
+                loggingAccelerometerSwitch = true
             }
             else {
                 Toast.makeText(context?.applicationContext, "Accelerometer is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
@@ -102,8 +106,9 @@ class LoggingFragment : Fragment() {
 
         // Checks if Temperature in Dashboard is checked
         switchTemperature.setOnCheckedChangeListener { _, _ ->
-            if (dashboardTempSwitch!!.isChecked) {
+            if (dashboardTempSwitch) {
                 allowLogging = true
+                loggingTempSwitch = true
             }
             else {
                 Toast.makeText(context?.applicationContext, "Temperature is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
@@ -123,10 +128,11 @@ class LoggingFragment : Fragment() {
 
         val DriveButton: Button = root.findViewById(R.id.DriveButton)
         DriveButton.setOnClickListener{
-            export()
+            //export()
         }
         return root
     }
+
     fun buttonShareText() {
         val intentShare = Intent(Intent.ACTION_SEND)
         intentShare.type = "text/plain"
@@ -137,28 +143,32 @@ class LoggingFragment : Fragment() {
         )
         startActivity(Intent.createChooser(intentShare, "Shared the text ..."))
     }
-    private fun export() {
+
+    fun record(readData: String, vitalName: String) {
         //generate data
         val data = StringBuilder()
-        data.append("Time,Distance")
+        val fileName: String = vitalName + "Data.csv"
+
+        data.append(readData)
         try {
             //saving the file into device
-            val out: FileOutputStream = requireActivity().applicationContext.openFileOutput("data.csv", Context.MODE_PRIVATE)
+            val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(fileName, Context.MODE_PRIVATE)
             out.write(data.toString().toByteArray())
             out.close()
-
-            //exporting
-            val context: Context = requireActivity().applicationContext
-            val filelocation = File(context.filesDir, "data.csv")
-            val path: Uri = FileProvider.getUriForFile(context, "com.example.exportcsv.fileprovider", filelocation)
-            val fileIntent = Intent(Intent.ACTION_SEND)
-            fileIntent.type = "text/csv"
-            fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data")
-            fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            fileIntent.putExtra(Intent.EXTRA_STREAM, path)
-            startActivity(Intent.createChooser(fileIntent, "Send mail"))
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun export(dataFile: String) {
+        val context: Context = requireActivity().applicationContext
+        val fileLocation = File(context.filesDir, dataFile)
+        val path: Uri = FileProvider.getUriForFile(context, "com.example.exportcsv.fileprovider", fileLocation)
+        val fileIntent = Intent(Intent.ACTION_SEND)
+        fileIntent.type = "text/csv"
+        fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data")
+        fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        fileIntent.putExtra(Intent.EXTRA_STREAM, path)
+        startActivity(Intent.createChooser(fileIntent, "Send mail"))
     }
 }

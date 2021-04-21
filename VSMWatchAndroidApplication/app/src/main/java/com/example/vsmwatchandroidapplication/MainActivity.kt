@@ -1,6 +1,7 @@
 package com.example.vsmwatchandroidapplication
 
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -9,8 +10,10 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -28,16 +31,20 @@ var watchSdk // sdk reference variable
 : SDK? = null
 var watchConnection = false
 
-@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
-var dashboardPPGSwitch: Switch? = null
-@SuppressLint("UseSwitchCompatOrMaterialCode", "StaticFieldLeak")
-var dashboardECGSwitch: Switch? = null
-@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
-var dashboardEDASwitch: Switch? = null
-@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
-var dashboardTempSwitch: Switch? = null
-@SuppressLint("StaticFieldLeak", "UseSwitchCompatOrMaterialCode")
-var dashboardAccelSwitch: Switch? = null
+// Dashboard global variables for which vital is checked
+var dashboardPPGSwitch: Boolean = false
+var dashboardECGSwitch: Boolean = false
+var dashboardEDASwitch: Boolean = false
+var dashboardTempSwitch: Boolean = false
+var dashboardAccelSwitch: Boolean = false
+
+// Logging global variables for which vital is to be logged
+var loggingPPGSwitch: Boolean = false
+var loggingECGSwitch: Boolean = false
+var loggingEDASwitch: Boolean = false
+var loggingAccelerometerSwitch: Boolean = false
+var loggingPedometerSwitch: Boolean = false
+var loggingTempSwitch: Boolean = false
 
 class MainActivity : AppCompatActivity() {
 
