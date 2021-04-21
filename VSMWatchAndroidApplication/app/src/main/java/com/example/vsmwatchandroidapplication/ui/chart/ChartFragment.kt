@@ -7,28 +7,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import com.jjoe64.graphview.GraphView
-import java.lang.Double.max
-import java.lang.Double.min
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
+import kotlinx.android.synthetic.main.fragment_chart.*
+
 
 class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-    /*private lateinit var
-    private lateinit var
-    private lateinit var
-    private lateinit var
-    private lateinit var
-    private lateinit var*/
+    private var thread: Thread = Thread()
+    //private lateinit var ecgChart: LineChart
+    //private var plotData = true
+    private var ecgSeries = LineGraphSeries<DataPoint>()
+    private var lastX = 0
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         chartViewModel =
                 ViewModelProvider(this).get(ChartViewModel::class.java)
@@ -37,26 +37,24 @@ class ChartFragment : Fragment() {
         (activity as MainActivity)?.supportActionBar?.title = "Chart"
         (activity as MainActivity).checkBattery()
 
-        val ppgSeries1 = (activity as MainActivity).ppgSeries1
-        val ppgSeries2 = (activity as MainActivity).ppgSeries2
-        val ecgSeries = (activity as MainActivity).ecgSeries
-        val edaSeriesMag = (activity as MainActivity).edaSeriesMag
-        val edaSeriesPhase = (activity as MainActivity).edaSeriesPhase
-        val accSeriesX = (activity as MainActivity).accSeriesX
-        val accSeriesY = (activity as MainActivity).accSeriesY
-        val accSeriesZ = (activity as MainActivity).accSeriesZ
-        val accSeriesMag = (activity as MainActivity).accSeriesMag
-        val tempSeries = (activity as MainActivity).tempSeries
+        //var ppgSeries1 = LineGraphSeries<DataPoint>()
+        //var ppgSeries2 = LineGraphSeries<DataPoint>()
+        //var edaSeriesMag = LineGraphSeries<DataPoint>()
+        //var edaSeriesPhase = LineGraphSeries<DataPoint>()
+        //var accSeriesX = LineGraphSeries<DataPoint>()
+        //var accSeriesY = LineGraphSeries<DataPoint>()
+        //var accSeriesZ = LineGraphSeries<DataPoint>()
+        //var accSeriesMag = LineGraphSeries<DataPoint>()
+        //var tempSeries = LineGraphSeries<DataPoint>()
 
-        val ppgChart: GraphView = root.findViewById((R.id.ppgChart))
+        //val ppgChart: GraphView = root.findViewById((R.id.ppgChart))
         val ecgChart: GraphView = root.findViewById((R.id.ecgChart))
-        val edaPhaseChart: GraphView = root.findViewById((R.id.edaPhaseChart))
-        val edaMagChart: GraphView = root.findViewById((R.id.edaMagChart))
-        val accChart: GraphView = root.findViewById((R.id.accChart))
-        val tempChart: GraphView = root.findViewById((R.id.tempChart))
+        //val edaPhaseChart: GraphView = root.findViewById((R.id.edaPhaseChart))
+        //val edaMagChart: GraphView = root.findViewById((R.id.edaMagChart))
+        //val accChart: GraphView = root.findViewById((R.id.accChart))
+        //val tempChart: GraphView = root.findViewById((R.id.tempChart))
 
-
-        //PPG PLOT
+        /*//PPG PLOT
         ppgSeries1.color = Color.rgb(255, 51, 0)
         ppgSeries1.isDrawBackground = true
         ppgSeries1.backgroundColor = Color.argb(150, 255, 133, 102)
@@ -80,7 +78,7 @@ class ChartFragment : Fragment() {
         ppgChart.viewport.setMaxX(max(ppgSeries1.highestValueX, ppgSeries2.highestValueX))
         ppgChart.viewport.isScrollable = true
         ppgChart.addSeries(ppgSeries2)
-        ppgChart.addSeries(ppgSeries1)
+        ppgChart.addSeries(ppgSeries1)*/
 
         //ECG PLOT
         ecgSeries.color = Color.rgb(255, 51, 0)
@@ -91,16 +89,16 @@ class ChartFragment : Fragment() {
         ecgChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
         ecgChart.gridLabelRenderer.verticalAxisTitle = "ECG"
         ecgChart.gridLabelRenderer.numVerticalLabels = 3
-        ecgChart.viewport.isYAxisBoundsManual = true
+        //ecgChart.viewport.isYAxisBoundsManual = true
         ecgChart.viewport.isXAxisBoundsManual = true
-        ecgChart.viewport.setMinY(ecgSeries.lowestValueY)
-        ecgChart.viewport.setMaxY(ecgSeries.highestValueY)
-        ecgChart.viewport.setMinX(ecgSeries.lowestValueX)
-        ecgChart.viewport.setMaxX(ecgSeries.highestValueX)
+        ecgChart.viewport.setMinY(0.0)
+        ecgChart.viewport.setMaxY(10.0)
+        /*ecgChart.viewport.setMinX(ecgSeries.lowestValueX)
+        ecgChart.viewport.setMaxX(ecgSeries.highestValueX)*/
         ecgChart.viewport.isScrollable = true
         ecgChart.addSeries(ecgSeries)
 
-        //EDA MAG PLOT
+        /*//EDA MAG PLOT
         edaSeriesMag.color = Color.rgb(255, 51, 0)
         edaSeriesMag.isDrawBackground = true
         edaSeriesMag.backgroundColor = Color.argb(200, 233, 179, 179)
@@ -195,14 +193,14 @@ class ChartFragment : Fragment() {
         edaPhaseChart.setOnClickListener{
             val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
             startActivity(intent)
-        }
+        }*/
 
         ecgChart.setOnClickListener{
             val intent: Intent = Intent(context?.applicationContext, ECGActivity::class.java)
             startActivity(intent)
         }
 
-        tempChart.setOnClickListener{
+        /*tempChart.setOnClickListener{
             val intent: Intent = Intent(context?.applicationContext, TempActivity::class.java)
             startActivity(intent)
         }
@@ -211,7 +209,30 @@ class ChartFragment : Fragment() {
             val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
             startActivity(intent)
         }
-
+*/
         return root
+    }
+
+    private fun addEntry() {
+        ecgSeries.appendData(DataPoint(lastX++.toDouble(), Math.random() * 10.0), true, 10)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (thread != null) {
+            thread.interrupt()
+        }
+        thread = Thread {
+            for (i in 0..100) {
+                addEntry()
+                try {
+                    Thread.sleep(10)
+                } catch (e: InterruptedException) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace()
+                }
+            }
+        }
+        thread.start()
     }
 }
