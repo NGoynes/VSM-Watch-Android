@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.chart.ECGActivity">
 
-    <com.jjoe64.graphview.GraphView
+    <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/ecgChartInd"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:ignore="MissingConstraints">
 
-    </com.jjoe64.graphview.GraphView>
+    </com.github.mikephil.charting.charts.LineChart>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
