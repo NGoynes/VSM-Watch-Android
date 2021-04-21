@@ -13,90 +13,379 @@
         android:paddingTop="30dp"
         android:paddingBottom="100dp">
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/ppgChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="100dp"
-            android:paddingBottom="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/ppgSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/ppgTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_ppg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/ppgAmp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_amplitude"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/ppgChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ppgTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/ecgChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/ecgSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/ecgTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_ecg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/ecgAmp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_amplitude"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/ecgChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ecgTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/edaMagChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/edaMagSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/edaMagTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_edaMag"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/edaMag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_magnitude"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/edaMagChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edaMagTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/edaPhaseChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/edaPhaseSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/edaPhaseTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_edaPhase"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/edaPhase"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_phase"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/edaPhaseChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edaPhaseTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/accChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="30dp"
-            android:paddingBottom="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/accSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/accTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_acc"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/accMag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_magnitude"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/accChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/accTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/tempChart"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:clickable="true"
-            android:paddingTop="30dp"
-            android:focusable="true">
+            android:layout_height="match_parent">
 
-        </com.github.mikephil.charting.charts.LineChart>
+            <TextView
+                android:id="@+id/tempSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_seconds"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.94" />
+
+            <TextView
+                android:id="@+id/tempTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph_temp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.059" />
+
+            <TextView
+                android:id="@+id/tempCurr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="368dp"
+                android:rotation="-90"
+                android:text="@string/graph_tempCurr"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.502" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/tempChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tempTitle"
+                app:layout_constraintVertical_bias="0.53">
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 

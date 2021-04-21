@@ -15,6 +15,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import java.sql.Time
 
 class ECGActivity : AppCompatActivity() {
 
@@ -31,6 +32,7 @@ class ECGActivity : AppCompatActivity() {
 
         // enable description text
         ecgChart.description.isEnabled = true
+        ecgChart.description.text = "ECG Sensor Stream"
 
         // enable touch gestures
         ecgChart.setTouchEnabled(true)
@@ -45,7 +47,7 @@ class ECGActivity : AppCompatActivity() {
         ecgChart.setPinchZoom(true)
 
         // set an alternative background color
-        ecgChart.setBackgroundColor(Color.WHITE)
+        //ecgChart.setBackgroundColor(Color.WHITE)
 
         val data = LineData()
         data.setValueTextColor(Color.WHITE)
@@ -59,36 +61,34 @@ class ECGActivity : AppCompatActivity() {
         // modify the legend ...
         l.form = Legend.LegendForm.LINE
         l.textColor = Color.WHITE
+        l.isEnabled = false
 
         val xl: XAxis = ecgChart.xAxis
         xl.textColor = Color.WHITE
-        xl.setDrawGridLines(true)
+        xl.setDrawGridLines(false)
         xl.setAvoidFirstLastClipping(true)
         xl.isEnabled = true
 
         val leftAxis: YAxis = ecgChart.axisLeft
         leftAxis.textColor = Color.WHITE
         leftAxis.setDrawGridLines(false)
-        //leftAxis.axisMaximum = 10000f
-        //leftAxis.axisMinimum = 0f
-        leftAxis.setLabelCount(5, true)
-        leftAxis.setDrawGridLines(true)
 
         val rightAxis: YAxis = ecgChart.axisRight
         rightAxis.isEnabled = false
 
-        ecgChart.axisLeft.setDrawGridLines(true)
-        ecgChart.xAxis.setDrawGridLines(true)
         ecgChart.setDrawBorders(true)
 
         feedMultiple()
     }
 
     private fun createSet(): LineDataSet? {
-        val set = LineDataSet(null, "Dynamic Data")
+        val set = LineDataSet(null, "ECG Data Stream")
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
-        set.color = Color.MAGENTA
+        set.color = Color.rgb(255, 51, 0)
+        set.fillColor = Color.rgb(233, 179, 179)
+        set.fillAlpha = 250
+        set.setDrawFilled(true)
         set.isHighlightEnabled = false
         set.setDrawValues(false)
         set.setDrawCircles(false)

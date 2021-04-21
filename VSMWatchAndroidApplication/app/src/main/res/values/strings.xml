@@ -3,6 +3,19 @@
     <string name="title_chart">Chart</string>
     <string name="title_dashboard">Dashboard</string>
 
+    <!-- Chart Strings -->
+    <string name="graph_amplitude">Amplitude</string>
+    <string name="graph_magnitude">Magnitude</string>
+    <string name="graph_phase">Phase</string>
+    <string name="graph_seconds">Seconds</string>
+    <string name="graph_ppg">PPG Data Stream</string>
+    <string name="graph_ecg">ECG Data Stream</string>
+    <string name="graph_edaMag">EDA Mag. Data Stream</string>
+    <string name="graph_edaPhase">EDA Phase Data Stream</string>
+    <string name="graph_temp">Temp. Data Stream</string>
+    <string name="graph_tempCurr">Temp. (C)</string>
+    <string name="graph_acc">ADXL Data Stream</string>
+
 
     <!-- Logging Strings -->
     <string name="title_logging">Logging</string>
