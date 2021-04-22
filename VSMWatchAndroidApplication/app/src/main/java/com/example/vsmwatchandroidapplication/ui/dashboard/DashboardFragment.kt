@@ -145,7 +145,7 @@ class DashboardFragment : Fragment() {
         val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
         Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
             if(onSwitch) {
-                Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
+                //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
                 EDAsw?.isChecked = false
                 ECGsw?.isChecked = false
                 PPGsw?.isChecked = false

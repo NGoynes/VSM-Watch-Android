@@ -131,10 +131,12 @@ class ScanFragment : AppCompatActivity() {
                 scanResultAdapter.notifyItemChanged(indexQuery)
             } else {
                 with(result.device) {
-                    Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
+                    //Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
                 }
-                scanResults.add(result)
-                scanResultAdapter.notifyItemInserted(scanResults.size - 1)
+                if(result.device.name!= null && result.device.name.contains("STUDYWATCH")) {
+                    scanResults.add(result)
+                    scanResultAdapter.notifyItemInserted(scanResults.size - 1)
+                }
             }
         }
 

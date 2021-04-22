@@ -252,13 +252,13 @@ class MainActivity : AppCompatActivity() {
         }
         latTempSeries = rows[rows.size-1][1]
     }*/
-
-            ppg.startSensor()
-            ppg.subscribeStream()
-
-        }
-
-    }
+//
+//            ppg.startSensor()
+//            ppg.subscribeStream()
+//
+//        }
+//
+//    }
     fun stopPPG()
     {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
