@@ -6,12 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".ui.chart.EDAPhaseActivity">
 
-    <com.jjoe64.graphview.GraphView
+    <TextView
+        android:id="@+id/edaPhaseInd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="820dp"
+        android:rotation="-90"
+        android:text="@string/graph_phase"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/edaPhaseSecondsInd"
+        android:layout_width="59dp"
+        android:layout_height="17dp"
+        android:rotation="0"
+        android:text="@string/graph_seconds"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edaPhaseChartInd"
+        app:layout_constraintVertical_bias="0.958" />
+
+    <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/edaPhaseChartInd"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints">
 
-    </com.jjoe64.graphview.GraphView>
+    </com.github.mikephil.charting.charts.LineChart>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -43,7 +43,7 @@ class DashboardFragment : Fragment() {
     ): View? {
         (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
         (activity as MainActivity).checkBattery()
-        val latTempSeries = (activity as MainActivity).latTempSeries
+        /*val latTempSeries = (activity as MainActivity).latTempSeries
         val latAccSeriesX = (activity as MainActivity).latAccSeriesX
         val latAccSeriesY = (activity as MainActivity).latAccSeriesY
         val latAccSeriesZ = (activity as MainActivity).latAccSeriesZ
@@ -51,7 +51,7 @@ class DashboardFragment : Fragment() {
         val latPPGSeries2 = (activity as MainActivity).latPPGSeries2
 
         val latEcgSeries = (activity as MainActivity).latEcgSeries
-        val latEdaSeries = (activity as MainActivity).latEdaSeries
+        val latEdaSeries = (activity as MainActivity).latEdaSeries*/
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)

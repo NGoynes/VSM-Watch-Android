@@ -29,7 +29,7 @@ var watchSdk // sdk reference variable
 class MainActivity : AppCompatActivity() {
     var watchSdk // sdk reference variable
             : SDK? = null
-    var ppgSeries1 = LineGraphSeries<DataPoint>()
+    /*var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
     var ppgSeries2 = LineGraphSeries<DataPoint>()
     var latPPGSeries2 = String()
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     var latAccSeriesZ = String()
     var accSeriesMag = LineGraphSeries<DataPoint>()
     var tempSeries = LineGraphSeries<DataPoint>()
-    var latTempSeries = String()
+    var latTempSeries = String()*/
     private val CHANNEL_ID = "channel_id_01"
     private val notificationID = 101
     var notified = false
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         navView.setupWithNavController(navController)
         createNotificationChannel()
-        readHealthData()
+        //readHealthData()
         checkBattery()
     }
 
@@ -134,8 +134,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun readHealthData() {
+    /*private fun readHealthData() {
         //read ppg
         var file: InputStream = resources.openRawResource(R.raw.adpd)
         var rows: List<List<String>> = csvReader().readAll(file)
@@ -251,18 +250,8 @@ class MainActivity : AppCompatActivity() {
             eda.subscribeStream()
 
         }
-
-    }
-    fun readPPG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            ppg.setSyncPPGCallback{PPGDataPacket ->
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(0).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(1).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(2).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(3).ppgData}")
-            }
-            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
+        latTempSeries = rows[rows.size-1][1]
+    }*/
 
             ppg.startSensor()
             ppg.subscribeStream()
