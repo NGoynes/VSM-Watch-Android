@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.github.mikephil.charting.charts.LineChart
@@ -20,9 +21,9 @@ import java.sql.Time
 class ECGActivity : AppCompatActivity() {
 
     private var thread: Thread = Thread()
-    private var ecgSeries = LineGraphSeries<DataPoint>()
     private lateinit var ecgChart: LineChart
     private var prevX = 0
+    private val ecg: ECGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,7 @@ class ECGActivity : AppCompatActivity() {
         // enable description text
         ecgChart.description.isEnabled = true
         ecgChart.description.text = "ECG Sensor Stream"
+        ecgChart.description.textColor = Color.WHITE
 
         // enable touch gestures
         ecgChart.setTouchEnabled(true)
@@ -86,9 +88,6 @@ class ECGActivity : AppCompatActivity() {
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
         set.color = Color.rgb(255, 51, 0)
-        set.fillColor = Color.rgb(233, 179, 179)
-        set.fillAlpha = 250
-        set.setDrawFilled(true)
         set.isHighlightEnabled = false
         set.setDrawValues(false)
         set.setDrawCircles(false)
@@ -102,9 +101,6 @@ class ECGActivity : AppCompatActivity() {
 
         if (data != null) {
             var set = data.getDataSetByIndex(0)
-            // set.addEntry(...); // can be called as well
-
-            // set.addEntry(...); // can be called as well
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
@@ -112,14 +108,9 @@ class ECGActivity : AppCompatActivity() {
 
             for (i in ECGdata.payload.streamData) {
                 if (i != null) {
-                    //if (i.timestamp.toFloat() > data.xMax) {
-                        //data.addEntry(Entry(i.timestamp.toFloat(), i.ecgData.toFloat()), 0)
                     data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
-                    //}
                 }
             }
-            //data.addEntry(Entry(set.entryCount.toFloat(), (Math.random() * 80).toFloat() + 10f), 0)
-            //Collections.sort(data, EntryXComparator())
             data.notifyDataChanged()
 
             // let the chart know it's data has changed
@@ -127,12 +118,9 @@ class ECGActivity : AppCompatActivity() {
 
             // limit the number of visible entries
             ecgChart.setVisibleXRangeMaximum(150F)
-            // mChart.setVisibleYRange(30, AxisDependency.LEFT)
 
             // move to the latest entry
-            ecgChart.moveViewToX(data.getEntryCount().toFloat())
-
-            //println(data.dataSets.toString())
+            ecgChart.moveViewToX(data.entryCount.toFloat())
         }
     }
 
@@ -140,10 +128,8 @@ class ECGActivity : AppCompatActivity() {
         if (thread != null) {
             thread.interrupt()
         }
-        val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-        ecg.setCallback { ECGdata ->
 
-            //Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
+        ecg.setCallback { ECGdata ->
             runOnUiThread {
                 addEntry(ECGdata)
             }
@@ -161,6 +147,7 @@ class ECGActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        ecg.stopAndUnsubscribeStream()
         if (thread != null) {
             thread.interrupt()
         }
@@ -172,6 +159,7 @@ class ECGActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         thread.interrupt()
+        ecg.stopAndUnsubscribeStream()
         super.onDestroy()
     }
 }
