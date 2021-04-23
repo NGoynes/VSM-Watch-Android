@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@android:color/background_dark"
     android:layout_height="match_parent"
     tools:context=".ui.logging.LoggingFragment">
 
@@ -48,7 +49,7 @@
         android:layout_width="375dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@android:color/darker_gray"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +73,6 @@
         android:layout_width="375dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logging_ECG" />

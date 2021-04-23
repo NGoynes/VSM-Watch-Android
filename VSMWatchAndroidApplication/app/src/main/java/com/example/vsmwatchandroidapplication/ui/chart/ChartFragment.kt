@@ -17,6 +17,8 @@ import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.ui.dashboard.ecgOn
+import com.example.vsmwatchandroidapplication.ui.dashboard.ppgOn
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -53,7 +55,6 @@ class ChartFragment : Fragment() {
     private val eda: EDAApplication = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
     private val acc: ADXLApplication = com.example.vsmwatchandroidapplication.watchSdk!!.adxlApplication
     private val ecg: ECGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,14 +66,12 @@ class ChartFragment : Fragment() {
 
         (activity as MainActivity)?.supportActionBar?.title = "Chart"
         (activity as MainActivity).checkBattery()
-
         ppgChart = root.findViewById((R.id.ppgChart))
         ecgChart = root.findViewById((R.id.ecgChart))
         edaPhaseChart = root.findViewById((R.id.edaPhaseChart))
         edaMagChart = root.findViewById((R.id.edaMagChart))
         accChart = root.findViewById((R.id.accChart))
         tempChart = root.findViewById((R.id.tempChart))
-
 
         //ECG GRAPHING
         // enable description text
@@ -276,8 +275,7 @@ class ChartFragment : Fragment() {
 
         edaPhaseChart.setDrawBorders(true)
 
-        feedMultiple()
-
+        //feedMultiple()
         /*//PPG PLOT
         ppgSeries1.color = Color.rgb(255, 51, 0)
         ppgSeries1.isDrawBackground = true
@@ -415,14 +413,17 @@ class ChartFragment : Fragment() {
         }
 
         edaPhaseChart.setOnClickListener{
+
             val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
             startActivity(intent)
         }
 
         ecgChart.setOnClickListener {
-            val intent: Intent =
-                Intent(context?.applicationContext, ECGActivity::class.java)
-            startActivity(intent)
+            if(ecgOn == true) {
+                val intent: Intent =
+                        Intent(context?.applicationContext, ECGActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         /*tempChart.setOnClickListener{
@@ -492,7 +493,7 @@ class ChartFragment : Fragment() {
         return set
     }
 
-    private fun addEntry(ECGdata: ECGDataPacket) {
+     fun addEntry(ECGdata: ECGDataPacket) {
         var data: LineData = ecgChart.data
 
         if (data != null) {
@@ -638,32 +639,34 @@ class ChartFragment : Fragment() {
         if (thread != null) {
             thread.interrupt()
         }
+        if(ecgOn == true) {
+            ecg.setCallback { ECGdata ->
+                runOnUiThread {
+                    addEntry(ECGdata)
+                }
+                try {
+                    Thread.sleep(10)
+                } catch (e: InterruptedException) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace()
+                }
+            }
+            ecg.startSensor()
+            ecg.subscribeStream()
 
-        ecg.setCallback { ECGdata ->
-            runOnUiThread {
-                addEntry(ECGdata)
+            acc.setCallback { ACCdata ->
+                runOnUiThread {
+                    addEntry(ACCdata)
+                }
+                try {
+                    Thread.sleep(10)
+                } catch (e: InterruptedException) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace()
+                }
             }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
 
-        acc.setCallback { ACCdata ->
-            runOnUiThread {
-                addEntry(ACCdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        /*
+            /*
         eda.setCallback { EDAdata ->
             runOnUiThread {
                 addEntryMag(EDAdata)
@@ -677,14 +680,13 @@ class ChartFragment : Fragment() {
             }
         }*/
 
-        //eda.startSensor()
-        //eda.subscribeStream()
+            //eda.startSensor()
+            //eda.subscribeStream()
 
-        acc.startSensor()
-        acc.subscribeStream()
+            acc.startSensor()
+            acc.subscribeStream()
 
-        ecg.startSensor()
-        ecg.subscribeStream()
+        }
     }
 
     override fun onPause() {
@@ -698,7 +700,7 @@ class ChartFragment : Fragment() {
     }
 
     override fun onResume() {
-        feedMultiple()
+        //feedMultiple()
         super.onResume()
     }
 

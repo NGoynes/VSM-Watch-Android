@@ -10,14 +10,17 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
 import org.jetbrains.anko.support.v4.runOnUiThread
-import kotlin.math.log
 
-var ppgOn = true
+
+var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
@@ -108,6 +111,7 @@ class DashboardFragment : Fragment() {
                 EDAsw?.isChecked = false
                 PPGsw?.isChecked = false
                 tempsw?.isChecked = false
+
                 readECG()
                 ecgOn = true
 
@@ -197,6 +201,7 @@ class DashboardFragment : Fragment() {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
             val eda = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
             eda.setCallback { ECGdata ->
+                (cf as ChartFragment).addEntry(ECGdata)
 
                 Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
                 runOnUiThread {

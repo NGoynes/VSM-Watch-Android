@@ -79,8 +79,8 @@ class ECGActivity : AppCompatActivity() {
         rightAxis.isEnabled = false
 
         ecgChart.setDrawBorders(true)
-
         feedMultiple()
+
     }
 
     private fun createSet(): LineDataSet? {

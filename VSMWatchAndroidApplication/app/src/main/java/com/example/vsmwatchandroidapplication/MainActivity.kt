@@ -6,29 +6,27 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.fragment.app.Fragment
 import com.analog.study_watch_sdk.core.SDK
-import com.analog.study_watch_sdk.core.packets.stream.PPGDataPacket
-import com.analog.study_watch_sdk.interfaces.PPGCallback
+import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
+import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import java.io.InputStream
+
 
 var watchSdk // sdk reference variable
 : SDK? = null
+var df : Fragment? = null
+var cf : Fragment? = null
 class MainActivity : AppCompatActivity() {
-    var watchSdk // sdk reference variable
-            : SDK? = null
     /*var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
     var ppgSeries2 = LineGraphSeries<DataPoint>()
@@ -54,16 +52,76 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        //val navController = findNavController(R.id.nav_host_fragment)
 
-        val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
+        //val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
 
-        navView.setupWithNavController(navController)
+        navView.setOnNavigationItemSelectedListener(navListener)
+        df = DashboardFragment()
+        cf = ChartFragment()
+        supportFragmentManager.beginTransaction()
+                .add(R.id.nav_host_fragment, df as DashboardFragment)
+                .add(R.id.nav_host_fragment, cf as ChartFragment)
+                .hide(cf as ChartFragment)
+                .commit()
         createNotificationChannel()
         //readHealthData()
         checkBattery()
     }
 
+    private val navListener: BottomNavigationView.OnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
+        override fun onNavigationItemSelected(item: MenuItem): Boolean {
+             //By using switch we can easily get
+            // the selected fragment
+            // by using there id.
+            var selectedFragment: Fragment? = null
+            when (item.getItemId()) {
+                R.id.navigation_dashboard -> selectedFragment = DashboardFragment()
+                R.id.navigation_chart -> selectedFragment = ChartFragment()
+                R.id.navigation_logging -> selectedFragment = LoggingFragment()
+                R.id.navigation_settings -> selectedFragment = SettingsFragment()
+            }
+            // It will help to replace the
+            // one fragment to other.
+            if (selectedFragment != null) {
+                if(item.itemId == R.id.navigation_chart){
+                    println("test")
+                    supportFragmentManager
+                            .beginTransaction()
+                            .show(cf as ChartFragment)
+                            .commit()
+                }
+                else{
+                    println("test2")
+                    supportFragmentManager
+                            .beginTransaction()
+                            .hide(cf as ChartFragment)
+                            .commit()
+                }
+
+            }
+            return true
+        }
+
+//        fun onNavigationItemSelected(item: MenuItem): Boolean {
+//            // By using switch we can easily get
+//            // the selected fragment
+//            // by using there id.
+//            var selectedFragment: Fragment? = null
+//            when (item.getItemId()) {
+//                R.id.algorithm -> selectedFragment = AlgorithmFragment()
+//                R.id.course -> selectedFragment = CourseFragment()
+//                R.id.profile -> selectedFragment = ProfileFragment()
+//            }
+//            // It will help to replace the
+//            // one fragment to other.
+//            supportFragmentManager
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, selectedFragment)
+//                    .commit()
+//            return true
+//        }
+    }
     /*    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
             true
