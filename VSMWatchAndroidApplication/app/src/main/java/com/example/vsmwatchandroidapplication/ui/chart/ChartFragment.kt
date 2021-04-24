@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.ADXLApplication
 import com.analog.study_watch_sdk.application.ECGApplication
@@ -17,7 +18,10 @@ import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.ui.dashboard.accOn
 import com.example.vsmwatchandroidapplication.ui.dashboard.ecgOn
+import com.example.vsmwatchandroidapplication.ui.dashboard.edaOn
 import com.example.vsmwatchandroidapplication.ui.dashboard.ppgOn
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -408,14 +412,17 @@ class ChartFragment : Fragment() {
         }*/
 
         edaMagChart.setOnClickListener{
-            val intent: Intent = Intent(context?.applicationContext, EDAMagActivity::class.java)
-            startActivity(intent)
+            if(edaOn == true) {
+                val intent: Intent = Intent(context?.applicationContext, EDAMagActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         edaPhaseChart.setOnClickListener{
-
-            val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
-            startActivity(intent)
+            if(edaOn == true) {
+                val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         ecgChart.setOnClickListener {
@@ -432,8 +439,10 @@ class ChartFragment : Fragment() {
         }*/
 
         accChart.setOnClickListener{
-            val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
-            startActivity(intent)
+            if(accOn == true) {
+                val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
+                startActivity(intent)
+            }
         }
         return root
     }
@@ -575,7 +584,7 @@ class ChartFragment : Fragment() {
         }
     }
 
-    private fun addEntryMag(EDAdata: EDADataPacket) {
+    fun addEntryMag(EDAdata: EDADataPacket) {
         val data: LineData = edaMagChart.data
 
         if (data != null) {
@@ -604,7 +613,7 @@ class ChartFragment : Fragment() {
         }
     }
 
-    private fun addEntryPhase(EDAdata: EDADataPacket) {
+    fun addEntryPhase(EDAdata: EDADataPacket) {
         val data: LineData = edaPhaseChart.data
 
         if (data != null) {

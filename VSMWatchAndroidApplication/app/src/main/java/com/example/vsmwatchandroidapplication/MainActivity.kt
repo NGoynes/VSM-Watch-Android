@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
@@ -26,6 +27,9 @@ var watchSdk // sdk reference variable
 : SDK? = null
 var df : Fragment? = null
 var cf : Fragment? = null
+var lf : Fragment? = null
+var sf : Fragment? = null
+var fragman : FragmentManager? = null
 class MainActivity : AppCompatActivity() {
     /*var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
@@ -59,10 +63,17 @@ class MainActivity : AppCompatActivity() {
         navView.setOnNavigationItemSelectedListener(navListener)
         df = DashboardFragment()
         cf = ChartFragment()
-        supportFragmentManager.beginTransaction()
+        lf = LoggingFragment()
+        sf = SettingsFragment()
+        fragman = supportFragmentManager
+        fragman!!.beginTransaction()
                 .add(R.id.nav_host_fragment, df as DashboardFragment)
                 .add(R.id.nav_host_fragment, cf as ChartFragment)
+                .add(R.id.nav_host_fragment, lf as LoggingFragment)
+                .add(R.id.nav_host_fragment, sf as SettingsFragment)
                 .hide(cf as ChartFragment)
+                .hide(lf as LoggingFragment)
+                .hide(sf as SettingsFragment)
                 .commit()
         createNotificationChannel()
         //readHealthData()
@@ -85,20 +96,45 @@ class MainActivity : AppCompatActivity() {
             // one fragment to other.
             if (selectedFragment != null) {
                 if(item.itemId == R.id.navigation_chart){
-                    println("test")
-                    supportFragmentManager
+                    fragman!!
                             .beginTransaction()
+                            .hide(cf as ChartFragment)
+                            .hide(lf as LoggingFragment)
+                            .hide(sf as SettingsFragment)
+                            .hide(df as DashboardFragment)
                             .show(cf as ChartFragment)
                             .commit()
                 }
-                else{
-                    println("test2")
-                    supportFragmentManager
+                if(item.itemId == R.id.navigation_dashboard){
+                    fragman!!
                             .beginTransaction()
                             .hide(cf as ChartFragment)
+                            .hide(lf as LoggingFragment)
+                            .hide(sf as SettingsFragment)
+                            .hide(df as DashboardFragment)
+                            .show(df as DashboardFragment)
                             .commit()
                 }
-
+                if(item.itemId == R.id.navigation_logging){
+                    fragman!!
+                            .beginTransaction()
+                            .hide(cf as ChartFragment)
+                            .hide(lf as LoggingFragment)
+                            .hide(sf as SettingsFragment)
+                            .hide(df as DashboardFragment)
+                            .show(lf as LoggingFragment)
+                            .commit()
+                }
+                if(item.itemId == R.id.navigation_settings){
+                    fragman!!
+                            .beginTransaction()
+                            .hide(cf as ChartFragment)
+                            .hide(lf as LoggingFragment)
+                            .hide(sf as SettingsFragment)
+                            .hide(df as DashboardFragment)
+                            .show(sf as SettingsFragment)
+                            .commit()
+                }
             }
             return true
         }

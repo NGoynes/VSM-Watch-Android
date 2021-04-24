@@ -7,6 +7,8 @@ import com.analog.study_watch_sdk.application.ADXLApplication
 import com.analog.study_watch_sdk.core.packets.stream.ADXLDataPacket
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -82,8 +84,6 @@ class AccActivity : AppCompatActivity() {
         rightAxis.isEnabled = false
 
         accChart.setDrawBorders(true)
-
-        feedMultiple()
     }
 
     private fun createSetX(): LineDataSet? {
@@ -207,7 +207,6 @@ class AccActivity : AppCompatActivity() {
         if (thread != null) {
             thread.interrupt()
         }
-        acc.stopAndUnsubscribeStream()
     }
 
     override fun onResume() {
@@ -215,8 +214,10 @@ class AccActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        thread.interrupt()
-        acc.stopAndUnsubscribeStream()
         super.onDestroy()
+        fragman!!
+                .beginTransaction()
+                .show(cf as ChartFragment)
+                .commit()
     }
 }

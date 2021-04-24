@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -147,7 +149,7 @@ class ECGActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        ecg.stopAndUnsubscribeStream()
+        //ecg.stopAndUnsubscribeStream()
         if (thread != null) {
             thread.interrupt()
         }
@@ -158,8 +160,14 @@ class ECGActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        thread.interrupt()
-        ecg.stopAndUnsubscribeStream()
         super.onDestroy()
+        //thread.interrupt()
+        //ecg.stopAndUnsubscribeStream()
+
+        //super.onDestroy()
+        fragman!!
+        .beginTransaction()
+                .show(cf as ChartFragment)
+                .commit()
     }
 }

@@ -24,6 +24,7 @@ var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
+var accOn = false
 
 
 class DashboardFragment : Fragment() {
@@ -154,9 +155,11 @@ class DashboardFragment : Fragment() {
                 ECGsw?.isChecked = false
                 PPGsw?.isChecked = false
                 tempsw?.isChecked = false
+                accOn = true
             }
             else
                 Acctxt.setText("----")
+                accOn = false
         }
         val ScanButton: Button = root.findViewById(R.id.ScanButton)
         ScanButton.setOnClickListener {
@@ -168,18 +171,12 @@ class DashboardFragment : Fragment() {
     fun readPPG() {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
             val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
+            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD108)
             ppg.setPPGCallback{PPGDataPacket ->
               runOnUiThread {
-                    PPGtxt?.setText(PPGDataPacket.payload.hr.toString())
+                  PPGtxt?.setText(PPGDataPacket.payload.hr.toFloat().toString())
              }
-//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.hr}")
-//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(1).ppgData}")
-//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(2).ppgData}")
-//                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(3).ppgData}")
             }
-            //ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
-
             ppg.startSensor()
             ppg.subscribeStream()
 
@@ -246,20 +243,9 @@ class DashboardFragment : Fragment() {
             val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
-                    EDAtxt?.setText(EDADataPacket.payload.streamData.get(0).realData.toString())
+                    (cf as ChartFragment).addEntryMag(EDADataPacket)
+                    (cf as ChartFragment).addEntryPhase(EDADataPacket)
                 }
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).realData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(1).imaginaryData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(1).realData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(2).imaginaryData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(2).realData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(3).imaginaryData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(3).realData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(4).imaginaryData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(4).realData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(5).imaginaryData}")
-//                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(5).realData}")
             }
 
             eda.startSensor()
