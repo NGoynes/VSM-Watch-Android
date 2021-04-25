@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.analog.study_watch_sdk.application.EDAApplication
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -160,8 +162,10 @@ class EDAMagActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        thread.interrupt()
-        eda.stopAndUnsubscribeStream()
         super.onDestroy()
+        fragman!!
+                .beginTransaction()
+                .show(cf as ChartFragment)
+                .commit()
     }
 }

@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
@@ -50,5 +52,12 @@ class TempActivity : AppCompatActivity() {
             val time = rows[i][0].toDouble() / 1000
             tempSeries.appendData(DataPoint(time, rows[i][1].toDouble()),true, rows.size)
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        fragman!!
+                .beginTransaction()
+                .show(cf as ChartFragment)
+                .commit()
     }
 }
