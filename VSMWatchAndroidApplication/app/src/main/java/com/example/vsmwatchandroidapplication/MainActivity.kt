@@ -1,54 +1,33 @@
 package com.example.vsmwatchandroidapplication
 
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
-import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.fragment.app.Fragment
 import com.analog.study_watch_sdk.core.SDK
+import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
+import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import java.io.InputStream
+
+
 var watchSdk // sdk reference variable
 : SDK? = null
-var watchConnection = false
-
-// Dashboard global variables for which vital is checked
-var dashboardPPGSwitch: Boolean = false
-var dashboardECGSwitch: Boolean = false
-var dashboardEDASwitch: Boolean = false
-var dashboardTempSwitch: Boolean = false
-var dashboardAccelSwitch: Boolean = false
-
-// Logging global variables for which vital is to be logged
-var loggingPPGSwitch: Boolean = false
-var loggingECGSwitch: Boolean = false
-var loggingEDASwitch: Boolean = false
-var loggingAccelerometerSwitch: Boolean = false
-var loggingPedometerSwitch: Boolean = false
-var loggingTempSwitch: Boolean = false
-
+var df : Fragment? = null
+var cf : Fragment? = null
 class MainActivity : AppCompatActivity() {
-
-    var ppgSeries1 = LineGraphSeries<DataPoint>()
+    /*var ppgSeries1 = LineGraphSeries<DataPoint>()
     var latPPGSeries1 = String()
     var ppgSeries2 = LineGraphSeries<DataPoint>()
     var latPPGSeries2 = String()
@@ -65,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     var latAccSeriesZ = String()
     var accSeriesMag = LineGraphSeries<DataPoint>()
     var tempSeries = LineGraphSeries<DataPoint>()
-    var latTempSeries = String()
+    var latTempSeries = String()*/
     private val CHANNEL_ID = "channel_id_01"
     private val notificationID = 101
     var notified = false
@@ -73,17 +52,77 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        //val navController = findNavController(R.id.nav_host_fragment)
 
-        val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
+        //val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
 
-        navView.setupWithNavController(navController)
+        navView.setOnNavigationItemSelectedListener(navListener)
+        df = DashboardFragment()
+        cf = ChartFragment()
+        supportFragmentManager.beginTransaction()
+                .add(R.id.nav_host_fragment, df as DashboardFragment)
+                .add(R.id.nav_host_fragment, cf as ChartFragment)
+                .hide(cf as ChartFragment)
+                .commit()
         createNotificationChannel()
-        readHealthData()
+        //readHealthData()
         checkBattery()
     }
 
-/*    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    private val navListener: BottomNavigationView.OnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
+        override fun onNavigationItemSelected(item: MenuItem): Boolean {
+             //By using switch we can easily get
+            // the selected fragment
+            // by using there id.
+            var selectedFragment: Fragment? = null
+            when (item.getItemId()) {
+                R.id.navigation_dashboard -> selectedFragment = DashboardFragment()
+                R.id.navigation_chart -> selectedFragment = ChartFragment()
+                R.id.navigation_logging -> selectedFragment = LoggingFragment()
+                R.id.navigation_settings -> selectedFragment = SettingsFragment()
+            }
+            // It will help to replace the
+            // one fragment to other.
+            if (selectedFragment != null) {
+                if(item.itemId == R.id.navigation_chart){
+                    println("test")
+                    supportFragmentManager
+                            .beginTransaction()
+                            .show(cf as ChartFragment)
+                            .commit()
+                }
+                else{
+                    println("test2")
+                    supportFragmentManager
+                            .beginTransaction()
+                            .hide(cf as ChartFragment)
+                            .commit()
+                }
+
+            }
+            return true
+        }
+
+//        fun onNavigationItemSelected(item: MenuItem): Boolean {
+//            // By using switch we can easily get
+//            // the selected fragment
+//            // by using there id.
+//            var selectedFragment: Fragment? = null
+//            when (item.getItemId()) {
+//                R.id.algorithm -> selectedFragment = AlgorithmFragment()
+//                R.id.course -> selectedFragment = CourseFragment()
+//                R.id.profile -> selectedFragment = ProfileFragment()
+//            }
+//            // It will help to replace the
+//            // one fragment to other.
+//            supportFragmentManager
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, selectedFragment)
+//                    .commit()
+//            return true
+//        }
+    }
+    /*    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
             true
         }
@@ -153,8 +192,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun readHealthData() {
+    /*private fun readHealthData() {
         //read ppg
         var file: InputStream = resources.openRawResource(R.raw.adpd)
         var rows: List<List<String>> = csvReader().readAll(file)
@@ -203,10 +241,10 @@ class MainActivity : AppCompatActivity() {
         rows = csvReader().readAll(file)
         for (i in rows.indices) {
             val time = rows[i][0].toDouble() / 1000
-            tempSeries.appendData(DataPoint(time, rows[i][1].toDouble()),true, rows.size)
+            tempSeries.appendData(DataPoint(time, rows[i][1].toDouble()), true, rows.size)
 
         }
-        latTempSeries = rows[rows.size-1][1]
+        latTempSeries = rows[rows.size - 1][1]
     }
 
     //    fun readECG() {
@@ -270,25 +308,15 @@ class MainActivity : AppCompatActivity() {
             eda.subscribeStream()
 
         }
-
-    }
-    fun readPPG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            ppg.setSyncPPGCallback{PPGDataPacket ->
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(0).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(1).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(2).ppgData}")
-                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(3).ppgData}")
-            }
-            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
-
-            ppg.startSensor()
-            ppg.subscribeStream()
-
-        }
-
-    }
+        latTempSeries = rows[rows.size-1][1]
+    }*/
+//
+//            ppg.startSensor()
+//            ppg.subscribeStream()
+//
+//        }
+//
+//    }
     fun stopPPG()
     {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {

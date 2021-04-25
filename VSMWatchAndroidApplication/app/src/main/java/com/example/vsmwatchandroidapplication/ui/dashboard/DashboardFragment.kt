@@ -1,6 +1,5 @@
 package com.example.vsmwatchandroidapplication.ui.dashboard
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,233 +7,178 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Switch
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
 import org.jetbrains.anko.support.v4.runOnUiThread
-import kotlin.math.log
-import com.example.vsmwatchandroidapplication.*
-import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 
-var ppgOn = true
+
+var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
 
-@SuppressLint("UseSwitchCompatOrMaterialCode")
 
 class DashboardFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
-    lateinit var PPGsw: Switch
-    lateinit var PPGtxt: TextView
-    lateinit var EDAsw: Switch
-    lateinit var EDAtxt: TextView
-    lateinit var ECGsw: Switch
-    lateinit var ECGtxt: TextView
-    lateinit var tempsw: Switch
-    lateinit var temptxt: TextView
-    lateinit var Accsw: Switch
-    lateinit var Acctxt: TextView
+    var PPGtxt: TextView? = null
+    var ECGtxt: TextView? = null
+    var EDAtxt: TextView? = null
+    var temptxt: TextView? = null
+    var EDAsw: Switch? = null
+    var ECGsw: Switch? = null
+    var tempsw: Switch? = null
+    var PPGsw: Switch? = null
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private lateinit var dashboardViewModel: DashboardViewModel
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
+        (activity as MainActivity).checkBattery()
+        /*val latTempSeries = (activity as MainActivity).latTempSeries
+        val latAccSeriesX = (activity as MainActivity).latAccSeriesX
+        val latAccSeriesY = (activity as MainActivity).latAccSeriesY
+        val latAccSeriesZ = (activity as MainActivity).latAccSeriesZ
+        val latPPGSeries1 = (activity as MainActivity).latPPGSeries1
+        val latPPGSeries2 = (activity as MainActivity).latPPGSeries2
+
+        val latEcgSeries = (activity as MainActivity).latEcgSeries
+        val latEdaSeries = (activity as MainActivity).latEdaSeries*/
+        dashboardViewModel =
+                ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        super.onActivityCreated(savedInstanceState)
-
-        if (savedInstanceState == null) {
-            (activity as MainActivity).supportActionBar?.title = "Dashboard"
-            (activity as MainActivity).checkBattery()
-            val latTempSeries = (activity as MainActivity).latTempSeries
-            val latAccSeriesX = (activity as MainActivity).latAccSeriesX
-            val latAccSeriesY = (activity as MainActivity).latAccSeriesY
-            val latAccSeriesZ = (activity as MainActivity).latAccSeriesZ
-            val latPPGSeries1 = (activity as MainActivity).latPPGSeries1
-            val latPPGSeries2 = (activity as MainActivity).latPPGSeries2
-
-            val latEcgSeries = (activity as MainActivity).latEcgSeries
-            val latEdaSeries = (activity as MainActivity).latEdaSeries
-            dashboardViewModel =
-                    ViewModelProvider(this).get(DashboardViewModel::class.java)
-
-            // Initialize Switches
-            EDAsw = root.findViewById(R.id.dbeda_switch)
-            ECGsw = root.findViewById(R.id.dbecg_switch)
-            tempsw = root.findViewById(R.id.dbtemp_switch)
-            PPGsw = root.findViewById(R.id.dbppg_switch)
-            Accsw = root.findViewById(R.id.dbAcc_switch)
-
-            // PPG Switch and Text
-            PPGtxt = root.findViewById(R.id.dbppg_data)
-            PPGsw.setOnCheckedChangeListener { _, onSwitch ->
-                if (onSwitch) {
-                    dashboardPPGSwitch = onSwitch
-
-                    resetVal()
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    tempsw.isChecked = false
-
-                    dashboardECGSwitch = false
-                    dashboardEDASwitch = false
-                    dashboardTempSwitch = false
-                    dashboardAccelSwitch = false
-
-                    readPPG()
-                    ppgOn = true
-
-                } else {
-                    dashboardPPGSwitch = onSwitch
-
-                    stopPPG()
-                    Log.d("Connection", "DATA :: PPG is OFF")
-
-                    ppgOn = false
-                }
+        EDAsw = root.findViewById(R.id.dbeda_switch)
+        ECGsw = root.findViewById(R.id.dbecg_switch)
+        tempsw = root.findViewById(R.id.dbtemp_switch)
+        PPGsw = root.findViewById(R.id.dbppg_switch)
+        PPGtxt = root.findViewById(R.id.dbppg_data)
+        PPGsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            if(onSwitch) {
+                resetVal()
+                EDAsw?.isChecked = false
+                ECGsw?.isChecked = false
+                tempsw?.isChecked = false
+                readPPG()
+                ppgOn = true
 
             }
+            else {
+                stopPPG()
+                Log.d("Connection", "DATA :: PPG is OFF")
 
-            // EDA Switch and Text
-            EDAtxt = root.findViewById(R.id.dbeda_data)
-            EDAsw.setOnCheckedChangeListener { _, onSwitch ->
-                if (onSwitch) {
-                    dashboardEDASwitch = onSwitch
-
-                    resetVal()
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
-
-                    dashboardPPGSwitch = false
-                    dashboardECGSwitch = false
-                    dashboardTempSwitch= false
-                    dashboardAccelSwitch = false
-
-                    readEDA()
-                    edaOn = true
-
-                } else {
-                    dashboardEDASwitch = onSwitch
-
-                    stopEDA()
-                    Log.d("Connection", "DATA :: EDA is OFF")
-
-                    edaOn = false
-                }
+                ppgOn = false
             }
 
-            // ECG Switch and Text
-            ECGtxt = root.findViewById(R.id.dbecg_data)
-            ECGsw.setOnCheckedChangeListener { _, onSwitch ->
+        }
 
-                if (onSwitch) {
-                    dashboardECGSwitch
+        EDAtxt = root.findViewById(R.id.dbeda_data)
 
-                    resetVal()
-                    EDAsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
+        EDAsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            if(onSwitch) {
+                resetVal()
+                ECGsw?.isChecked = false
+                PPGsw?.isChecked = false
+                tempsw?.isChecked = false
+                readEDA()
+                edaOn = true
 
-                    dashboardPPGSwitch = false
-                    dashboardEDASwitch = false
-                    dashboardTempSwitch = false
-                    dashboardAccelSwitch = false
-
-                    readECG()
-                    ecgOn = true
-
-                } else {
-                    dashboardECGSwitch = onSwitch
-
-                    stopECG()
-                    Log.d("Connection", "DATA :: ECG is OFF")
-
-                    ecgOn = false
-
-                }
             }
+            else {
+                stopEDA()
+                Log.d("Connection", "DATA :: EDA is OFF")
 
-            // Temperature Switch and Text
-            temptxt = root.findViewById(R.id.dbtemp_data)
-            tempsw.setOnCheckedChangeListener { _, onSwitch ->
-                if (onSwitch) {
-                    dashboardTempSwitch = onSwitch
-
-                    resetVal()
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-
-                    dashboardPPGSwitch = false
-                    dashboardECGSwitch = false
-                    dashboardEDASwitch = false
-                    dashboardAccelSwitch = false
-
-                    readTemp()
-                    tempOn = true
-
-                } else {
-                    dashboardTempSwitch = onSwitch
-
-                    stopTemp()
-                    Log.d("Connection", "DATA :: Temp is OFF")
-
-                    tempOn = false
-                }
+                edaOn = false
             }
+        }
 
-            // Accelerometer Switch and Text
-            Acctxt= root.findViewById(R.id.dbAcc_data)
-            Accsw.setOnCheckedChangeListener { _, onSwitch ->
-                if (onSwitch) {
-                    dashboardAccelSwitch = onSwitch
+        ECGtxt = root.findViewById(R.id.dbecg_data)
 
-                    Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
+        ECGsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
 
-                    dashboardPPGSwitch = false
-                    dashboardECGSwitch = false
-                    dashboardEDASwitch = false
-                    dashboardTempSwitch = false
-                } else {
-                    dashboardAccelSwitch = onSwitch
+            if(onSwitch) {
+                resetVal()
+                EDAsw?.isChecked = false
+                PPGsw?.isChecked = false
+                tempsw?.isChecked = false
 
-                    Acctxt.setText("----")
-                }
+                readECG()
+                ecgOn = true
+
             }
-            val ScanButton: Button = root.findViewById(R.id.ScanButton)
-            ScanButton.setOnClickListener {
-                val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)
-                startActivity(intent)
+             else {
+                stopECG()
+                Log.d("Connection", "DATA :: ECG is OFF")
+
+                ecgOn = false
+
             }
+         }
+
+
+        temptxt = root.findViewById(R.id.dbtemp_data)
+        tempsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            if (onSwitch) {
+                resetVal()
+                EDAsw?.isChecked = false
+                ECGsw?.isChecked = false
+                PPGsw?.isChecked = false
+                readTemp()
+                tempOn = true
+
+            }
+            else {
+                stopTemp()
+                Log.d("Connection", "DATA :: Temp is OFF")
+
+                tempOn = false
+            }
+        }
+
+        val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
+        val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
+        Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            if(onSwitch) {
+                //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
+                EDAsw?.isChecked = false
+                ECGsw?.isChecked = false
+                PPGsw?.isChecked = false
+                tempsw?.isChecked = false
+            }
+            else
+                Acctxt.setText("----")
+        }
+        val ScanButton: Button = root.findViewById(R.id.ScanButton)
+        ScanButton.setOnClickListener {
+            val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)
+            startActivity(intent)
         }
         return root
     }
-
-    private fun readPPG() {
-        if (watchSdk != null) {
-            val ppg = watchSdk!!.ppgApplication
-            ppg.setPPGCallback { PPGDataPacket ->
-                runOnUiThread {
-                    PPGtxt.setText(PPGDataPacket.payload.hr.toString())
-                }
+    fun readPPG() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
+            ppg.setPPGCallback{PPGDataPacket ->
+              runOnUiThread {
+                    PPGtxt?.setText(PPGDataPacket.payload.hr.toString())
+             }
 //                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.hr}")
 //                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(1).ppgData}")
 //                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(2).ppgData}")
 //                Log.d("Connection", "DATA :: ${PPGDataPacket.payload.streamData.get(3).ppgData}")
             }
-            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
+            //ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
 
             ppg.startSensor()
             ppg.subscribeStream()
@@ -242,10 +186,10 @@ class DashboardFragment : Fragment() {
         }
 
     }
-
-    private fun stopPPG() {
-        if (watchSdk != null) {
-            val ppg = watchSdk!!.ppgApplication
+    fun stopPPG()
+    {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
             resetVal()
 
             ppg.stopSensor()
@@ -253,31 +197,30 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    private fun readECG() {
-        if (watchSdk != null) {
-            val eda = watchSdk!!.ecgApplication
+    fun readECG() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
             eda.setCallback { ECGdata ->
+                (cf as ChartFragment).addEntry(ECGdata)
 
                 Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
                 runOnUiThread {
-                    ECGtxt.text = ECGdata.payload.ecgInfo.toString()
-                    LoggingFragment().record(ECGdata.payload.ecgInfo.toString(), "ECG")
+                    ECGtxt?.setText(ECGdata.payload.ecgInfo.toString())
                 }
             }
 
             eda.startSensor()
             eda.subscribeStream()
             resetVal()
+
         }
 
     }
+    fun stopECG()
+    {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
 
-    private fun stopECG() {
-        if (watchSdk != null) {
-
-            val ecg = watchSdk!!.ecgApplication
-
-            LoggingFragment().export("ECGData.csv")
+            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
 
             ecg.stopSensor()
             ecg.stopAndUnsubscribeStream()
@@ -286,11 +229,11 @@ class DashboardFragment : Fragment() {
 
         }
     }
+    fun stopTemp()
+    {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
 
-    private fun stopTemp() {
-        if (watchSdk != null) {
-
-            val temp = watchSdk!!.temperatureApplication
+            val temp = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
             resetVal()
 
             temp.stopSensor()
@@ -298,13 +241,12 @@ class DashboardFragment : Fragment() {
 
         }
     }
-
-    private fun readEDA() {
-        if (watchSdk != null) {
-            val eda = watchSdk!!.edaApplication
+    fun readEDA() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
-                    EDAtxt.setText(EDADataPacket.payload.streamData.get(0).realData.toString())
+                    EDAtxt?.setText(EDADataPacket.payload.streamData.get(0).realData.toString())
                 }
                 Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).imaginaryData}")
                 Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).realData}")
@@ -326,10 +268,10 @@ class DashboardFragment : Fragment() {
         }
 
     }
-
-    private fun stopEDA() {
-        if (watchSdk != null) {
-            val eda = watchSdk!!.edaApplication
+    fun stopEDA()
+    {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
 
             resetVal()
             eda.stopSensor()
@@ -338,13 +280,14 @@ class DashboardFragment : Fragment() {
 
     }
 
-    private fun readTemp() {
-        if (watchSdk != null) {
-            val temps = watchSdk!!.temperatureApplication
+    fun readTemp() {
+        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+            val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
             temps.setCallback { TempuratureDataPacket ->
-                val Celsius = TempuratureDataPacket.payload.temperature1.toFloat() / 10
+                var Celsius = TempuratureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
-                    temptxt.setText(Celsius.toString() + "C")
+
+                    temptxt?.setText(Celsius.toString() + "C")
                 }
                 Log.d("Connection", "DATA :: ${Celsius}")
             }
@@ -354,13 +297,13 @@ class DashboardFragment : Fragment() {
         }
 
     }
-
-    private fun resetVal() {
+    fun resetVal()
+    {
         runOnUiThread {
-            EDAtxt.setText("----")
-            temptxt.setText("----")
-            ECGtxt.setText("----")
-            PPGtxt.setText("----")
+            EDAtxt?.setText("----")
+            temptxt?.setText("----")
+            ECGtxt?.setText("----")
+            PPGtxt?.setText("----")
 
         }
     }

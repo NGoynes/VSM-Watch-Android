@@ -3,6 +3,7 @@ package com.example.vsmwatchandroidapplication.ui.dashboard
 
 import android.Manifest
 import android.app.Activity
+import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
@@ -14,6 +15,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,11 +28,9 @@ import com.analog.study_watch_sdk.core.SDK
 import com.analog.study_watch_sdk.interfaces.StudyWatchCallback
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.ui.logging.TemperatureLog
 import com.example.vsmwatchandroidapplication.watchSdk
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.jetbrains.anko.alert
-import org.mortbay.jetty.Main
 
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
@@ -49,11 +49,6 @@ class ScanFragment : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
-        val test_button = findViewById<Button>(R.id.test_button)
-        test_button.setEnabled(false);
-        test_button.setOnClickListener {
-            readBatter()
-        }
         scan_button.setOnClickListener {
             if (isScanning) {
                 stopBleScan()
@@ -71,6 +66,9 @@ class ScanFragment : AppCompatActivity() {
             if (isScanning) {
                 stopBleScan()
             }
+            runOnUiThread{
+                llProgressBar.visibility = View.VISIBLE
+            }
             with(result.device) {
                 Log.w("ScanResultAdapter", "Connecting to $address")
                 StudyWatch.connectBLE(address, applicationContext, object : StudyWatchCallback {
@@ -78,7 +76,7 @@ class ScanFragment : AppCompatActivity() {
                         Log.d("Connection", "onSuccess: SDK Ready")
                         watchSdk = sdk // store this sdk reference to be used for creating applications
                         runOnUiThread {
-                            test_button.setEnabled(true)
+                            llProgressBar.visibility = View.GONE
                             val intent: Intent = Intent(applicationContext, MainActivity::class.java)
                             startActivity(intent)
                         }
@@ -133,10 +131,12 @@ class ScanFragment : AppCompatActivity() {
                 scanResultAdapter.notifyItemChanged(indexQuery)
             } else {
                 with(result.device) {
-                    Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
+                    //Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
                 }
-                scanResults.add(result)
-                scanResultAdapter.notifyItemInserted(scanResults.size - 1)
+                if(result.device.name!= null && result.device.name.contains("STUDYWATCH")) {
+                    scanResults.add(result)
+                    scanResultAdapter.notifyItemInserted(scanResults.size - 1)
+                }
             }
         }
 
