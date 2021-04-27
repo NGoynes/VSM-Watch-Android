@@ -24,7 +24,7 @@ class ECGActivity : AppCompatActivity() {
 
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
-    private var prevX = 0
+    private var prevX: Double = 0.0
     private val ecg: ECGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ class ECGActivity : AppCompatActivity() {
         ecgChart.setTouchEnabled(true)
 
         // enable scaling and dragging
-        ecgChart.isDragEnabled = true
+        ecgChart.isDragEnabled = false
         ecgChart.setScaleEnabled(true)
         ecgChart.setDrawGridBackground(false)
         ecgChart.isAutoScaleMinMaxEnabled = true
@@ -110,7 +110,8 @@ class ECGActivity : AppCompatActivity() {
 
             for (i in ECGdata.payload.streamData) {
                 if (i != null) {
-                    data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
+                    prevX += i.timestamp.toDouble() / (1e9).toDouble()
+                    data.addEntry(Entry(prevX.toFloat(), i.ecgData.toFloat()), 0)
                 }
             }
             data.notifyDataChanged()

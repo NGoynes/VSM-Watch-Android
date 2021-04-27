@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vsmwatchandroidapplication">
+    package="com.example.vsmwatchandroidapplication" >
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -9,85 +9,91 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VSMWatchAndroidApplication">
-        <activity android:name=".ui.settings.SystemSetting"
-            android:screenOrientation="portrait">
+        android:theme="@style/Theme.VSMWatchAndroidApplication" >
+        <activity android:name=".ui.logging.ShareLog" >
         </activity>
-        <activity android:name=".ui.settings.EDASetting"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.settings.SystemSetting"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".ui.settings.ECGSetting"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.settings.EDASetting"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".ui.settings.PPGSetting"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.settings.ECGSetting"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".ui.logging.TemperatureLog"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.settings.PPGSetting"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.logging.TemperatureLog"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ui.chart.TempActivity"
-            android:screenOrientation="landscape"
-            android:label="Temperature Graph">
+            android:label="Temperature Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.chart.AccActivity"
-            android:screenOrientation="landscape"
-            android:label="Accelerometer Graph">
+            android:label="Accelerometer Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.chart.EDAPhaseActivity"
-            android:screenOrientation="landscape"
-            android:label="EDA Phase Graph">
+            android:label="EDA Phase Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.chart.EDAMagActivity"
-            android:screenOrientation="landscape"
-            android:label="EDA Magnitude Graph">
+            android:label="EDA Magnitude Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.chart.ECGActivity"
-            android:screenOrientation="landscape"
-            android:label="ECG Graph">
+            android:label="ECG Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.chart.PPGActivity"
-            android:screenOrientation="landscape"
-            android:label="PPG Graph">
+            android:label="PPG Graph"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".ui.dashboard.ScanFragment"
-            android:screenOrientation="portrait">
-
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.logging.ShareActivity">
+        <activity android:name=".ui.logging.ShareActivity" >
         </activity>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name">
-
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.exportcsv.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
     </application>
 

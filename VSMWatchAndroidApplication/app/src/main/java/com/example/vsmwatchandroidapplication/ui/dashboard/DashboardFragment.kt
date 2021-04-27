@@ -1,5 +1,6 @@
 package com.example.vsmwatchandroidapplication.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,14 +11,14 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
-import com.example.vsmwatchandroidapplication.MainActivity
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
+import java.time.LocalDateTime
 
 
 var ppgOn = false
@@ -25,7 +26,6 @@ var edaOn = false
 var ecgOn = false
 var tempOn = false
 var accOn = false
-
 
 class DashboardFragment : Fragment() {
 
@@ -37,6 +37,8 @@ class DashboardFragment : Fragment() {
     var ECGsw: Switch? = null
     var tempsw: Switch? = null
     var PPGsw: Switch? = null
+
+    private var log = watchSdk!!.fsApplication
 
     private lateinit var dashboardViewModel: DashboardViewModel
 
@@ -168,14 +170,20 @@ class DashboardFragment : Fragment() {
         }
         return root
     }
-    fun readPPG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+
+    // PPG
+    private fun readPPG() {
+        if (watchSdk != null) {
+            val ppg = watchSdk!!.ppgApplication
             ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD108)
             ppg.setPPGCallback{PPGDataPacket ->
-              runOnUiThread {
-                  PPGtxt?.setText(PPGDataPacket.payload.hr.toFloat().toString())
-             }
+                runOnUiThread {
+                    PPGtxt?.setText(PPGDataPacket.payload.hr.toFloat().toString())
+
+                    if(isLoggingOn && ppgOn) {
+                        (lf as LoggingFragment).recordVital(PPGDataPacket.payload.timestamp, PPGDataPacket.payload.hr)
+                    }
+                }
             }
             ppg.startSensor()
             ppg.subscribeStream()
@@ -183,64 +191,69 @@ class DashboardFragment : Fragment() {
         }
 
     }
-    fun stopPPG()
+    @SuppressLint("NewApi")
+    private fun stopPPG()
     {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            resetVal()
+        if (watchSdk != null) {
+            val ppg = watchSdk!!.ppgApplication
 
             ppg.stopSensor()
             ppg.stopAndUnsubscribeStream()
+
+            val currentDateTime = LocalDateTime.now()
+            val fileName = "PPGData$currentDateTime.csv"
+            (lf as LoggingFragment).writeToFile("PPG", fileName)
+
+            resetVal()
         }
     }
 
-    fun readECG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-            eda.setCallback { ECGdata ->
+    // ECG
+    private fun readECG() {
+        if (watchSdk != null) {
+            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+            ecg.setCallback { ECGdata ->
                 (cf as ChartFragment).addEntry(ECGdata)
 
-                Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
                 runOnUiThread {
                     ECGtxt?.setText(ECGdata.payload.ecgInfo.toString())
+
+                    if (isLoggingOn && ecgOn) {
+                        for ( i in ECGdata.payload.streamData) {
+                            if (i != null) (lf as LoggingFragment).recordVital(i.timestamp, i.ecgData)
+                        }
+                    }
                 }
             }
 
-            eda.startSensor()
-            eda.subscribeStream()
+            ecg.startSensor()
+            ecg.subscribeStream()
             resetVal()
-
         }
-
     }
-    fun stopECG()
+    @SuppressLint("NewApi")
+    private fun stopECG()
     {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+        if (watchSdk != null) {
 
-            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+            val ecg = watchSdk!!.ecgApplication
 
             ecg.stopSensor()
             ecg.stopAndUnsubscribeStream()
             ecg.setTimeout(5)
-            resetVal()
 
+            val currentDateTime = LocalDateTime.now()
+            val fileName = "ECGData$currentDateTime.csv"
+            (lf as LoggingFragment).writeToFile("ECG", fileName)
+
+            resetVal()
         }
     }
-    fun stopTemp()
-    {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
 
-            val temp = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            resetVal()
-
-            temp.stopSensor()
-            temp.stopAndUnsubscribeStream()
-
-        }
-    }
-    fun readEDA() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
+    // EDA
+    private fun readEDA() {
+        if (watchSdk != null) {
+            val eda = watchSdk!!.edaApplication
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
                     (cf as ChartFragment).addEntryMag(EDADataPacket)
@@ -250,14 +263,12 @@ class DashboardFragment : Fragment() {
 
             eda.startSensor()
             eda.subscribeStream()
-
         }
-
     }
-    fun stopEDA()
+    private fun stopEDA()
     {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
+        if (watchSdk != null) {
+            val eda = watchSdk!!.edaApplication
 
             resetVal()
             eda.stopSensor()
@@ -266,31 +277,50 @@ class DashboardFragment : Fragment() {
 
     }
 
-    fun readTemp() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            temps.setCallback { TempuratureDataPacket ->
-                var Celsius = TempuratureDataPacket.payload.temperature1.toFloat()/10
+    // Temperature
+    private fun readTemp() {
+        if (watchSdk != null) {
+            val temps = watchSdk!!.temperatureApplication
+            temps.setCallback { TemperatureDataPacket ->
+                val celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
+                    temptxt?.text = celsius.toString() + "C"
 
-                    temptxt?.setText(Celsius.toString() + "C")
+                    (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, celsius)
                 }
-                Log.d("Connection", "DATA :: ${Celsius}")
+                //Log.d("Connection", "DATA :: ${celsius}")
             }
+
             temps.startSensor()
             temps.subscribeStream()
-
         }
-
     }
-    fun resetVal()
+    @SuppressLint("NewApi")
+    private fun stopTemp()
+    {
+        if (watchSdk != null) {
+
+            val temp = watchSdk!!.temperatureApplication
+
+            temp.stopSensor()
+            temp.stopAndUnsubscribeStream()
+
+            val currentDateTime = LocalDateTime.now()
+            val fileName = "TemperatureData$currentDateTime.csv"
+            (lf as LoggingFragment).writeToFile("Temperature", fileName)
+
+            resetVal()
+        }
+    }
+
+    // Reset
+    private fun resetVal()
     {
         runOnUiThread {
             EDAtxt?.setText("----")
             temptxt?.setText("----")
             ECGtxt?.setText("----")
             PPGtxt?.setText("----")
-
         }
     }
 }
