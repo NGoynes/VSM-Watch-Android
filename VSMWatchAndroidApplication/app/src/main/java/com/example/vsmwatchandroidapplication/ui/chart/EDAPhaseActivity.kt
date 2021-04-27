@@ -173,6 +173,7 @@ class EDAPhaseActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        eda.stopAndUnsubscribeStream()
         fragman!!
                 .beginTransaction()
                 .show(cf as ChartFragment)

@@ -1,6 +1,8 @@
         package com.example.vsmwatchandroidapplication.ui.chart
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -10,19 +12,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import com.analog.study_watch_sdk.application.ADXLApplication
-import com.analog.study_watch_sdk.application.ECGApplication
-import com.analog.study_watch_sdk.application.EDAApplication
-import com.analog.study_watch_sdk.core.packets.stream.ADXLDataPacket
-import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
-import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
-import com.example.vsmwatchandroidapplication.MainActivity
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.ui.dashboard.accOn
-import com.example.vsmwatchandroidapplication.ui.dashboard.ecgOn
-import com.example.vsmwatchandroidapplication.ui.dashboard.edaOn
-import com.example.vsmwatchandroidapplication.ui.dashboard.ppgOn
+import com.analog.study_watch_sdk.application.*
+import com.analog.study_watch_sdk.core.packets.stream.*
+import com.example.vsmwatchandroidapplication.*
+import com.example.vsmwatchandroidapplication.ui.dashboard.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -59,6 +52,10 @@ class ChartFragment : Fragment() {
     private val eda: EDAApplication = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
     private val acc: ADXLApplication = com.example.vsmwatchandroidapplication.watchSdk!!.adxlApplication
     private val ecg: ECGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+    private val ppg: PPGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+    private val temp: TemperatureApplication = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
+
+    @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -279,167 +276,154 @@ class ChartFragment : Fragment() {
 
         edaPhaseChart.setDrawBorders(true)
 
-        //feedMultiple()
-        /*//PPG PLOT
-        ppgSeries1.color = Color.rgb(255, 51, 0)
-        ppgSeries1.isDrawBackground = true
-        ppgSeries1.backgroundColor = Color.argb(150, 255, 133, 102)
-        ppgSeries1.thickness = 10
-        ppgSeries1.title = "S1"
-        ppgSeries2.color = Color.rgb(51, 153, 255)
-        ppgSeries2.isDrawBackground = true
-        ppgSeries2.backgroundColor = Color.argb(150, 128, 191, 255)
-        ppgSeries2.thickness = 10
-        ppgSeries2.title = "S2"
-        ppgChart.title = "PPG"
-        ppgChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        ppgChart.gridLabelRenderer.verticalAxisTitle = "PPG"
-        ppgChart.gridLabelRenderer.numVerticalLabels = 3
-        ppgChart.legendRenderer.isVisible = true
-        ppgChart.viewport.isYAxisBoundsManual = true
-        ppgChart.viewport.isXAxisBoundsManual = true
-        ppgChart.viewport.setMinY(min(ppgSeries1.lowestValueY, ppgSeries2.lowestValueY))
-        ppgChart.viewport.setMaxY(max(ppgSeries1.highestValueY, ppgSeries2.highestValueY))
-        ppgChart.viewport.setMinX(min(ppgSeries1.lowestValueX, ppgSeries2.lowestValueX))
-        ppgChart.viewport.setMaxX(max(ppgSeries1.highestValueX, ppgSeries2.highestValueX))
-        ppgChart.viewport.isScrollable = true
-        ppgChart.addSeries(ppgSeries2)
-        ppgChart.addSeries(ppgSeries1)*/
 
-        /*//ECG PLOT
-        ecgSeries.color = Color.rgb(255, 51, 0)
-        ecgSeries.isDrawBackground = true
-        ecgSeries.backgroundColor = Color.argb(200, 233, 179, 179)
-        ecgSeries.thickness = 10
-        ecgChart.title = "ECG"
-        ecgChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        ecgChart.gridLabelRenderer.verticalAxisTitle = "ECG"
-        ecgChart.gridLabelRenderer.numVerticalLabels = 3
-        ecgChart.addSeries(ecgSeries)
-        ecgChart.viewport.isYAxisBoundsManual = true
-        ecgChart.viewport.isXAxisBoundsManual = true
-        ecgChart.viewport.setMinY(0.0)
-        ecgChart.viewport.setMaxY(100000.0)
-        ecgChart.viewport.setMinX(0.0)
-        ecgChart.viewport.setMaxX(60.0)
-        ecgChart.viewport.isScrollable = true*/
+        //PPG GRAPHING
 
-        /*//EDA MAG PLOT
-        edaSeriesMag.color = Color.rgb(255, 51, 0)
-        edaSeriesMag.isDrawBackground = true
-        edaSeriesMag.backgroundColor = Color.argb(200, 233, 179, 179)
-        edaSeriesMag.thickness = 10
-        edaMagChart.title = "EDA MAGNITUDE"
-        edaMagChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        edaMagChart.gridLabelRenderer.verticalAxisTitle = "Imp. Mag. (Ohms)"
-        edaMagChart.gridLabelRenderer.numVerticalLabels = 3
-        edaMagChart.viewport.isYAxisBoundsManual = true
-        edaMagChart.viewport.isXAxisBoundsManual = true
-        edaMagChart.viewport.setMinY(edaSeriesMag.lowestValueY)
-        edaMagChart.viewport.setMaxY(edaSeriesMag.highestValueY)
-        edaMagChart.viewport.setMinX(edaSeriesMag.lowestValueX)
-        edaMagChart.viewport.setMaxX(edaSeriesMag.highestValueX)
-        edaMagChart.viewport.isScrollable = true
-        edaMagChart.addSeries(edaSeriesMag)
+        // enable description text
+        ppgChart.description.isEnabled = false
+        ppgChart.description.text = "PPG Sensor Stream"
+        ppgChart.description.textColor = Color.WHITE
 
-        //EDA PHASE PLOT
-        edaSeriesPhase.color = Color.rgb(51, 153, 255)
-        edaSeriesPhase.isDrawBackground = true
-        edaSeriesPhase.backgroundColor = Color.argb(150, 128, 191, 255)
-        edaSeriesPhase.thickness = 10
-        edaPhaseChart.title = "EDA PHASE"
-        edaPhaseChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        edaPhaseChart.gridLabelRenderer.verticalAxisTitle = "Imp. Phase (Rad)"
-        edaPhaseChart.gridLabelRenderer.numVerticalLabels = 3
-        edaPhaseChart.viewport.isYAxisBoundsManual = true
-        edaPhaseChart.viewport.isXAxisBoundsManual = true
-        edaPhaseChart.viewport.setMinY(edaSeriesPhase.lowestValueY)
-        edaPhaseChart.viewport.setMaxY(edaSeriesPhase.highestValueY)
-        edaPhaseChart.viewport.setMinX(edaSeriesPhase.lowestValueX)
-        edaPhaseChart.viewport.setMaxX(edaSeriesPhase.highestValueX)
-        edaPhaseChart.viewport.isScrollable = true
-        edaPhaseChart.addSeries(edaSeriesPhase)
+        // enable touch gestures
+        ppgChart.setTouchEnabled(true)
 
-        //ACC PLOT
-        accSeriesX.color = Color.rgb(255, 51, 0)
-        accSeriesX.thickness = 5
-        accSeriesX.title = "X"
-        accSeriesY.color = Color.rgb(51, 153, 255)
-        accSeriesY.thickness = 5
-        accSeriesY.title = "Y"
-        accSeriesZ.color = Color.rgb(0, 204, 0)
-        accSeriesZ.thickness = 5
-        accSeriesZ.title = "Z"
-        accChart.title = "ACCELEROMETER"
-        accChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        accChart.gridLabelRenderer.verticalAxisTitle = "Accelerometer"
-        accChart.gridLabelRenderer.numVerticalLabels = 3
-        accChart.legendRenderer.isVisible = true
-        accChart.viewport.isYAxisBoundsManual = true
-        accChart.viewport.isXAxisBoundsManual = true
-        accChart.viewport.setMinY(min(min(accSeriesX.lowestValueY, accSeriesY.lowestValueY), accSeriesZ.lowestValueY))
-        accChart.viewport.setMaxY(max(max(accSeriesX.highestValueY, accSeriesY.highestValueY), accSeriesZ.highestValueY))
-        accChart.viewport.setMinX(min(min(accSeriesX.lowestValueX, accSeriesY.lowestValueX), accSeriesZ.lowestValueX))
-        accChart.viewport.setMaxX(max(max(accSeriesX.highestValueX, accSeriesY.highestValueX), accSeriesY.highestValueX))
-        accChart.viewport.isScrollable = true
-        accChart.addSeries(accSeriesX)
-        accChart.addSeries(accSeriesY)
-        accChart.addSeries(accSeriesZ)
+        // enable scaling and dragging
+        ppgChart.isDragEnabled = true
+        ppgChart.setScaleEnabled(true)
+        ppgChart.setDrawGridBackground(false)
+        ppgChart.isAutoScaleMinMaxEnabled = true
 
-        //TEMP PLOT
-        tempSeries.color = Color.rgb(51, 153, 255)
-        tempSeries.isDrawBackground = true
-        tempSeries.backgroundColor = Color.argb(150, 128, 191, 255)
-        tempSeries.thickness = 10
-        tempChart.title = "TEMPERATURE"
-        tempChart.gridLabelRenderer.horizontalAxisTitle = "Time (s)"
-        tempChart.gridLabelRenderer.verticalAxisTitle = "Temperature (C)"
-        tempChart.gridLabelRenderer.numVerticalLabels = 3
-        tempChart.viewport.isYAxisBoundsManual = true
-        tempChart.viewport.isXAxisBoundsManual = true
-        tempChart.viewport.setMinY(tempSeries.lowestValueY)
-        tempChart.viewport.setMaxY(tempSeries.highestValueY)
-        tempChart.viewport.setMinX(tempSeries.lowestValueX)
-        tempChart.viewport.setMaxX(tempSeries.highestValueX)
-        tempChart.viewport.isScrollable = true
-        tempChart.addSeries(tempSeries)
+        // if disabled, scaling can be done on x- and y-axis separately
+        ppgChart.setPinchZoom(true)
+
+        // set an alternative background color
+        //ecgChart.setBackgroundColor(Color.WHITE)
+
+        val ppgData = LineData()
+        ppgData.setValueTextColor(Color.WHITE)
+
+        // add empty data
+        ppgChart.data = ppgData
+
+        // get the legend (only possible after setting data)
+        val ppgL: Legend = ppgChart.legend
+
+        // modify the legend ...
+        ppgL.form = Legend.LegendForm.LINE
+        ppgL.textColor = Color.WHITE
+        ppgL.isEnabled = false
+
+        val ppgXl: XAxis = ppgChart.xAxis
+        ppgXl.textColor = Color.WHITE
+        ppgXl.setDrawGridLines(false)
+        ppgXl.setAvoidFirstLastClipping(true)
+        ppgXl.isEnabled = true
+
+        val ppgLeftAxis: YAxis = ppgChart.axisLeft
+        ppgLeftAxis.textColor = Color.WHITE
+        ppgLeftAxis.setDrawGridLines(false)
+
+        val ppgRightAxis: YAxis = ppgChart.axisRight
+        ppgRightAxis.isEnabled = false
+
+        ppgChart.setDrawBorders(true)
+
+
+        //TEMP GRAPHING
+
+        // enable description text
+        tempChart.description.isEnabled = false
+        tempChart.description.text = "Temperature Sensor Stream"
+        tempChart.description.textColor = Color.WHITE
+
+        // enable touch gestures
+        tempChart.setTouchEnabled(true)
+
+        // enable scaling and dragging
+        tempChart.isDragEnabled = true
+        tempChart.setScaleEnabled(true)
+        tempChart.setDrawGridBackground(false)
+        tempChart.isAutoScaleMinMaxEnabled = true
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        tempChart.setPinchZoom(true)
+
+        // set an alternative background color
+        //ecgChart.setBackgroundColor(Color.WHITE)
+
+        val tempData = LineData()
+        tempData.setValueTextColor(Color.WHITE)
+
+        // add empty data
+        tempChart.data = tempData
+
+        // get the legend (only possible after setting data)
+        val tempL: Legend = tempChart.legend
+
+        // modify the legend ...
+        tempL.form = Legend.LegendForm.LINE
+        tempL.textColor = Color.WHITE
+        tempL.isEnabled = false
+
+        val tempXl: XAxis = tempChart.xAxis
+        tempXl.textColor = Color.WHITE
+        tempXl.setDrawGridLines(false)
+        tempXl.setAvoidFirstLastClipping(true)
+        tempXl.isEnabled = true
+
+        val tempLeftAxis: YAxis = tempChart.axisLeft
+        tempLeftAxis.textColor = Color.WHITE
+        tempLeftAxis.setDrawGridLines(false)
+
+        val tempRightAxis: YAxis = tempChart.axisRight
+        tempRightAxis.isEnabled = false
+
+        tempChart.setDrawBorders(true)
 
 
         //create click listeners
         ppgChart.setOnClickListener{
-            val intent: Intent = Intent(context?.applicationContext, PPGActivity::class.java)
-            startActivity(intent)
-        }*/
+            if (ppgOn) {
+                //val intent: Intent = Intent(context?.applicationContext, PPGActivity::class.java)
+                //startActivity(intent)
+                fragman!!
+                        .beginTransaction()
+                        .show(ppgF as PPGActivity)
+                        .hide(cf as ChartFragment)
+                        .commit()
+            }
+        }
 
         edaMagChart.setOnClickListener{
-            if(edaOn == true) {
+            if(edaOn) {
                 val intent: Intent = Intent(context?.applicationContext, EDAMagActivity::class.java)
                 startActivity(intent)
             }
         }
 
         edaPhaseChart.setOnClickListener{
-            if(edaOn == true) {
+            if(edaOn) {
                 val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
                 startActivity(intent)
             }
         }
 
         ecgChart.setOnClickListener {
-            if(ecgOn == true) {
-                val intent: Intent =
-                        Intent(context?.applicationContext, ECGActivity::class.java)
+            if(ecgOn) {
+                val intent: Intent = Intent(context?.applicationContext, ECGActivity::class.java)
                 startActivity(intent)
             }
         }
 
-        /*tempChart.setOnClickListener{
-            val intent: Intent = Intent(context?.applicationContext, TempActivity::class.java)
-            startActivity(intent)
-        }*/
+        tempChart.setOnClickListener{
+            if (tempOn) {
+                val intent: Intent = Intent(context?.applicationContext, TempActivity::class.java)
+                startActivity(intent)
+            }
+        }
 
         accChart.setOnClickListener{
-            if(accOn == true) {
+            if(accOn) {
                 val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
                 startActivity(intent)
             }
@@ -641,6 +625,61 @@ class ChartFragment : Fragment() {
 
             // move to the latest entry
             edaPhaseChart.moveViewToX(data.entryCount.toFloat())
+        }
+    }
+
+    fun addEntry(PPGdata: SYNCPPGDataPacket) {
+        var data: LineData = ppgChart.data
+
+        if (data != null) {
+            var set = data.getDataSetByIndex(0)
+            if (set == null) {
+                set = createSet()
+                data.addDataSet(set)
+            }
+
+            for (i in PPGdata.payload.streamData) {
+                if (i != null) {
+                    data.addEntry(Entry(prevX++.toFloat(), i.ppgData.toFloat()), 0)
+                }
+            }
+            data.notifyDataChanged()
+
+            // let the chart know it's data has changed
+            ppgChart.notifyDataSetChanged()
+
+            // limit the number of visible entries
+            ppgChart.setVisibleXRangeMaximum(150F)
+
+            // move to the latest entry
+            ppgChart.moveViewToX(data.entryCount.toFloat())
+        }
+    }
+
+    fun addEntry(TempData: TemperatureDataPacket) {
+        var data: LineData = tempChart.data
+
+        if (data != null) {
+            var set = data.getDataSetByIndex(0)
+            if (set == null) {
+                set = createSet()
+                data.addDataSet(set)
+            }
+
+            if (TempData.payload != null) {
+                data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat()), 0)
+            }
+
+            data.notifyDataChanged()
+
+            // let the chart know it's data has changed
+            tempChart.notifyDataSetChanged()
+
+            // limit the number of visible entries
+            tempChart.setVisibleXRangeMaximum(150F)
+
+            // move to the latest entry
+            tempChart.moveViewToX(data.entryCount.toFloat())
         }
     }
 
