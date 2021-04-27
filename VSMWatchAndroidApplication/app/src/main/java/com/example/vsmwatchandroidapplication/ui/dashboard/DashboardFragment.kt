@@ -12,11 +12,15 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
+import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
 import com.example.vsmwatchandroidapplication.MainActivity
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.ppgF
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
+import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
 import org.jetbrains.anko.support.v4.runOnUiThread
 
 
@@ -37,6 +41,8 @@ class DashboardFragment : Fragment() {
     var ECGsw: Switch? = null
     var tempsw: Switch? = null
     var PPGsw: Switch? = null
+
+    val ppg: PPGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
 
     private lateinit var dashboardViewModel: DashboardViewModel
 
@@ -170,11 +176,13 @@ class DashboardFragment : Fragment() {
     }
     fun readPPG() {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD108)
-            ppg.setPPGCallback{PPGDataPacket ->
+            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
+            ppg.setSyncPPGCallback{PPGDataPacket ->
+                (cf as ChartFragment).addEntry(PPGDataPacket)
+                (ppgF as PPGActivity).addEntry(PPGDataPacket)
+
               runOnUiThread {
-                  PPGtxt?.setText(PPGDataPacket.payload.hr.toFloat().toString())
+                  PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
              }
             }
             ppg.startSensor()
@@ -270,6 +278,8 @@ class DashboardFragment : Fragment() {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
             val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
             temps.setCallback { TempuratureDataPacket ->
+                (cf as ChartFragment).addEntry(TemperatureDataPacket())
+
                 var Celsius = TempuratureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
 

@@ -57,11 +57,6 @@
             android:label="ECG Graph">
         </activity>
         <activity
-            android:name=".ui.chart.PPGActivity"
-            android:screenOrientation="landscape"
-            android:label="PPG Graph">
-        </activity>
-        <activity
             android:name=".ui.dashboard.ScanFragment"
             android:screenOrientation="portrait">
 
