@@ -12,15 +12,11 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
-import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
-import com.example.vsmwatchandroidapplication.MainActivity
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.ppgF
+import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
-import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.time.LocalDateTime
 
@@ -42,7 +38,7 @@ class DashboardFragment : Fragment() {
     var tempsw: Switch? = null
     var PPGsw: Switch? = null
 
-    val ppg: PPGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+    private var log = watchSdk!!.fsApplication
 
     private lateinit var dashboardViewModel: DashboardViewModel
 
@@ -174,16 +170,20 @@ class DashboardFragment : Fragment() {
         }
         return root
     }
-    fun readPPG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
-            ppg.setSyncPPGCallback{PPGDataPacket ->
-                (cf as ChartFragment).addEntry(PPGDataPacket)
-                (ppgF as PPGActivity).addEntry(PPGDataPacket)
 
-              runOnUiThread {
-                  PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
-             }
+    // PPG
+    private fun readPPG() {
+        if (watchSdk != null) {
+            val ppg = watchSdk!!.ppgApplication
+            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD108)
+            ppg.setPPGCallback{PPGDataPacket ->
+                runOnUiThread {
+                    PPGtxt?.setText(PPGDataPacket.payload.hr.toFloat().toString())
+
+                    if(isLoggingOn && ppgOn) {
+                        (lf as LoggingFragment).recordVital(PPGDataPacket.payload.timestamp, PPGDataPacket.payload.hr)
+                    }
+                }
             }
             ppg.startSensor()
             ppg.subscribeStream()
@@ -277,13 +277,12 @@ class DashboardFragment : Fragment() {
 
     }
 
-    fun readTemp() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            temps.setCallback { TempuratureDataPacket ->
-                (cf as ChartFragment).addEntry(TemperatureDataPacket())
-
-                var Celsius = TempuratureDataPacket.payload.temperature1.toFloat()/10
+    // Temperature
+    private fun readTemp() {
+        if (watchSdk != null) {
+            val temps = watchSdk!!.temperatureApplication
+            temps.setCallback { TemperatureDataPacket ->
+                val celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
                     temptxt?.text = celsius.toString() + "C"
 

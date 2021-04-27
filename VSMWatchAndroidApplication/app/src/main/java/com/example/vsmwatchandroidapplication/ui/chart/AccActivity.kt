@@ -215,7 +215,6 @@ class AccActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        acc.stopAndUnsubscribeStream()
         fragman!!
                 .beginTransaction()
                 .show(cf as ChartFragment)

@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.analog.study_watch_sdk.core.SDK
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
-import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
@@ -30,9 +29,26 @@ var df : Fragment? = null
 var cf : Fragment? = null
 var lf : Fragment? = null
 var sf : Fragment? = null
-var ppgF : Fragment? = null
 var fragman : FragmentManager? = null
 class MainActivity : AppCompatActivity() {
+    /*var ppgSeries1 = LineGraphSeries<DataPoint>()
+    var latPPGSeries1 = String()
+    var ppgSeries2 = LineGraphSeries<DataPoint>()
+    var latPPGSeries2 = String()
+    var ecgSeries = LineGraphSeries<DataPoint>()
+    var latEcgSeries = String()
+    var edaSeriesMag = LineGraphSeries<DataPoint>()
+    var latEdaSeries = String()
+    var edaSeriesPhase = LineGraphSeries<DataPoint>()
+    var accSeriesX = LineGraphSeries<DataPoint>()
+    var latAccSeriesX = String()
+    var accSeriesY = LineGraphSeries<DataPoint>()
+    var latAccSeriesY = String()
+    var accSeriesZ = LineGraphSeries<DataPoint>()
+    var latAccSeriesZ = String()
+    var accSeriesMag = LineGraphSeries<DataPoint>()
+    var tempSeries = LineGraphSeries<DataPoint>()
+    var latTempSeries = String()*/
     private val CHANNEL_ID = "channel_id_01"
     private val notificationID = 101
     var notified = false
@@ -49,15 +65,12 @@ class MainActivity : AppCompatActivity() {
         cf = ChartFragment()
         lf = LoggingFragment()
         sf = SettingsFragment()
-        ppgF = PPGActivity()
         fragman = supportFragmentManager
         fragman!!.beginTransaction()
                 .add(R.id.nav_host_fragment, df as DashboardFragment)
                 .add(R.id.nav_host_fragment, cf as ChartFragment)
                 .add(R.id.nav_host_fragment, lf as LoggingFragment)
                 .add(R.id.nav_host_fragment, sf as SettingsFragment)
-                .add(R.id.nav_host_fragment, ppgF as PPGActivity)
-                .hide(ppgF as PPGActivity)
                 .hide(cf as ChartFragment)
                 .hide(lf as LoggingFragment)
                 .hide(sf as SettingsFragment)
