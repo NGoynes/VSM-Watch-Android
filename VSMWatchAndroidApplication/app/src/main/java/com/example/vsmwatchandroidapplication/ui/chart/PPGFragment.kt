@@ -26,7 +26,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import org.jetbrains.anko.support.v4.runOnUiThread
 
-class PPGActivity : Fragment() {
+class PPGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
@@ -176,15 +176,15 @@ class PPGActivity : Fragment() {
         super.onResume()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        //thread.interrupt()
-        //ppg.stopAndUnsubscribeStream()
-
-        //super.onDestroy()
-        fragman!!
-                .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
-    }
+//    override fun on() {
+//        //super.onDestroy()
+//        //thread.interrupt()
+//        //ppg.stopAndUnsubscribeStream()
+//
+//        //super.onDestroy()
+//        fragman!!
+//                .beginTransaction()
+//                .show(cf as ChartFragment)
+//                .commit()
+//    }
 }

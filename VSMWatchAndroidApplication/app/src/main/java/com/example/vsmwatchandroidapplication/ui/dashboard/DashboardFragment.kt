@@ -17,7 +17,7 @@ import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
 import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
-import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
+import com.example.vsmwatchandroidapplication.ui.chart.PPGFragment
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -178,7 +178,7 @@ class DashboardFragment : Fragment() {
             ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
             ppg.setSyncPPGCallback{PPGDataPacket ->
                 (cf as ChartFragment).addEntry(PPGDataPacket)
-                (ppgF as PPGActivity).addEntry(PPGDataPacket)
+                (ppgF as PPGFragment).addEntry(PPGDataPacket)
 
               runOnUiThread {
                   PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()

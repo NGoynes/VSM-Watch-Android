@@ -5,12 +5,11 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.*
 import com.analog.study_watch_sdk.core.packets.stream.*
@@ -23,14 +22,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.utils.EntryXComparator
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import kotlinx.android.synthetic.main.fragment_chart.*
+import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.support.v4.runOnUiThread
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -386,9 +379,12 @@ class ChartFragment : Fragment() {
             if (ppgOn) {
                 //val intent: Intent = Intent(context?.applicationContext, PPGActivity::class.java)
                 //startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 fragman!!
                         .beginTransaction()
-                        .show(ppgF as PPGActivity)
+                        .show(ppgF as PPGFragment)
                         .hide(cf as ChartFragment)
                         .commit()
             }

@@ -5,7 +5,7 @@
     android:background="@android:color/background_dark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.chart.PPGActivity">
+    tools:context=".ui.chart.PPGFragment">
 
     <TextView
         android:id="@+id/ppgDataInd"
