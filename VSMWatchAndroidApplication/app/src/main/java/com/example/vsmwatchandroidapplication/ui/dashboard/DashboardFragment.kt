@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
@@ -41,7 +42,7 @@ class DashboardFragment : Fragment() {
     var tempsw: Switch? = null
     var PPGsw: Switch? = null
 
-    val ppg: PPGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
+    val ppg: PPGApplication = watchSdk!!.ppgApplication
 
     private lateinit var dashboardViewModel: DashboardViewModel
 
@@ -50,17 +51,9 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        (activity as MainActivity)?.supportActionBar?.title = "Dashboard"
+        (activity as MainActivity).supportActionBar?.title = "Dashboard"
         (activity as MainActivity).checkBattery()
-        /*val latTempSeries = (activity as MainActivity).latTempSeries
-        val latAccSeriesX = (activity as MainActivity).latAccSeriesX
-        val latAccSeriesY = (activity as MainActivity).latAccSeriesY
-        val latAccSeriesZ = (activity as MainActivity).latAccSeriesZ
-        val latPPGSeries1 = (activity as MainActivity).latPPGSeries1
-        val latPPGSeries2 = (activity as MainActivity).latPPGSeries2
 
-        val latEcgSeries = (activity as MainActivity).latEcgSeries
-        val latEdaSeries = (activity as MainActivity).latEdaSeries*/
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
@@ -69,103 +62,164 @@ class DashboardFragment : Fragment() {
         tempsw = root.findViewById(R.id.dbtemp_switch)
         PPGsw = root.findViewById(R.id.dbppg_switch)
         PPGtxt = root.findViewById(R.id.dbppg_data)
-        PPGsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch) {
-                resetVal()
-                EDAsw?.isChecked = false
-                ECGsw?.isChecked = false
-                tempsw?.isChecked = false
-                readPPG()
-                ppgOn = true
 
+        if (!isLoggingOn) {
+            PPGsw?.setOnCheckedChangeListener { _, onSwitch ->
+                if(onSwitch) {
+                    // Turn off other signals
+                    EDAsw?.isChecked = false
+                    ECGsw?.isChecked = false
+                    tempsw?.isChecked = false
+                    resetVal()
+
+                    stopECG()
+                    stopEDA()
+                    stopTemp()
+
+                    // Begin reading PPG
+                    readPPG()
+                    ppgOn = true
+
+                }
+                else {
+                    if(isLoggingOn) {
+                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                        PPGsw!!.isChecked = true
+                    }
+                    else {
+                        stopPPG()
+                        ppgOn = false
+                    }
+                }
             }
-            else {
-                stopPPG()
-                Log.d("Connection", "DATA :: PPG is OFF")
-
-                ppgOn = false
-            }
-
+        }
+        else {
+            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
         }
 
         EDAtxt = root.findViewById(R.id.dbeda_data)
 
-        EDAsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch) {
-                resetVal()
-                ECGsw?.isChecked = false
-                PPGsw?.isChecked = false
-                tempsw?.isChecked = false
-                readEDA()
-                edaOn = true
+        if (!isLoggingOn) {
+            EDAsw?.setOnCheckedChangeListener { _, onSwitch ->
+                if(onSwitch) {
+                    // Turn off other signals
+                    ECGsw?.isChecked = false
+                    PPGsw?.isChecked = false
+                    tempsw?.isChecked = false
+                    resetVal()
 
-            }
-            else {
-                stopEDA()
-                Log.d("Connection", "DATA :: EDA is OFF")
+                    stopPPG()
+                    stopECG()
+                    stopTemp()
 
-                edaOn = false
+                    // Begin reading EDA
+                    readEDA()
+                    edaOn = true
+                }
+                else {
+                    if(isLoggingOn) {
+                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                        EDAsw!!.isChecked = true
+                    }
+                    else {
+                        stopEDA()
+                        edaOn = false
+                    }
+                }
             }
+        }
+        else {
+            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
         }
 
         ECGtxt = root.findViewById(R.id.dbecg_data)
 
-        ECGsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
+        if (!isLoggingOn) {
+            ECGsw?.setOnCheckedChangeListener { _, onSwitch ->
 
-            if(onSwitch) {
-                resetVal()
-                EDAsw?.isChecked = false
-                PPGsw?.isChecked = false
-                tempsw?.isChecked = false
+                if(onSwitch) {
+                    // Turn off other signals
+                    EDAsw?.isChecked = false
+                    PPGsw?.isChecked = false
+                    tempsw?.isChecked = false
+                    resetVal()
 
-                readECG()
-                ecgOn = true
+                    stopPPG()
+                    stopEDA()
+                    stopTemp()
 
+                    // Begin reading ECG
+                    readECG()
+                    ecgOn = true
+                }
+                else {
+                    if(isLoggingOn) {
+                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                        ECGsw!!.isChecked = true
+                    }
+                    else {
+                        stopECG()
+                        ecgOn = false
+                    }
+                }
             }
-             else {
-                stopECG()
-                Log.d("Connection", "DATA :: ECG is OFF")
-
-                ecgOn = false
-
-            }
-         }
+        }
+        else {
+            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+        }
 
 
         temptxt = root.findViewById(R.id.dbtemp_data)
-        tempsw?.setOnCheckedChangeListener { compoundButton, onSwitch ->
+        tempsw?.setOnCheckedChangeListener { _, onSwitch ->
             if (onSwitch) {
-                resetVal()
+                // Turn off other signals
                 EDAsw?.isChecked = false
                 ECGsw?.isChecked = false
                 PPGsw?.isChecked = false
+                resetVal()
+
+                stopPPG()
+                stopEDA()
+                stopECG()
+
+                // Begin reading temperature
                 readTemp()
                 tempOn = true
-
             }
             else {
-                stopTemp()
-                Log.d("Connection", "DATA :: Temp is OFF")
-
-                tempOn = false
+                if(isLoggingOn) {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    tempsw!!.isChecked = true
+                }
+                else {
+                    stopTemp()
+                    tempOn = false
+                }
             }
         }
 
         val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
         val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
-        Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
-            if(onSwitch) {
-                //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
-                EDAsw?.isChecked = false
-                ECGsw?.isChecked = false
-                PPGsw?.isChecked = false
-                tempsw?.isChecked = false
-                accOn = true
-            }
-            else
-                Acctxt.setText("----")
+        if (!isLoggingOn) {
+            Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
+                if(onSwitch) {
+                    //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
+                    EDAsw?.isChecked = false
+                    ECGsw?.isChecked = false
+                    PPGsw?.isChecked = false
+                    tempsw?.isChecked = false
+
+                    accOn = true
+                }
+                else
+                    Acctxt.setText("----")
                 accOn = false
+            }
         }
+        else {
+            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+        }
+
         val ScanButton: Button = root.findViewById(R.id.ScanButton)
         ScanButton.setOnClickListener {
             val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)

@@ -76,57 +76,57 @@ class LoggingFragment : Fragment() {
 
         // Checks if PPG in Dashboard is checked
         switchPPG.setOnCheckedChangeListener { _, _ ->
-            if (ppgOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!ppgOn) {
                 Toast.makeText(context?.applicationContext, "PPG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchPPG.isChecked = false
+            }
+            if (isLoggingOn && ppgOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchPPG.isChecked = true
             }
         }
 
         // Checks if ECG in Dashboard is checked
         switchECG.setOnCheckedChangeListener{ _, _ ->
-            if (ecgOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!ecgOn) {
                 Toast.makeText(context?.applicationContext, "ECG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchECG.isChecked = false
+            }
+            if (isLoggingOn && ecgOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchECG.isChecked = true
             }
         }
 
         // Checks if EDA in Dashboard is checked
         switchEDA.setOnCheckedChangeListener{ _, _->
-            if (edaOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!edaOn) {
                 Toast.makeText(context?.applicationContext, "EDA is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchEDA.isChecked = false
+            }
+            if (isLoggingOn && edaOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchEDA.isChecked = true
             }
         }
 
         // Checks if Accelerometer in Dashboard is checked
         switchAccelerometer.setOnCheckedChangeListener { _, _ ->
             /*if (dashboardAccelSwitch) {
-                allowLogging = true
-                loggingAccelerometerSwitch = true
-            }
-            else {
                 Toast.makeText(context?.applicationContext, "Accelerometer is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchAccelerometer.isChecked = false
             }*/
         }
 
         // Checks if Temperature in Dashboard is checked
-        switchTemperature.setOnCheckedChangeListener { _, _ ->
-            if (tempOn) {
-                //allowLogging = true
-            }
-            else {
+        switchTemperature.setOnCheckedChangeListener { _, isChecked ->
+            if (!tempOn) {
                 Toast.makeText(context?.applicationContext, "Temperature is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchTemperature.isChecked = false
+            }
+            if (isLoggingOn && tempOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchTemperature.isChecked = true
             }
         }
 
