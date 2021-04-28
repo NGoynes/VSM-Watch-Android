@@ -56,6 +56,10 @@ class LoggingFragment : Fragment() {
     private var ecg_ppg_tempSeconds: Double = 0.0
     private val ecg_ppg_tempData = StringBuilder()
 
+    // Data for EDA
+    private var edaSeconds: Double = 0.0
+    private val edaData = StringBuilder()
+
     @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -185,12 +189,30 @@ class LoggingFragment : Fragment() {
         ecg_ppg_tempData.append('\n')
     }
 
+    fun recordVital(timestamp: Long, data: Long) {
+        ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
+        ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
+        ecg_ppg_tempData.append(",")
+        ecg_ppg_tempData.append(data)
+        ecg_ppg_tempData.append('\n')
+    }
+
     fun recordVital(timestamp: Long, data: Float) {
         ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
         ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
         ecg_ppg_tempData.append(",")
         ecg_ppg_tempData.append(data)
         ecg_ppg_tempData.append('\n')
+    }
+
+    fun recordVital(timestamp: Long, mag: Float, phase: Float) {
+        edaSeconds += timestamp.toDouble()  / (1e9).toDouble()
+        edaData.append(edaSeconds)
+        edaData.append(",")
+        edaData.append(mag)
+        edaData.append(",")
+        edaData.append(phase)
+        edaData.append('\n')
     }
 
     fun writeToFile(vital: String, dataFile: String) {
@@ -217,14 +239,14 @@ class LoggingFragment : Fragment() {
                 hasLogged = false
             }
             "EDA" -> {
-                /*val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()*/
+                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                out.write(edaData.toString().toByteArray())
+                out.close()
 
                 // Reset data
-                /*ecg_ppg_tempData.clear()
-                ecg_ppg_tempSeconds = 0.0*/
-                //hasLogged = false
+                edaData.clear()
+                edaSeconds = 0.0
+                hasLogged = false
             }
             "Accelerometer" -> {
                 /*val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
@@ -251,9 +273,6 @@ class LoggingFragment : Fragment() {
 
     @SuppressLint("NewApi")
     fun export(dataFile: String) {
-        //val currentDateTime = LocalDateTime.now()
-        //val fileName: String = dataFile + "Data_" + currentDateTime + ".csv"
-
         try {
             val context: Context = requireActivity().applicationContext
             val fileLocation = File(context.filesDir, dataFile)
@@ -270,8 +289,6 @@ class LoggingFragment : Fragment() {
                 context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            //fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data")
-            //startActivity(Intent.createChooser(fileIntent, "Send mail"))
             startActivity(chooser)
         } catch (e: Exception) {
             e.printStackTrace()

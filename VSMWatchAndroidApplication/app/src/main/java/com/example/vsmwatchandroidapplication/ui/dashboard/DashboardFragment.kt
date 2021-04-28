@@ -2,6 +2,7 @@ package com.example.vsmwatchandroidapplication.ui.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
@@ -24,6 +26,9 @@ import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.time.LocalDateTime
+import kotlin.math.atan
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 var ppgOn = false
@@ -213,15 +218,19 @@ class DashboardFragment : Fragment() {
                 (cf as ChartFragment).addEntry(PPGDataPacket)
                 (ppgF as PPGFragment).addEntry(PPGDataPacket)
 
-              runOnUiThread {
-                  PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
-             }
+                runOnUiThread {
+                    PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
+
+                    if (isLoggingOn && ppgOn) {
+                        for (i in PPGDataPacket.payload.streamData) {
+                            if (i != null) (lf as LoggingFragment).recordVital(i.ppgTimestamp, i.ppgData)
+                        }
+                    }
+                }
             }
             ppg.startSensor()
             ppg.subscribeStream()
-
         }
-
     }
     @SuppressLint("NewApi")
     private fun stopPPG(forcedSwitchOff: Boolean)
@@ -249,7 +258,7 @@ class DashboardFragment : Fragment() {
                 (cf as ChartFragment).addEntry(ECGdata)
 
                 runOnUiThread {
-                    ECGtxt?.setText(ECGdata.payload.ecgInfo.toString())
+                    ECGtxt?.text = ECGdata.payload.ecgInfo.toString()
 
                     if (isLoggingOn && ecgOn) {
                         for ( i in ECGdata.payload.streamData) {
@@ -293,6 +302,17 @@ class DashboardFragment : Fragment() {
                 runOnUiThread {
                     (cf as ChartFragment).addEntryMag(EDADataPacket)
                     (cf as ChartFragment).addEntryPhase(EDADataPacket)
+
+                    if (isLoggingOn && edaOn) {
+                        for (i in EDADataPacket.payload.streamData) {
+                            if (i != null) {
+                                val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                                val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
+
+                                (lf as LoggingFragment).recordVital(i.timestamp, mag, phase)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -300,6 +320,7 @@ class DashboardFragment : Fragment() {
             eda.subscribeStream()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun stopEDA(forcedSwitchOff: Boolean)
     {
         if (watchSdk != null) {
@@ -307,8 +328,9 @@ class DashboardFragment : Fragment() {
             resetVal()
 
             if (!forcedSwitchOff && hasLogged) {
-                //TODO
-                // Export EDA
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "EDAData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("EDA", fileName)
             }
 
             eda.stopSensor()

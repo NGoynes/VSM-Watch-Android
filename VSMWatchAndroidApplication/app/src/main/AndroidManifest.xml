@@ -17,45 +17,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VSMWatchAndroidApplication">
-        <activity android:name=".ui.logging.DeleteLog"></activity>
+        <activity android:name=".ui.logging.DeleteLog" />
         <activity
             android:name=".ui.logging.ShareLog"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.settings.SystemSetting"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.settings.EDASetting"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.settings.ECGSetting"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.settings.PPGSetting"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.logging.TemperatureLog"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.chart.TempActivity"
             android:label="Temperature Graph"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.chart.AccActivity"
             android:label="Accelerometer Graph"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.chart.EDAPhaseActivity"
             android:label="EDA Phase Graph"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.chart.EDAMagActivity"
             android:label="EDA Magnitude Graph"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.chart.ECGActivity"
             android:label="ECG Graph"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.dashboard.ScanFragment"
             android:screenOrientation="portrait">
@@ -65,11 +65,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.logging.ShareActivity"></activity>
+        <activity android:name=".ui.logging.ShareActivity" />
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"></activity>
+            android:label="@string/app_name" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
