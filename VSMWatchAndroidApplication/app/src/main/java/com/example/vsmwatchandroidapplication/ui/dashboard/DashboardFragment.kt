@@ -15,12 +15,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
-import com.example.vsmwatchandroidapplication.MainActivity
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.ppgF
+import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
 import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
+import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.time.LocalDateTime
 
@@ -280,14 +279,14 @@ class DashboardFragment : Fragment() {
     fun readTemp() {
         if (com.example.vsmwatchandroidapplication.watchSdk != null) {
             val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            temps.setCallback { TempuratureDataPacket ->
+            temps.setCallback { TemperatureDataPacket ->
                 (cf as ChartFragment).addEntry(TemperatureDataPacket())
 
-                var Celsius = TempuratureDataPacket.payload.temperature1.toFloat()/10
+                var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
-                    temptxt?.text = celsius.toString() + "C"
+                    temptxt?.text = Celsius.toString() + "C"
 
-                    (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, celsius)
+                    (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, Celsius)
                 }
                 //Log.d("Connection", "DATA :: ${celsius}")
             }
