@@ -20,6 +20,7 @@ import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
 import com.example.vsmwatchandroidapplication.ui.chart.PPGFragment
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
+import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.time.LocalDateTime
@@ -37,10 +38,10 @@ class DashboardFragment : Fragment() {
     var ECGtxt: TextView? = null
     var EDAtxt: TextView? = null
     var temptxt: TextView? = null
-    var EDAsw: Switch? = null
-    var ECGsw: Switch? = null
-    var tempsw: Switch? = null
-    var PPGsw: Switch? = null
+    lateinit var EDAsw: Switch
+    lateinit var ECGsw: Switch
+    lateinit var tempsw: Switch
+    lateinit var PPGsw: Switch
 
     val ppg: PPGApplication = watchSdk!!.ppgApplication
 
@@ -61,126 +62,103 @@ class DashboardFragment : Fragment() {
         ECGsw = root.findViewById(R.id.dbecg_switch)
         tempsw = root.findViewById(R.id.dbtemp_switch)
         PPGsw = root.findViewById(R.id.dbppg_switch)
+
         PPGtxt = root.findViewById(R.id.dbppg_data)
+        PPGsw.setOnCheckedChangeListener { _, onSwitch ->
+            if(onSwitch) {
+                // Turn off other signals
+                EDAsw.isChecked = false
+                ECGsw.isChecked = false
+                tempsw.isChecked = false
+                resetVal()
 
-        if (!isLoggingOn) {
-            PPGsw?.setOnCheckedChangeListener { _, onSwitch ->
-                if(onSwitch) {
-                    // Turn off other signals
-                    EDAsw?.isChecked = false
-                    ECGsw?.isChecked = false
-                    tempsw?.isChecked = false
-                    resetVal()
+                stopECG(true)
+                stopEDA(true)
+                stopTemp(true)
 
-                    stopECG()
-                    stopEDA()
-                    stopTemp()
+                // Begin reading PPG
+                readPPG()
+                ppgOn = true
 
-                    // Begin reading PPG
-                    readPPG()
-                    ppgOn = true
-
-                }
-                else {
-                    if(isLoggingOn) {
-                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                        PPGsw!!.isChecked = true
-                    }
-                    else {
-                        stopPPG()
-                        ppgOn = false
-                    }
+            } else {
+                if(isLoggingOn) {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    PPGsw.isChecked = true
+                } else {
+                    stopPPG(false)
+                    ppgOn = false
                 }
             }
-        }
-        else {
-            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
         }
 
         EDAtxt = root.findViewById(R.id.dbeda_data)
+        EDAsw.setOnCheckedChangeListener { _, onSwitch ->
+            if(onSwitch) {
+                // Turn off other signals
+                ECGsw.isChecked = false
+                PPGsw.isChecked = false
+                tempsw.isChecked = false
+                resetVal()
 
-        if (!isLoggingOn) {
-            EDAsw?.setOnCheckedChangeListener { _, onSwitch ->
-                if(onSwitch) {
-                    // Turn off other signals
-                    ECGsw?.isChecked = false
-                    PPGsw?.isChecked = false
-                    tempsw?.isChecked = false
-                    resetVal()
+                stopPPG(true)
+                stopECG(true)
+                stopTemp(true)
 
-                    stopPPG()
-                    stopECG()
-                    stopTemp()
-
-                    // Begin reading EDA
-                    readEDA()
-                    edaOn = true
-                }
-                else {
-                    if(isLoggingOn) {
-                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                        EDAsw!!.isChecked = true
-                    }
-                    else {
-                        stopEDA()
-                        edaOn = false
-                    }
+                // Begin reading EDA
+                readEDA()
+                edaOn = true
+            } else {
+                if(isLoggingOn) {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    EDAsw.isChecked = true
+                } else {
+                    stopEDA(false)
+                    edaOn = false
                 }
             }
         }
-        else {
-            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-        }
 
         ECGtxt = root.findViewById(R.id.dbecg_data)
-
-        if (!isLoggingOn) {
-            ECGsw?.setOnCheckedChangeListener { _, onSwitch ->
-
-                if(onSwitch) {
-                    // Turn off other signals
-                    EDAsw?.isChecked = false
-                    PPGsw?.isChecked = false
-                    tempsw?.isChecked = false
+        ECGsw.setOnCheckedChangeListener { _, onSwitch ->
+            if(onSwitch) {
+                // Turn off other signals
+                if (EDAsw.isChecked)
+                    EDAsw.isChecked = false
+                    PPGsw.isChecked = false
+                    tempsw.isChecked = false
                     resetVal()
 
-                    stopPPG()
-                    stopEDA()
-                    stopTemp()
+                    stopPPG(true)
+                    stopEDA(true)
+                    stopTemp(true)
 
                     // Begin reading ECG
                     readECG()
                     ecgOn = true
-                }
-                else {
-                    if(isLoggingOn) {
-                        Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                        ECGsw!!.isChecked = true
-                    }
-                    else {
-                        stopECG()
-                        ecgOn = false
-                    }
+            } else {
+                if(isLoggingOn) {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    ECGsw.isChecked = true
+                } else {
+                    stopECG(false)
+                    ecgOn = false
                 }
             }
-        }
-        else {
-            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
         }
 
 
         temptxt = root.findViewById(R.id.dbtemp_data)
-        tempsw?.setOnCheckedChangeListener { _, onSwitch ->
+        tempsw.setOnCheckedChangeListener { _, onSwitch ->
             if (onSwitch) {
                 // Turn off other signals
-                EDAsw?.isChecked = false
-                ECGsw?.isChecked = false
-                PPGsw?.isChecked = false
+                EDAsw.isChecked = false
+                ECGsw.isChecked = false
+                PPGsw.isChecked = false
                 resetVal()
 
-                stopPPG()
-                stopEDA()
-                stopECG()
+                stopPPG(true)
+                stopEDA(true)
+                stopECG(true)
 
                 // Begin reading temperature
                 readTemp()
@@ -189,10 +167,10 @@ class DashboardFragment : Fragment() {
             else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                    tempsw!!.isChecked = true
+                    tempsw.isChecked = true
                 }
                 else {
-                    stopTemp()
+                    stopTemp(false)
                     tempOn = false
                 }
             }
@@ -201,19 +179,20 @@ class DashboardFragment : Fragment() {
         val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
         val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
         if (!isLoggingOn) {
-            Accsw.setOnCheckedChangeListener { compoundButton, onSwitch ->
+            Accsw.setOnCheckedChangeListener { _, onSwitch ->
                 if(onSwitch) {
                     //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
-                    EDAsw?.isChecked = false
-                    ECGsw?.isChecked = false
-                    PPGsw?.isChecked = false
-                    tempsw?.isChecked = false
+                    EDAsw.isChecked = false
+                    ECGsw.isChecked = false
+                    PPGsw.isChecked = false
+                    tempsw.isChecked = false
 
                     accOn = true
                 }
-                else
-                    Acctxt.setText("----")
-                accOn = false
+                else {
+                    Acctxt.text = "----"
+                    accOn = false
+                }
             }
         }
         else {
@@ -227,8 +206,8 @@ class DashboardFragment : Fragment() {
         }
         return root
     }
-    fun readPPG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
+    private fun readPPG() {
+        if (watchSdk != null) {
             ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
             ppg.setSyncPPGCallback{PPGDataPacket ->
                 (cf as ChartFragment).addEntry(PPGDataPacket)
@@ -245,7 +224,7 @@ class DashboardFragment : Fragment() {
 
     }
     @SuppressLint("NewApi")
-    private fun stopPPG()
+    private fun stopPPG(forcedSwitchOff: Boolean)
     {
         if (watchSdk != null) {
             val ppg = watchSdk!!.ppgApplication
@@ -253,10 +232,11 @@ class DashboardFragment : Fragment() {
             ppg.stopSensor()
             ppg.stopAndUnsubscribeStream()
 
-            val currentDateTime = LocalDateTime.now()
-            val fileName = "PPGData$currentDateTime.csv"
-            (lf as LoggingFragment).writeToFile("PPG", fileName)
-
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "PPGData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("PPG", fileName)
+            }
             resetVal()
         }
     }
@@ -264,7 +244,7 @@ class DashboardFragment : Fragment() {
     // ECG
     private fun readECG() {
         if (watchSdk != null) {
-            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+            val ecg = watchSdk!!.ecgApplication
             ecg.setCallback { ECGdata ->
                 (cf as ChartFragment).addEntry(ECGdata)
 
@@ -285,7 +265,7 @@ class DashboardFragment : Fragment() {
         }
     }
     @SuppressLint("NewApi")
-    private fun stopECG()
+    private fun stopECG(forcedSwitchOff: Boolean)
     {
         if (watchSdk != null) {
 
@@ -295,9 +275,11 @@ class DashboardFragment : Fragment() {
             ecg.stopAndUnsubscribeStream()
             ecg.setTimeout(5)
 
-            val currentDateTime = LocalDateTime.now()
-            val fileName = "ECGData$currentDateTime.csv"
-            (lf as LoggingFragment).writeToFile("ECG", fileName)
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "ECGData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("ECG", fileName)
+            }
 
             resetVal()
         }
@@ -318,12 +300,17 @@ class DashboardFragment : Fragment() {
             eda.subscribeStream()
         }
     }
-    private fun stopEDA()
+    private fun stopEDA(forcedSwitchOff: Boolean)
     {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
-
             resetVal()
+
+            if (!forcedSwitchOff && hasLogged) {
+                //TODO
+                // Export EDA
+            }
+
             eda.stopSensor()
             eda.stopAndUnsubscribeStream()
         }
@@ -331,8 +318,8 @@ class DashboardFragment : Fragment() {
     }
 
     fun readTemp() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
+        if (watchSdk != null) {
+            val temps = watchSdk!!.temperatureApplication
             temps.setCallback { TemperatureDataPacket ->
                 (cf as ChartFragment).addEntry(TemperatureDataPacket())
 
@@ -342,7 +329,6 @@ class DashboardFragment : Fragment() {
 
                     (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, Celsius)
                 }
-                //Log.d("Connection", "DATA :: ${celsius}")
             }
 
             temps.startSensor()
@@ -350,7 +336,7 @@ class DashboardFragment : Fragment() {
         }
     }
     @SuppressLint("NewApi")
-    private fun stopTemp()
+    private fun stopTemp(forcedSwitchOff: Boolean)
     {
         if (watchSdk != null) {
 
@@ -359,9 +345,11 @@ class DashboardFragment : Fragment() {
             temp.stopSensor()
             temp.stopAndUnsubscribeStream()
 
-            val currentDateTime = LocalDateTime.now()
-            val fileName = "TemperatureData$currentDateTime.csv"
-            (lf as LoggingFragment).writeToFile("Temperature", fileName)
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "TemperatureData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("Temperature", fileName)
+            }
 
             resetVal()
         }
@@ -370,11 +358,9 @@ class DashboardFragment : Fragment() {
     // Reset
     private fun resetVal()
     {
-        runOnUiThread {
-            EDAtxt?.setText("----")
-            temptxt?.setText("----")
-            ECGtxt?.setText("----")
-            PPGtxt?.setText("----")
-        }
+        EDAtxt?.text = "----"
+        temptxt?.text = "----"
+        ECGtxt?.text = "----"
+        PPGtxt?.text = "----"
     }
 }
