@@ -178,15 +178,15 @@ class PPGFragment : Fragment() {
         super.onResume()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        //thread.interrupt()
-        //ppg.stopAndUnsubscribeStream()
-
-        //super.onDestroy()
-        fragman!!
-                .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
-    }
+//    override fun on() {
+//        //super.onDestroy()
+//        //thread.interrupt()
+//        //ppg.stopAndUnsubscribeStream()
+//
+//        //super.onDestroy()
+//        fragman!!
+//                .beginTransaction()
+//                .show(cf as ChartFragment)
+//                .commit()
+//    }
 }

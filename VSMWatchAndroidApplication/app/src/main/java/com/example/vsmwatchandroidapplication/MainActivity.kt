@@ -4,6 +4,7 @@ package com.example.vsmwatchandroidapplication
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         //val navController = findNavController(R.id.nav_host_fragment)
 
         //val bar = setSupportActionBar(findViewById(R.id.my_toolbar))
-
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         navView.setOnNavigationItemSelectedListener(navListener)
         df = DashboardFragment()
         cf = ChartFragment()
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
     private val navListener: BottomNavigationView.OnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
         override fun onNavigationItemSelected(item: MenuItem): Boolean {
-             //By using switch we can easily get
+            //By using switch we can easily get
             // the selected fragment
             // by using there id.
             var selectedFragment: Fragment? = null
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             // It will help to replace the
             // one fragment to other.
             if (selectedFragment != null) {
-                if(item.itemId == R.id.navigation_chart){
+                if (item.itemId == R.id.navigation_chart) {
                     fragman!!
                             .beginTransaction()
                             .hide(cf as ChartFragment)
@@ -116,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                             .show(cf as ChartFragment)
                             .commit()
                 }
-                if(item.itemId == R.id.navigation_dashboard){
+                if (item.itemId == R.id.navigation_dashboard) {
                     fragman!!
                             .beginTransaction()
                             .hide(cf as ChartFragment)
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                             .show(df as DashboardFragment)
                             .commit()
                 }
-                if(item.itemId == R.id.navigation_logging){
+                if (item.itemId == R.id.navigation_logging) {
                     fragman!!
                             .beginTransaction()
                             .hide(cf as ChartFragment)
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                             .show(lf as LoggingFragment)
                             .commit()
                 }
-                if(item.itemId == R.id.navigation_settings){
+                if (item.itemId == R.id.navigation_settings) {
                     fragman!!
                             .beginTransaction()
                             .hide(cf as ChartFragment)
@@ -149,39 +150,8 @@ class MainActivity : AppCompatActivity() {
             }
             return true
         }
-
-//        fun onNavigationItemSelected(item: MenuItem): Boolean {
-//            // By using switch we can easily get
-//            // the selected fragment
-//            // by using there id.
-//            var selectedFragment: Fragment? = null
-//            when (item.getItemId()) {
-//                R.id.algorithm -> selectedFragment = AlgorithmFragment()
-//                R.id.course -> selectedFragment = CourseFragment()
-//                R.id.profile -> selectedFragment = ProfileFragment()
-//            }
-//            // It will help to replace the
-//            // one fragment to other.
-//            supportFragmentManager
-//                    .beginTransaction()
-//                    .replace(R.id.fragment_container, selectedFragment)
-//                    .commit()
-//            return true
-//        }
     }
-    /*    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_settings -> {
-            true
-        }
-        R.id.action_favorite -> {
-            true
-        }
-        else -> {
 
-            super.onOptionsItemSelected(item)
-        }
-
-    }*/
     fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "VSM Warning"
@@ -216,14 +186,6 @@ class MainActivity : AppCompatActivity() {
     fun checkBattery() {
         val batterytxt: TextView = findViewById(R.id.battery_data)
         val batteryImage: ImageView = findViewById(R.id.battery_image)
-//        val batteryStatus: Intent? = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
-//            registerReceiver(null, ifilter)
-//        }
-//        val batteryPct: Float? = batteryStatus?.let { intent ->
-//            val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-//            val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-//            level * 100 / scale.toFloat()
-//        }
         var batteryPct = ScanFragment().readBatter()
         batterytxt.setText(batteryPct.toString() + "%")
         if (batteryPct != null) {

@@ -30,6 +30,7 @@ import java.lang.StringBuilder
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 
 var isLoggingOn: Boolean = false
+var hasLogged: Boolean = false
 
 class LoggingFragment : Fragment() {
 
@@ -48,9 +49,16 @@ class LoggingFragment : Fragment() {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switchTemperature: Switch
 
+    private lateinit var driveButton: Button
+    private lateinit var deleteButton: Button
+
     // Data for PPG, ECG, Temp
     private var ecg_ppg_tempSeconds: Double = 0.0
     private val ecg_ppg_tempData = StringBuilder()
+
+    // Data for EDA
+    private var edaSeconds: Double = 0.0
+    private val edaData = StringBuilder()
 
     @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
@@ -76,57 +84,57 @@ class LoggingFragment : Fragment() {
 
         // Checks if PPG in Dashboard is checked
         switchPPG.setOnCheckedChangeListener { _, _ ->
-            if (ppgOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!ppgOn) {
                 Toast.makeText(context?.applicationContext, "PPG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchPPG.isChecked = false
+            }
+            if (isLoggingOn && ppgOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchPPG.isChecked = true
             }
         }
 
         // Checks if ECG in Dashboard is checked
         switchECG.setOnCheckedChangeListener{ _, _ ->
-            if (ecgOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!ecgOn) {
                 Toast.makeText(context?.applicationContext, "ECG is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchECG.isChecked = false
+            }
+            if (isLoggingOn && ecgOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchECG.isChecked = true
             }
         }
 
         // Checks if EDA in Dashboard is checked
         switchEDA.setOnCheckedChangeListener{ _, _->
-            if (edaOn) {
-                //allowLogging = true
-            }
-            else {
+            if (!edaOn) {
                 Toast.makeText(context?.applicationContext, "EDA is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchEDA.isChecked = false
+            }
+            if (isLoggingOn && edaOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchEDA.isChecked = true
             }
         }
 
         // Checks if Accelerometer in Dashboard is checked
         switchAccelerometer.setOnCheckedChangeListener { _, _ ->
             /*if (dashboardAccelSwitch) {
-                allowLogging = true
-                loggingAccelerometerSwitch = true
-            }
-            else {
                 Toast.makeText(context?.applicationContext, "Accelerometer is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchAccelerometer.isChecked = false
             }*/
         }
 
         // Checks if Temperature in Dashboard is checked
-        switchTemperature.setOnCheckedChangeListener { _, _ ->
-            if (tempOn) {
-                //allowLogging = true
-            }
-            else {
+        switchTemperature.setOnCheckedChangeListener { _, isChecked ->
+            if (!tempOn) {
                 Toast.makeText(context?.applicationContext, "Temperature is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchTemperature.isChecked = false
+            }
+            if (isLoggingOn && tempOn) {
+                Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                switchTemperature.isChecked = true
             }
         }
 
@@ -134,10 +142,15 @@ class LoggingFragment : Fragment() {
             if ( (switchPPG.isChecked || switchECG.isChecked || switchEDA.isChecked || switchTemperature.isChecked) && isLoggingChecked) {
                 Toast.makeText(context?.applicationContext, "Now Logging", Toast.LENGTH_SHORT).show()
                 isLoggingOn = true
+                hasLogged = true
             }
             else if ( (switchPPG.isChecked || switchECG.isChecked || switchEDA.isChecked || switchTemperature.isChecked) && !isLoggingChecked) {
                 Toast.makeText(context?.applicationContext, "Stopped Logging", Toast.LENGTH_SHORT).show()
                 isLoggingOn = false
+                switchPPG.isChecked = false
+                switchECG.isChecked = false
+                switchEDA.isChecked = false
+                switchTemperature.isChecked = false
             }
             else {
                 Toast.makeText(context?.applicationContext, "Select Measurement", Toast.LENGTH_SHORT).show()
@@ -145,22 +158,26 @@ class LoggingFragment : Fragment() {
             }
         }
 
-        val DriveButton: Button = root.findViewById(R.id.DriveButton)
-        DriveButton.setOnClickListener{
-            //export("ECG")
+        driveButton = root.findViewById(R.id.DriveButton)
+        driveButton.setOnClickListener{
             val directory = File(f)
             val files = directory.listFiles()
-
-//            val intent = Intent(Intent.ACTION_GET_CONTENT)
-//            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-//            intent.addCategory(Intent.CATEGORY_OPENABLE)
-//            intent.type = "*/*"
-//            startActivityForResult(intent, REQUEST_CODE)
 
             val intent = Intent(context?.applicationContext, ShareLog::class.java)
             intent.putExtra("files", files)
             startActivity(intent)
         }
+
+        deleteButton = root.findViewById(R.id.logging_deleteBttn)
+        deleteButton.setOnClickListener {
+            val directory = File(f)
+            val files = directory.listFiles()
+
+            val intent = Intent(context?.applicationContext, DeleteLog::class.java)
+            intent.putExtra("files", files)
+            startActivity(intent)
+        }
+
         return root
     }
 
@@ -169,7 +186,15 @@ class LoggingFragment : Fragment() {
         ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
         ecg_ppg_tempData.append(",")
         ecg_ppg_tempData.append(data)
-        ecg_ppg_tempData
+        ecg_ppg_tempData.append('\n')
+    }
+
+    fun recordVital(timestamp: Long, data: Long) {
+        ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
+        ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
+        ecg_ppg_tempData.append(",")
+        ecg_ppg_tempData.append(data)
+        ecg_ppg_tempData.append('\n')
     }
 
     fun recordVital(timestamp: Long, data: Float) {
@@ -177,7 +202,17 @@ class LoggingFragment : Fragment() {
         ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
         ecg_ppg_tempData.append(",")
         ecg_ppg_tempData.append(data)
-        ecg_ppg_tempData
+        ecg_ppg_tempData.append('\n')
+    }
+
+    fun recordVital(timestamp: Long, mag: Float, phase: Float) {
+        edaSeconds += timestamp.toDouble()  / (1e9).toDouble()
+        edaData.append(edaSeconds)
+        edaData.append(",")
+        edaData.append(mag)
+        edaData.append(",")
+        edaData.append(phase)
+        edaData.append('\n')
     }
 
     fun writeToFile(vital: String, dataFile: String) {
@@ -187,35 +222,57 @@ class LoggingFragment : Fragment() {
                 val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
                 out.write(ecg_ppg_tempData.toString().toByteArray())
                 out.close()
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
             }
             "ECG" -> {
                 val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
                 out.write(ecg_ppg_tempData.toString().toByteArray())
                 out.close()
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
             }
             "EDA" -> {
-                /*val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()*/
+                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                out.write(edaData.toString().toByteArray())
+                out.close()
+
+                // Reset data
+                edaData.clear()
+                edaSeconds = 0.0
+                hasLogged = false
             }
             "Accelerometer" -> {
                 /*val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
                 out.write(ecg_ppg_tempData.toString().toByteArray())
                 out.close()*/
+
+                // Reset data
+                /*ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0*/
+                //hasLogged = false
             }
             "Temperature" -> {
                 val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
                 out.write(ecg_ppg_tempData.toString().toByteArray())
                 out.close()
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
             }
         }
     }
 
     @SuppressLint("NewApi")
     fun export(dataFile: String) {
-        //val currentDateTime = LocalDateTime.now()
-        //val fileName: String = dataFile + "Data_" + currentDateTime + ".csv"
-
         try {
             val context: Context = requireActivity().applicationContext
             val fileLocation = File(context.filesDir, dataFile)
@@ -232,11 +289,15 @@ class LoggingFragment : Fragment() {
                 context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            //fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data")
-            //startActivity(Intent.createChooser(fileIntent, "Send mail"))
             startActivity(chooser)
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun delete(dataFile: String) {
+        val context: Context = requireActivity().applicationContext
+        val file = File(context.filesDir, dataFile)
+        file.delete()
     }
 }

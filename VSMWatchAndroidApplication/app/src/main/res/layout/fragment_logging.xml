@@ -231,14 +231,23 @@
 
     <Button
         android:id="@+id/DriveButton"
-        android:layout_width="418dp"
+        android:layout_width="0dp"
         android:layout_height="55dp"
-        android:text="Share Logged Data"
+        android:layout_marginTop="100dp"
+        android:text="@string/logging_Share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logging_Temperature" />
+
+    <Button
+        android:id="@+id/logging_deleteBttn"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:text="@string/logging_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.934" />
+        app:layout_constraintTop_toBottomOf="@+id/DriveButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
