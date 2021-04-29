@@ -127,7 +127,7 @@ class LoggingFragment : Fragment() {
         }
 
         // Checks if Temperature in Dashboard is checked
-        switchTemperature.setOnCheckedChangeListener { _, isChecked ->
+        switchTemperature.setOnCheckedChangeListener { _, _ ->
             if (!tempOn) {
                 Toast.makeText(context?.applicationContext, "Temperature is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
                 switchTemperature.isChecked = false
@@ -141,6 +141,39 @@ class LoggingFragment : Fragment() {
         switchStartLog.setOnCheckedChangeListener { _, isLoggingChecked ->
             if ( (switchPPG.isChecked || switchECG.isChecked || switchEDA.isChecked || switchTemperature.isChecked) && isLoggingChecked) {
                 Toast.makeText(context?.applicationContext, "Now Logging", Toast.LENGTH_SHORT).show()
+
+                if (switchPPG.isChecked) {
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
+                    ecg_ppg_tempData.append("PPG")
+                    ecg_ppg_tempData.append('\n')
+                }
+                if (switchECG.isChecked) {
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
+                    ecg_ppg_tempData.append("ECG")
+                    ecg_ppg_tempData.append('\n')
+                }
+                if (switchEDA.isChecked) {
+                    edaData.append("Time (s)")
+                    edaData.append(",")
+                    edaData.append("Real Data")
+                    edaData.append(",")
+                    edaData.append(",")
+                    edaData.append("Imaginary Data")
+                    edaData.append(",")
+                    edaData.append("Magnitude")
+                    edaData.append(",")
+                    edaData.append("Phase")
+                    edaData.append('\n')
+                }
+                if (switchTemperature.isChecked) {
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
+                    ecg_ppg_tempData.append("Temperature (C)")
+                    ecg_ppg_tempData.append('\n')
+                }
+
                 isLoggingOn = true
                 hasLogged = true
             }
@@ -205,9 +238,12 @@ class LoggingFragment : Fragment() {
         ecg_ppg_tempData.append('\n')
     }
 
-    fun recordVital(timestamp: Long, mag: Float, phase: Float) {
+    fun recordVital(timestamp: Long, real: Int, imaginary: Int, mag: Float, phase: Float) {
         edaSeconds += timestamp.toDouble()  / (1e9).toDouble()
         edaData.append(edaSeconds)
+        edaData.append(real)
+        edaData.append(",")
+        edaData.append(imaginary)
         edaData.append(",")
         edaData.append(mag)
         edaData.append(",")
@@ -271,7 +307,7 @@ class LoggingFragment : Fragment() {
         }
     }
 
-    @SuppressLint("NewApi")
+    @SuppressLint("NewApi", "QueryPermissionsNeeded")
     fun export(dataFile: String) {
         try {
             val context: Context = requireActivity().applicationContext
@@ -283,7 +319,7 @@ class LoggingFragment : Fragment() {
             fileIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             fileIntent.putExtra(Intent.EXTRA_STREAM, path)
             val chooser = Intent.createChooser(fileIntent, "Share File")
-            val resInfoList: List<ResolveInfo> = context?.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+            val resInfoList: List<ResolveInfo> = context.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
             for (resolveInfo in resInfoList) {
                 val packageName = resolveInfo.activityInfo.packageName
                 context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
