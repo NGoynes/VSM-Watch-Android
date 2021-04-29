@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
+import com.analog.study_watch_sdk.core.enums.EDADFTWindow
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
-import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
+import com.analog.study_watch_sdk.core.enums.ScaleResistor
 import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
@@ -214,11 +214,11 @@ class DashboardFragment : Fragment() {
     private fun readPPG() {
         if (watchSdk != null) {
             ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
-            ppg.setSyncPPGCallback{PPGDataPacket ->
+            ppg.setSyncPPGCallback{ PPGDataPacket ->
                 (cf as ChartFragment).addEntry(PPGDataPacket)
-                (ppgF as PPGFragment).addEntry(PPGDataPacket)
-                (cf as ChartFragment).addEntryADXL(PPGDataPacket)
-                (adxlF as ADXLFragment).addEntry(PPGDataPacket)
+                //(ppgF as PPGFragment).addEntry(PPGDataPacket)
+                //(cf as ChartFragment).addEntryADXL(PPGDataPacket)
+                //(adxlF as ADXLFragment).addEntry(PPGDataPacket)
 
                 runOnUiThread {
                     PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
@@ -301,13 +301,19 @@ class DashboardFragment : Fragment() {
     private fun readEDA() {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
-            println(eda.readDeviceConfigurationBlock())
+            eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
+            eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
+//            val filepath: URI = URI.create("android.resource://com.example.vsmwatchandroidapplication/raw/eda_dcb")
+//            val myObj = File(filepath)
+//            eda.writeDeviceConfigurationBlockFromFile(myObj)
+//            eda.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x1E)))
+//            eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x0, 0x1E)))
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
                     (cf as ChartFragment).addEntryMag(EDADataPacket)
                     (cf as ChartFragment).addEntryPhase(EDADataPacket)
-                    (edaMagF as EDAMagFragment).addEntry(EDADataPacket)
-                    (edaPhaseF as EDAPhaseFragment).addEntry(EDADataPacket)
+                    (edaMagF as EDAMagFragment).addEntryMag(EDADataPacket)
+                    (edaPhaseF as EDAPhaseFragment).addEntryPhase(EDADataPacket)
 
                     if (isLoggingOn && edaOn) {
                         for (i in EDADataPacket.payload.streamData) {

@@ -26,8 +26,8 @@ class ECGFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
-    private var prevX: Double = 0.0
     private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -111,31 +111,35 @@ class ECGFragment : Fragment() {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
                 set = createSet()
+                set.setDrawFilled(false)
                 data.addDataSet(set)
-            }
-
-            if (set.entryCount > maxEntry) {
-                for (i in ECGdata.payload.streamData.indices - 1) {
-                    set?.removeFirst()
-                }
             }
 
             for (i in ECGdata.payload.streamData) {
                 if (i != null) {
-                    prevX += i.timestamp.toDouble() / (1e9).toDouble()
-                    data.addEntry(Entry(prevX.toFloat(), i.ecgData.toFloat()), 0)
+                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ecgData.toFloat()), 0)
                 }
             }
+//            data.notifyDataChanged()
+//
+//            // let the chart know it's data has changed
+//            ecgChart.notifyDataSetChanged()
+//
+//            // limit the number of visible entries
+//            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+//
+//            // move to the latest entry
+//            ecgChart.moveViewToX(data.entryCount.toFloat())
+
+            if (set.entryCount > maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                removalCounter++
+            }
+
             data.notifyDataChanged()
-
-            // let the chart know it's data has changed
             ecgChart.notifyDataSetChanged()
-
-            // limit the number of visible entries
-            ecgChart.setVisibleXRangeMaximum(150F)
-
-            // move to the latest entry
-            ecgChart.moveViewToX(data.entryCount.toFloat())
+            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ecgChart.invalidate()
         }
     }
 

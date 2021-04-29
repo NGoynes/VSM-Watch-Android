@@ -28,8 +28,8 @@ class EDAMagFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private lateinit var edaMagChart: LineChart
     private var thread: Thread = Thread()
-    private var prevX = 0
     private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -109,7 +109,7 @@ class EDAMagFragment : Fragment() {
         return set
     }
 
-    fun addEntry(EDAdata: EDADataPacket) {
+    fun addEntryMag(EDAdata: EDADataPacket) {
         val data: LineData = edaMagChart.data
 
         if (data != null) {
@@ -119,28 +119,32 @@ class EDAMagFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            if (set.entryCount > maxEntry) {
-                for (i in EDAdata.payload.streamData.indices - 1) {
-                    set?.removeFirst()
-                }
-            }
-
             for (i in EDAdata.payload.streamData) {
                 if (i != null) {
                     val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                    data.addEntry(Entry(prevX++.toFloat(), mag), 0)
+                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), mag), 0)
                 }
             }
+//            data.notifyDataChanged()
+//
+//            // let the chart know it's data has changed
+//            edaMagChart.notifyDataSetChanged()
+//
+//            // limit the number of visible entries
+//            edaMagChart.setVisibleXRangeMaximum(100F)
+//
+//            // move to the latest entry
+//            edaMagChart.moveViewToX(data.entryCount.toFloat())
+
+            if (set.entryCount > maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                removalCounter++
+            }
+
             data.notifyDataChanged()
-
-            // let the chart know it's data has changed
             edaMagChart.notifyDataSetChanged()
-
-            // limit the number of visible entries
-            edaMagChart.setVisibleXRangeMaximum(150F)
-
-            // move to the latest entry
-            edaMagChart.moveViewToX(data.entryCount.toFloat())
+            edaMagChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            edaMagChart.invalidate()
         }
     }
 

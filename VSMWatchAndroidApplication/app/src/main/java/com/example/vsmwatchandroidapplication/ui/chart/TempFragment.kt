@@ -26,8 +26,8 @@ class TempFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var tempChart: LineChart
-    private var prevX = 0
     private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -114,24 +114,31 @@ class TempFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            if (set.entryCount > maxEntry) {
-                set?.removeFirst()
-            }
 
             if (TempData.payload != null) {
-                data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat()/10), 0)
+                data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+            }
+
+//            data.notifyDataChanged()
+//
+//            // let the chart know it's data has changed
+//            tempChart.notifyDataSetChanged()
+//
+//            // limit the number of visible entries
+//            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+//
+//            // move to the latest entry
+//            tempChart.moveViewToX(data.entryCount.toFloat())
+
+            if (set.entryCount > maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                removalCounter++
             }
 
             data.notifyDataChanged()
-
-            // let the chart know it's data has changed
             tempChart.notifyDataSetChanged()
-
-            // limit the number of visible entries
-            tempChart.setVisibleXRangeMaximum(150F)
-
-            // move to the latest entry
-            tempChart.moveViewToX(data.entryCount.toFloat())
+            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            tempChart.invalidate()
         }
     }
 

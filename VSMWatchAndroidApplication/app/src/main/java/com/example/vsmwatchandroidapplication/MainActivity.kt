@@ -201,17 +201,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    /*private fun readHealthData() {
-        //read ppg
-        var file: InputStream = resources.openRawResource(R.raw.adpd)
-        var rows: List<List<String>> = csvReader().readAll(file)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            ppgSeries1.appendData(DataPoint(time, rows[i][2].toDouble()), true, rows.size)
-            ppgSeries2.appendData(DataPoint(time, rows[i][4].toDouble()), true, rows.size)
-        }
-        latPPGSeries1 = rows[rows.size - 1][2]
-        latPPGSeries2 = rows[rows.size - 1][4]
 
     override fun onBackPressed(){
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

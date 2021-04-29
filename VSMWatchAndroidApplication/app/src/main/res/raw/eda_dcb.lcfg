@@ -1,0 +1,5 @@
+#EDA_DCB_LCFG
+<EDA_DCB>
+00 001E	# for checking DCB, ODR here is 8 Hz to differentiate DCB value from f/w value . Default f/w EDA ODR = 4 Hz
+</EDA_DCB>
+

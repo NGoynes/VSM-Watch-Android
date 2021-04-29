@@ -21,14 +21,16 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import kotlin.math.atan
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class EDAPhaseFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
-    private var prevX = 0
     private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -108,7 +110,7 @@ class EDAPhaseFragment : Fragment() {
         return set
     }
 
-    fun addEntry(EDAdata: EDADataPacket) {
+    fun addEntryPhase(EDAdata: EDADataPacket) {
         val data: LineData = edaPhaseChart.data
 
         if (data != null) {
@@ -118,30 +120,34 @@ class EDAPhaseFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            if (set.entryCount > maxEntry) {
-                for (i in EDAdata.payload.streamData.indices - 1) {
-                    set?.removeFirst()
-                }
-            }
-
             for (i in EDAdata.payload.streamData) {
                 if (i != null) {
                     if (i.realData != 0) {
                         val phase = atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
-                        data.addEntry(Entry(prevX++.toFloat(), phase), 0)
+                        data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), phase), 0)
                     }
                 }
             }
+//            data.notifyDataChanged()
+//
+//            // let the chart know it's data has changed
+//            edaPhaseChart.notifyDataSetChanged()
+//
+//            // limit the number of visible entries
+//            edaPhaseChart.setVisibleXRangeMaximum(100F)
+//
+//            // move to the latest entry
+//            edaPhaseChart.moveViewToX(data.entryCount.toFloat())
+
+            if (set.entryCount > maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                removalCounter++
+            }
+
             data.notifyDataChanged()
-
-            // let the chart know it's data has changed
             edaPhaseChart.notifyDataSetChanged()
-
-            // limit the number of visible entries
-            edaPhaseChart.setVisibleXRangeMaximum(150F)
-
-            // move to the latest entry
-            edaPhaseChart.moveViewToX(data.entryCount.toFloat())
+            edaPhaseChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            edaPhaseChart.invalidate()
         }
     }
 

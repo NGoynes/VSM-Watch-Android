@@ -26,8 +26,8 @@ class PPGFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var ppgChart: LineChart
-    private var prevX = 0
     private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -119,51 +119,34 @@ class PPGFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            if (set.entryCount > maxEntry) {
-                for (i in PPGdata.payload.streamData.indices - 1) {
-                    set?.removeFirst()
-                }
-            }
-
             for (i in PPGdata.payload.streamData) {
                 if (i != null) {
-                    data.addEntry(Entry(prevX++.toFloat(), i.ppgData.toFloat()), 0)
+                    println(i.ppgData)
+                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ppgData.toFloat()), 0)
                 }
             }
+
+            if (set.entryCount > maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                removalCounter++
+            }
+
+//            data.notifyDataChanged()
+//
+//            // let the chart know it's data has changed
+//            ppgChart.notifyDataSetChanged()
+//
+//            // limit the number of visible entries
+//            ppgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+//
+//            // move to the latest entry
+//            ppgChart.moveViewToX(data.entryCount.toFloat())
+
             data.notifyDataChanged()
-
-            // let the chart know it's data has changed
             ppgChart.notifyDataSetChanged()
-
-            // limit the number of visible entries
-            ppgChart.setVisibleXRangeMaximum(150F)
-
-            // move to the latest entry
-            ppgChart.moveViewToX(data.entryCount.toFloat())
+            ppgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ppgChart.invalidate()
         }
-    }
-
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-
-        val ppg = (df as DashboardFragment).ppg
-        ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
-        ppg.setSyncPPGCallback { PPGdata ->
-            runOnUiThread {
-                addEntry(PPGdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        //ppg.startSensor()
-        ppg.subscribeStream()
     }
 
     override fun onPause() {
@@ -177,16 +160,4 @@ class PPGFragment : Fragment() {
     override fun onResume() {
         super.onResume()
     }
-
-//    override fun on() {
-//        //super.onDestroy()
-//        //thread.interrupt()
-//        //ppg.stopAndUnsubscribeStream()
-//
-//        //super.onDestroy()
-//        fragman!!
-//                .beginTransaction()
-//                .show(cf as ChartFragment)
-//                .commit()
-//    }
 }

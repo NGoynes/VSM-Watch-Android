@@ -7,7 +7,7 @@
     <string name="graph_amplitude">Amplitude</string>
     <string name="graph_magnitude">Magnitude</string>
     <string name="graph_phase">Phase</string>
-    <string name="graph_seconds">Seconds</string>
+    <string name="graph_samples">Samples</string>
     <string name="graph_ppg">PPG Data Stream</string>
     <string name="graph_ecg">ECG Data Stream</string>
     <string name="graph_edaMag">EDA Mag. Data Stream</string>
