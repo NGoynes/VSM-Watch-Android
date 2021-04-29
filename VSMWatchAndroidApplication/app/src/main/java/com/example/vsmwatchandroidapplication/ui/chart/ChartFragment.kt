@@ -1,16 +1,14 @@
         package com.example.vsmwatchandroidapplication.ui.chart
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.*
 import com.analog.study_watch_sdk.core.packets.stream.*
@@ -23,14 +21,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.utils.EntryXComparator
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import kotlinx.android.synthetic.main.fragment_chart.*
-import org.jetbrains.anko.support.v4.runOnUiThread
-import java.util.*
-import kotlin.collections.ArrayList
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -41,6 +32,7 @@ class ChartFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private var prevX = 0
+    private var maxEntry = 300
 
     private lateinit var ecgChart: LineChart
     private lateinit var accChart: LineChart
@@ -384,11 +376,12 @@ class ChartFragment : Fragment() {
         //create click listeners
         ppgChart.setOnClickListener{
             if (ppgOn) {
-                //val intent: Intent = Intent(context?.applicationContext, PPGActivity::class.java)
-                //startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 fragman!!
                         .beginTransaction()
-                        .show(ppgF as PPGActivity)
+                        .show(ppgF as PPGFragment)
                         .hide(cf as ChartFragment)
                         .commit()
             }
@@ -396,36 +389,66 @@ class ChartFragment : Fragment() {
 
         edaMagChart.setOnClickListener{
             if(edaOn) {
-                val intent: Intent = Intent(context?.applicationContext, EDAMagActivity::class.java)
-                startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                fragman!!
+                        .beginTransaction()
+                        .show(edaMagF as EDAMagFragment)
+                        .hide(cf as ChartFragment)
+                        .commit()
             }
         }
 
         edaPhaseChart.setOnClickListener{
             if(edaOn) {
-                val intent: Intent = Intent(context?.applicationContext, EDAPhaseActivity::class.java)
-                startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                fragman!!
+                        .beginTransaction()
+                        .show(edaPhaseF as EDAPhaseFragment)
+                        .hide(cf as ChartFragment)
+                        .commit()
             }
         }
 
         ecgChart.setOnClickListener {
             if(ecgOn) {
-                val intent: Intent = Intent(context?.applicationContext, ECGActivity::class.java)
-                startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                fragman!!
+                        .beginTransaction()
+                        .show(ecgF as ECGFragment)
+                        .hide(cf as ChartFragment)
+                        .commit()
             }
         }
 
         tempChart.setOnClickListener{
             if (tempOn) {
-                val intent: Intent = Intent(context?.applicationContext, TempActivity::class.java)
-                startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                fragman!!
+                        .beginTransaction()
+                        .show(tempF as TempFragment)
+                        .hide(cf as ChartFragment)
+                        .commit()
             }
         }
 
         accChart.setOnClickListener{
             if(accOn) {
-                val intent: Intent = Intent(context?.applicationContext, AccActivity::class.java)
-                startActivity(intent)
+                (activity as MainActivity).nav_view.isVisible = false
+                (activity as MainActivity).my_toolbar.isVisible = false
+                (activity as MainActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                fragman!!
+                        .beginTransaction()
+                        .show(adxlF as ADXLFragment)
+                        .hide(cf as ChartFragment)
+                        .commit()
             }
         }
         return root
@@ -497,6 +520,14 @@ class ChartFragment : Fragment() {
                 data.addDataSet(set)
             }
 
+            if (set.entryCount > maxEntry) {
+                println("here")
+                for (i in ECGdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
+                println(set.xMin)
+            }
+
             for (i in ECGdata.payload.streamData) {
                 if (i != null) {
                     data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
@@ -515,7 +546,7 @@ class ChartFragment : Fragment() {
         }
     }
 
-    private fun addEntry(ACCdata: ADXLDataPacket) {
+    fun addEntryADXL(ACCdata: SYNCPPGDataPacket) {
         var data: LineData = accChart.data
 
         if (data != null) {
@@ -532,25 +563,31 @@ class ChartFragment : Fragment() {
                 data.addDataSet(setZ)
             }
 
+            if (setX.entryCount > maxEntry) {
+                for (i in ACCdata.payload.streamData.indices - 1) {
+                    setX?.removeFirst()
+                }
+            }
+
             for (i in ACCdata.payload.streamData) {
                 if (i != null) {
-                    if (i.x.toFloat() > 65000) {
-                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), 65000 - i.x.toFloat()))
+                    if (i.adxlX.toFloat() > 65000) {
+                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlX.toFloat()))
                     }
                     else {
-                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), i.x.toFloat()))
+                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), i.adxlX.toFloat()))
                     }
-                    if (i.y.toFloat() > 65000) {
-                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), 65000 - i.y.toFloat()))
-                    }
-                    else {
-                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), i.y.toFloat()))
-                    }
-                    if (i.z.toFloat() > 65000) {
-                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), 65000 - i.z.toFloat()))
+                    if (i.adxlY.toFloat() > 65000) {
+                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlY.toFloat()))
                     }
                     else {
-                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), i.z.toFloat()))
+                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), i.adxlY.toFloat()))
+                    }
+                    if (i.adxlZ.toFloat() > 65000) {
+                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlZ.toFloat()))
+                    }
+                    else {
+                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), i.adxlZ.toFloat()))
                     }
                 }
             }
@@ -576,6 +613,12 @@ class ChartFragment : Fragment() {
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
+            }
+
+            if (set.entryCount > maxEntry) {
+                for (i in EDAdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
             }
 
             for (i in EDAdata.payload.streamData) {
@@ -607,10 +650,16 @@ class ChartFragment : Fragment() {
                 data.addDataSet(set)
             }
 
+            if (set.entryCount > maxEntry) {
+                for (i in EDAdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
+            }
+
             for (i in EDAdata.payload.streamData) {
                 if (i != null) {
                     if (i.realData != 0) {
-                        val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
+                        val phase = atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
                         data.addEntry(Entry(prevX++.toFloat(), phase), 0)
                     }
                 }
@@ -636,6 +685,12 @@ class ChartFragment : Fragment() {
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
+            }
+
+            if (set.entryCount > maxEntry) {
+                for (i in PPGdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
             }
 
             for (i in PPGdata.payload.streamData) {
@@ -666,8 +721,14 @@ class ChartFragment : Fragment() {
                 data.addDataSet(set)
             }
 
+            if (set.entryCount > maxEntry) {
+                set?.removeFirst()
+            }
+
             if (TempData.payload != null) {
-                data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat()), 0)
+                println(TempData.payload)
+                println(TempData.payload.temperature1.toFloat()/10)
+                data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat()/10), 0)
             }
 
             data.notifyDataChanged()
@@ -680,60 +741,6 @@ class ChartFragment : Fragment() {
 
             // move to the latest entry
             tempChart.moveViewToX(data.entryCount.toFloat())
-        }
-    }
-
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-        if(ecgOn == true) {
-            ecg.setCallback { ECGdata ->
-                runOnUiThread {
-                    addEntry(ECGdata)
-                }
-                try {
-                    Thread.sleep(10)
-                } catch (e: InterruptedException) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace()
-                }
-            }
-            ecg.startSensor()
-            ecg.subscribeStream()
-
-            acc.setCallback { ACCdata ->
-                runOnUiThread {
-                    addEntry(ACCdata)
-                }
-                try {
-                    Thread.sleep(10)
-                } catch (e: InterruptedException) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace()
-                }
-            }
-
-            /*
-        eda.setCallback { EDAdata ->
-            runOnUiThread {
-                addEntryMag(EDAdata)
-                addEntryPhase(EDAdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }*/
-
-            //eda.startSensor()
-            //eda.subscribeStream()
-
-            acc.startSensor()
-            acc.subscribeStream()
-
         }
     }
 
@@ -754,9 +761,11 @@ class ChartFragment : Fragment() {
 
     override fun onDestroy() {
         thread.interrupt()
-        //eda.stopAndUnsubscribeStream()
+        eda.stopAndUnsubscribeStream()
         acc.stopAndUnsubscribeStream()
         ecg.stopAndUnsubscribeStream()
+        ppg.stopAndUnsubscribeStream()
+        temp.stopAndUnsubscribeStream()
         super.onDestroy()
     }
 }

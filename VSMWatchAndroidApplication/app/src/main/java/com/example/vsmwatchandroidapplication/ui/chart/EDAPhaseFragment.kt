@@ -2,7 +2,12 @@ package com.example.vsmwatchandroidapplication.ui.chart
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.EDAApplication
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.example.vsmwatchandroidapplication.R
@@ -15,38 +20,42 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.atan
 
-class EDAMagActivity : AppCompatActivity() {
+class EDAPhaseFragment : Fragment() {
 
-    private lateinit var edaMagChart: LineChart
+    private lateinit var chartViewModel: ChartViewModel
+    private lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
     private var prevX = 0
-    private val eda: EDAApplication = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
+    private var maxEntry = 300
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_eda_mag)
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_eda_phase, container, false)
 
-        edaMagChart = findViewById((R.id.edaMagChartInd))
+        edaPhaseChart = root.findViewById((R.id.edaPhaseChartInd))
 
         // enable description text
-        edaMagChart.description.isEnabled = true
-        edaMagChart.description.text = "EDA Mag. Sensor Stream"
-        edaMagChart.description.textColor = Color.WHITE
+        edaPhaseChart.description.isEnabled = true
+        edaPhaseChart.description.text = "EDA Phase Sensor Stream"
+        edaPhaseChart.description.textColor = Color.WHITE
 
         // enable touch gestures
-        edaMagChart.setTouchEnabled(true)
+        edaPhaseChart.setTouchEnabled(true)
 
         // enable scaling and dragging
-        edaMagChart.isDragEnabled = true
-        edaMagChart.setScaleEnabled(true)
-        edaMagChart.setDrawGridBackground(false)
-        edaMagChart.isAutoScaleMinMaxEnabled = true
+        edaPhaseChart.isDragEnabled = true
+        edaPhaseChart.setScaleEnabled(true)
+        edaPhaseChart.setDrawGridBackground(false)
+        edaPhaseChart.isAutoScaleMinMaxEnabled = true
 
         // if disabled, scaling can be done on x- and y-axis separately
-        edaMagChart.setPinchZoom(true)
+        edaPhaseChart.setPinchZoom(true)
 
         // set an alternative background color
         //ecgChart.setBackgroundColor(Color.WHITE)
@@ -55,36 +64,36 @@ class EDAMagActivity : AppCompatActivity() {
         data.setValueTextColor(Color.WHITE)
 
         // add empty data
-        edaMagChart.data = data
+        edaPhaseChart.data = data
 
         // get the legend (only possible after setting data)
-        val l: Legend = edaMagChart.legend
+        val l: Legend = edaPhaseChart.legend
 
         // modify the legend ...
         l.form = Legend.LegendForm.LINE
         l.textColor = Color.WHITE
         l.isEnabled = false
 
-        val xl: XAxis = edaMagChart.xAxis
+        val xl: XAxis = edaPhaseChart.xAxis
         xl.textColor = Color.WHITE
         xl.setDrawGridLines(false)
         xl.setAvoidFirstLastClipping(true)
         xl.isEnabled = true
 
-        val leftAxis: YAxis = edaMagChart.axisLeft
+        val leftAxis: YAxis = edaPhaseChart.axisLeft
         leftAxis.textColor = Color.WHITE
         leftAxis.setDrawGridLines(false)
 
-        val rightAxis: YAxis = edaMagChart.axisRight
+        val rightAxis: YAxis = edaPhaseChart.axisRight
         rightAxis.isEnabled = false
 
-        edaMagChart.setDrawBorders(true)
+        edaPhaseChart.setDrawBorders(true)
 
-        feedMultiple()
+        return root
     }
 
     private fun createSet(): LineDataSet? {
-        val set = LineDataSet(null, "EDA Mag Data Stream")
+        val set = LineDataSet(null, "EDA Phase Data Stream")
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
         set.color = Color.rgb(255, 51, 0)
@@ -99,8 +108,8 @@ class EDAMagActivity : AppCompatActivity() {
         return set
     }
 
-    private fun addEntry(EDAdata: EDADataPacket) {
-        val data: LineData = edaMagChart.data
+    fun addEntry(EDAdata: EDADataPacket) {
+        val data: LineData = edaPhaseChart.data
 
         if (data != null) {
             var set = data.getDataSetByIndex(0)
@@ -109,49 +118,35 @@ class EDAMagActivity : AppCompatActivity() {
                 data.addDataSet(set)
             }
 
+            if (set.entryCount > maxEntry) {
+                for (i in EDAdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
+            }
+
             for (i in EDAdata.payload.streamData) {
                 if (i != null) {
-                    val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                    data.addEntry(Entry(prevX++.toFloat(), mag), 0)
+                    if (i.realData != 0) {
+                        val phase = atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
+                        data.addEntry(Entry(prevX++.toFloat(), phase), 0)
+                    }
                 }
             }
             data.notifyDataChanged()
 
             // let the chart know it's data has changed
-            edaMagChart.notifyDataSetChanged()
+            edaPhaseChart.notifyDataSetChanged()
 
             // limit the number of visible entries
-            edaMagChart.setVisibleXRangeMaximum(150F)
+            edaPhaseChart.setVisibleXRangeMaximum(150F)
 
             // move to the latest entry
-            edaMagChart.moveViewToX(data.entryCount.toFloat())
+            edaPhaseChart.moveViewToX(data.entryCount.toFloat())
         }
-    }
-
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-
-        eda.setCallback { EDAdata ->
-            runOnUiThread {
-                addEntry(EDAdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        eda.startSensor()
-        eda.subscribeStream()
     }
 
     override fun onPause() {
         super.onPause()
-        eda.stopAndUnsubscribeStream()
         if (thread != null) {
             thread.interrupt()
         }
@@ -159,14 +154,5 @@ class EDAMagActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        eda.stopAndUnsubscribeStream()
-        fragman!!
-                .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
     }
 }

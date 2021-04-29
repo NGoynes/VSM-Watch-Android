@@ -2,14 +2,14 @@ package com.example.vsmwatchandroidapplication.ui.chart
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.analog.study_watch_sdk.application.ADXLApplication
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.core.packets.stream.ADXLDataPacket
-import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
+import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.fragman
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -17,24 +17,24 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import java.io.InputStream
-import java.lang.Double
 
-class AccActivity : AppCompatActivity() {
+class ADXLFragment : Fragment() {
 
+    private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var accChart: LineChart
     private var prevX = 0
-    private val acc: ADXLApplication = com.example.vsmwatchandroidapplication.watchSdk!!.adxlApplication
+    private var maxEntry = 300
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_acc)
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_adxl, container, false)
 
-        accChart = findViewById((R.id.accChartInd))
+        accChart = root.findViewById((R.id.accChartInd))
 
         // enable description text
         accChart.description.isEnabled = true
@@ -84,6 +84,8 @@ class AccActivity : AppCompatActivity() {
         rightAxis.isEnabled = false
 
         accChart.setDrawBorders(true)
+
+        return root
     }
 
     private fun createSetX(): LineDataSet? {
@@ -125,7 +127,7 @@ class AccActivity : AppCompatActivity() {
         return set
     }
 
-    private fun addEntry(ACCdata: ADXLDataPacket) {
+    fun addEntry(ACCdata: SYNCPPGDataPacket) {
         var data: LineData = accChart.data
 
         if (data != null) {
@@ -142,25 +144,31 @@ class AccActivity : AppCompatActivity() {
                 data.addDataSet(setZ)
             }
 
+            if (setX.entryCount > maxEntry) {
+                for (i in ACCdata.payload.streamData.indices - 1) {
+                    setX?.removeFirst()
+                }
+            }
+
             for (i in ACCdata.payload.streamData) {
                 if (i != null) {
-                    if (i.x.toFloat() > 65000) {
-                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), 65000 - i.x.toFloat()))
+                    if (i.adxlX.toFloat() > 65000) {
+                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlX.toFloat()))
                     }
                     else {
-                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), i.x.toFloat()))
+                        data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), i.adxlX.toFloat()))
                     }
-                    if (i.y.toFloat() > 65000) {
-                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), 65000 - i.y.toFloat()))
-                    }
-                    else {
-                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), i.y.toFloat()))
-                    }
-                    if (i.z.toFloat() > 65000) {
-                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), 65000 - i.z.toFloat()))
+                    if (i.adxlY.toFloat() > 65000) {
+                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlY.toFloat()))
                     }
                     else {
-                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), i.z.toFloat()))
+                        data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), i.adxlY.toFloat()))
+                    }
+                    if (i.adxlZ.toFloat() > 65000) {
+                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlZ.toFloat()))
+                    }
+                    else {
+                        data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), i.adxlZ.toFloat()))
                     }
                 }
             }
@@ -175,31 +183,7 @@ class AccActivity : AppCompatActivity() {
 
             // move to the latest entry
             accChart.moveViewToX(data.entryCount.toFloat())
-            accChart.moveViewTo(data.entryCount.toFloat(), data.yMax, YAxis.AxisDependency.LEFT)
         }
-    }
-
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-
-        acc.setCallback { ACCdata ->
-
-            //Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
-            runOnUiThread {
-                addEntry(ACCdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        acc.startSensor()
-        acc.subscribeStream()
     }
 
     override fun onPause() {
@@ -211,14 +195,5 @@ class AccActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        acc.stopAndUnsubscribeStream()
-        fragman!!
-                .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
     }
 }

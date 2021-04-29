@@ -2,24 +2,25 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/background_dark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.chart.TempActivity">
+    tools:context=".ui.chart.PPGFragment">
 
     <TextView
-        android:id="@+id/tempCurrInd"
+        android:id="@+id/ppgDataInd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="820dp"
         android:rotation="-90"
-        android:text="@string/graph_tempCurr"
+        android:text="@string/graph_magnitude"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tempSecondsInd"
+        android:id="@+id/ppgSecondsInd"
         android:layout_width="59dp"
         android:layout_height="17dp"
         android:rotation="0"
@@ -27,11 +28,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tempChartInd"
+        app:layout_constraintTop_toTopOf="@+id/ppgChartInd"
         app:layout_constraintVertical_bias="0.958" />
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/tempChartInd"
+        android:id="@+id/ppgChartInd"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="32dp"

@@ -1,21 +1,16 @@
 package com.example.vsmwatchandroidapplication.ui.chart
 
-import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
 import com.example.vsmwatchandroidapplication.df
-import com.example.vsmwatchandroidapplication.fragman
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -26,12 +21,13 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import org.jetbrains.anko.support.v4.runOnUiThread
 
-class PPGActivity : Fragment() {
+class PPGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var ppgChart: LineChart
     private var prevX = 0
+    private var maxEntry = 300
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -40,7 +36,7 @@ class PPGActivity : Fragment() {
     ): View? {
         chartViewModel =
                 ViewModelProvider(this).get(ChartViewModel::class.java)
-        val root = inflater.inflate(R.layout.activity_ppg, container, false)
+        val root = inflater.inflate(R.layout.fragment_ppg, container, false)
 
 
 
@@ -121,6 +117,12 @@ class PPGActivity : Fragment() {
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
+            }
+
+            if (set.entryCount > maxEntry) {
+                for (i in PPGdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
             }
 
             for (i in PPGdata.payload.streamData) {

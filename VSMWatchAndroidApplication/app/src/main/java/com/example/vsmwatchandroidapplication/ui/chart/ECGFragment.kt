@@ -2,8 +2,12 @@ package com.example.vsmwatchandroidapplication.ui.chart
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.example.vsmwatchandroidapplication.R
@@ -16,22 +20,24 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import java.sql.Time
 
-class ECGActivity : AppCompatActivity() {
+class ECGFragment : Fragment() {
 
+    private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
     private var prevX: Double = 0.0
-    private val ecg: ECGApplication = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
+    private var maxEntry = 300
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ecg)
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_ecg, container, false)
 
-        ecgChart= findViewById((R.id.ecgChartInd))
+        ecgChart= root.findViewById((R.id.ecgChartInd))
 
         // enable description text
         ecgChart.description.isEnabled = true
@@ -81,8 +87,8 @@ class ECGActivity : AppCompatActivity() {
         rightAxis.isEnabled = false
 
         ecgChart.setDrawBorders(true)
-        feedMultiple()
 
+        return root
     }
 
     private fun createSet(): LineDataSet? {
@@ -98,7 +104,7 @@ class ECGActivity : AppCompatActivity() {
         return set
     }
 
-    private fun addEntry(ECGdata: ECGDataPacket) {
+    fun addEntry(ECGdata: ECGDataPacket) {
         var data: LineData = ecgChart.data
 
         if (data != null) {
@@ -106,6 +112,12 @@ class ECGActivity : AppCompatActivity() {
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
+            }
+
+            if (set.entryCount > maxEntry) {
+                for (i in ECGdata.payload.streamData.indices - 1) {
+                    set?.removeFirst()
+                }
             }
 
             for (i in ECGdata.payload.streamData) {
@@ -127,26 +139,6 @@ class ECGActivity : AppCompatActivity() {
         }
     }
 
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-
-        ecg.setCallback { ECGdata ->
-            runOnUiThread {
-                addEntry(ECGdata)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        ecg.startSensor()
-        ecg.subscribeStream()
-    }
 
     override fun onPause() {
         super.onPause()
@@ -158,17 +150,5 @@ class ECGActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //thread.interrupt()
-        //ecg.stopAndUnsubscribeStream()
-
-        //super.onDestroy()
-        fragman!!
-        .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
     }
 }

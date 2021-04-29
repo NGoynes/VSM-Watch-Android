@@ -12,16 +12,18 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.analog.study_watch_sdk.application.*
 import com.analog.study_watch_sdk.core.SDK
-import com.example.vsmwatchandroidapplication.ui.chart.ChartFragment
-import com.example.vsmwatchandroidapplication.ui.chart.PPGActivity
+import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 var watchSdk // sdk reference variable
@@ -31,7 +33,13 @@ var cf : Fragment? = null
 var lf : Fragment? = null
 var sf : Fragment? = null
 var ppgF : Fragment? = null
+var adxlF : Fragment? = null
+var ecgF : Fragment? = null
+var edaMagF : Fragment? = null
+var edaPhaseF : Fragment? = null
+var tempF : Fragment? = null
 var fragman : FragmentManager? = null
+
 class MainActivity : AppCompatActivity() {
     private val CHANNEL_ID = "channel_id_01"
     private val notificationID = 101
@@ -49,15 +57,31 @@ class MainActivity : AppCompatActivity() {
         cf = ChartFragment()
         lf = LoggingFragment()
         sf = SettingsFragment()
-        ppgF = PPGActivity()
+        ppgF = PPGFragment()
+        adxlF = ADXLFragment()
+        ecgF = ECGFragment()
+        edaMagF = EDAMagFragment()
+        edaPhaseF = EDAPhaseFragment()
+        tempF = TempFragment()
+
         fragman = supportFragmentManager
         fragman!!.beginTransaction()
                 .add(R.id.nav_host_fragment, df as DashboardFragment)
                 .add(R.id.nav_host_fragment, cf as ChartFragment)
                 .add(R.id.nav_host_fragment, lf as LoggingFragment)
                 .add(R.id.nav_host_fragment, sf as SettingsFragment)
-                .add(R.id.nav_host_fragment, ppgF as PPGActivity)
-                .hide(ppgF as PPGActivity)
+                .add(R.id.nav_host_fragment, ppgF as PPGFragment)
+                .add(R.id.nav_host_fragment, adxlF as ADXLFragment)
+                .add(R.id.nav_host_fragment, edaMagF as EDAMagFragment)
+                .add(R.id.nav_host_fragment, edaPhaseF as EDAPhaseFragment)
+                .add(R.id.nav_host_fragment, tempF as TempFragment)
+                .add(R.id.nav_host_fragment, ecgF as ECGFragment)
+                .hide(ecgF as ECGFragment)
+                .hide(adxlF as ADXLFragment)
+                .hide(edaMagF as EDAMagFragment)
+                .hide(edaPhaseF as EDAPhaseFragment)
+                .hide(tempF as TempFragment)
+                .hide(ppgF as PPGFragment)
                 .hide(cf as ChartFragment)
                 .hide(lf as LoggingFragment)
                 .hide(sf as SettingsFragment)
@@ -227,149 +251,19 @@ class MainActivity : AppCompatActivity() {
         latPPGSeries1 = rows[rows.size - 1][2]
         latPPGSeries2 = rows[rows.size - 1][4]
 
-        //read ecg
-        file = resources.openRawResource(R.raw.ecg)
-        rows = csvReader().readAll(file)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            ecgSeries.appendData(DataPoint(time, rows[i][2].toDouble()), true, rows.size)
-        }
-        latEcgSeries = rows[rows.size - 1][2]
-        //read eda
-        file = resources.openRawResource(R.raw.eda)
-        rows = csvReader().readAll(file)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            edaSeriesMag.appendData(DataPoint(time, rows[i][3].toDouble()), true, rows.size)
-            edaSeriesPhase.appendData(DataPoint(time, rows[i][4].toDouble()), true, rows.size)
-        }
-        latEdaSeries = rows[rows.size - 1][3]
-
-        //read acc
-        file = resources.openRawResource(R.raw.adxl)
-        rows = csvReader().readAll(file)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            accSeriesX.appendData(DataPoint(time, rows[i][1].toDouble()), true, rows.size)
-            accSeriesY.appendData(DataPoint(time, rows[i][2].toDouble()), true, rows.size)
-            accSeriesZ.appendData(DataPoint(time, rows[i][3].toDouble()), true, rows.size)
-            accSeriesMag.appendData(DataPoint(time, rows[i][4].toDouble()), true, rows.size)
-        }
-        latAccSeriesX = rows[rows.size - 1][1]
-        latAccSeriesY = rows[rows.size - 1][2]
-        latAccSeriesZ = rows[rows.size - 1][3]
-
-        //read temp
-        file = resources.openRawResource(R.raw.temp)
-        rows = csvReader().readAll(file)
-        for (i in rows.indices) {
-            val time = rows[i][0].toDouble() / 1000
-            tempSeries.appendData(DataPoint(time, rows[i][1].toDouble()), true, rows.size)
-
-        }
-        latTempSeries = rows[rows.size - 1][1]
-    }
-
-    //    fun readECG() {
-//        if(com.example.vsmwatchandroidapplication.watchSdk != null) {
-//            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-//            var test = ecg.startSensor()
-////            var sub = ecg.subscribeStream()
-//            var see = ecg.readDeviceConfigurationBlock().payload.data
-//            Log.d("Connection","pizza")
-//            Log.d("Connection", see.toString())
-//            Log.d("Connection","pizza")
-//            var x = ECGDataPacket()
-//            x = ecg
-////            (Log.d("Connection", sub.toString))
-////            ecg.stopSensor()
-    fun readECG() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-//        val ECGtxt: TextView = findViewById(R.id.dbecg_data)
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-            eda.setCallback { ECGdata ->
-                Log.d("Connection", "DATA :: ${ECGdata.payload.ecgInfo}")
-            }
-            eda.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x4)))
-
-            eda.startSensor()
-            eda.subscribeStream()
-
-        }
-
-    }
-    fun readTemp() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val temps = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            temps.setCallback { TempuratureDataPacket ->
-                Log.d("Connection", "DATA :: ${TempuratureDataPacket.payload.temperature1}")
-            }
-            temps.startSensor()
-            temps.subscribeStream()
-
-        }
-
-    }
-    fun readEDA() {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
-            eda.setCallback { EDADataPacket ->
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(0).realData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(1).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(1).realData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(2).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(2).realData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(3).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(3).realData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(4).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(4).realData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(5).imaginaryData}")
-                Log.d("Connection", "DATA :: ${EDADataPacket.payload.streamData.get(5).realData}")
-            }
-            eda.startSensor()
-            eda.subscribeStream()
-
-        }
-        latTempSeries = rows[rows.size-1][1]
-    }*/
-//
-//            ppg.startSensor()
-//            ppg.subscribeStream()
-//
-//        }
-//
-//    }
-    fun stopPPG()
-    {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ppg = com.example.vsmwatchandroidapplication.watchSdk!!.ppgApplication
-            ppg.stopSensor()
-            ppg.stopAndUnsubscribeStream()
-        }
-    }
-    fun stopECG()
-    {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val ecg = com.example.vsmwatchandroidapplication.watchSdk!!.ecgApplication
-            ecg.stopSensor()
-            ecg.stopAndUnsubscribeStream()
-        }
-    }
-    fun stopEDA()
-    {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val eda = com.example.vsmwatchandroidapplication.watchSdk!!.edaApplication
-            eda.stopSensor()
-            eda.stopAndUnsubscribeStream()
-        }
-    }
-    fun stopTemp()
-    {
-        if (com.example.vsmwatchandroidapplication.watchSdk != null) {
-            val temp = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
-            temp.stopSensor()
-            temp.stopAndUnsubscribeStream()
-        }
+    override fun onBackPressed(){
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        nav_view.isVisible = true
+        my_toolbar.isVisible = true
+        fragman!!
+                .beginTransaction()
+                .hide(ppgF as PPGFragment)
+                .hide(ecgF as ECGFragment)
+                .hide(adxlF as ADXLFragment)
+                .hide(edaMagF as EDAMagFragment)
+                .hide(edaPhaseF as EDAPhaseFragment)
+                .hide(tempF as TempFragment)
+                .show(cf as ChartFragment)
+                .commit()
     }
 }

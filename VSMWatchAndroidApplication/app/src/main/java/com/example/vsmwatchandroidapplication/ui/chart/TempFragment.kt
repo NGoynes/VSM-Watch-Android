@@ -2,7 +2,12 @@ package com.example.vsmwatchandroidapplication.ui.chart
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.TemperatureApplication
 import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
 import com.example.vsmwatchandroidapplication.R
@@ -16,18 +21,23 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 
-class TempActivity : AppCompatActivity() {
+class TempFragment : Fragment() {
 
+    private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var tempChart: LineChart
     private var prevX = 0
-    private val temp: TemperatureApplication = com.example.vsmwatchandroidapplication.watchSdk!!.temperatureApplication
+    private var maxEntry = 300
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_temp)
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_temp, container, false)
 
-        tempChart = findViewById((R.id.tempChartInd))
+        tempChart = root.findViewById((R.id.tempChartInd))
 
         // enable description text
         tempChart.description.isEnabled = true
@@ -78,7 +88,7 @@ class TempActivity : AppCompatActivity() {
 
         tempChart.setDrawBorders(true)
 
-        feedMultiple()
+        return root
     }
 
     private fun createSet(): LineDataSet? {
@@ -94,7 +104,7 @@ class TempActivity : AppCompatActivity() {
         return set
     }
 
-    private fun addEntry(TempData: TemperatureDataPacket) {
+    fun addEntry(TempData: TemperatureDataPacket) {
         var data: LineData = tempChart.data
 
         if (data != null) {
@@ -102,6 +112,10 @@ class TempActivity : AppCompatActivity() {
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
+            }
+
+            if (set.entryCount > maxEntry) {
+                set?.removeFirst()
             }
 
             if (TempData.payload != null) {
@@ -121,27 +135,6 @@ class TempActivity : AppCompatActivity() {
         }
     }
 
-    private fun feedMultiple() {
-        if (thread != null) {
-            thread.interrupt()
-        }
-
-        temp.setCallback { TempData ->
-            runOnUiThread {
-                addEntry(TempData)
-            }
-            try {
-                Thread.sleep(10)
-            } catch (e: InterruptedException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
-        }
-
-        temp.startSensor()
-        temp.subscribeStream()
-    }
-
     override fun onPause() {
         super.onPause()
         //ecg.stopAndUnsubscribeStream()
@@ -152,17 +145,5 @@ class TempActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //thread.interrupt()
-        temp.stopAndUnsubscribeStream()
-
-        //super.onDestroy()
-        fragman!!
-                .beginTransaction()
-                .show(cf as ChartFragment)
-                .commit()
     }
 }
