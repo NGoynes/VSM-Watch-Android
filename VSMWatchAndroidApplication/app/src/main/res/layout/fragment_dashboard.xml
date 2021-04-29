@@ -8,16 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <Switch
-        android:id="@+id/dbAcc_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_switch" />
-
     <TextView
         android:id="@+id/dbtemp_data"
         android:layout_width="wrap_content"
@@ -31,18 +21,6 @@
         app:layout_constraintTop_toBottomOf="@+id/dbeda_data" />
 
     <TextView
-        android:id="@+id/dbAcc_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="----"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.727"
-        app:layout_constraintStart_toEndOf="@+id/dbAcc_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_data" />
-
-    <TextView
         android:id="@+id/dbtemp_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,18 +31,6 @@
         app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toEndOf="@+id/dbtemp_switch"
         app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
-
-    <TextView
-        android:id="@+id/dbAcc_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Accelerometer"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.076"
-        app:layout_constraintStart_toEndOf="@+id/dbAcc_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbtemp_text" />
 
     <TextView
         android:id="@+id/dbecg_text"

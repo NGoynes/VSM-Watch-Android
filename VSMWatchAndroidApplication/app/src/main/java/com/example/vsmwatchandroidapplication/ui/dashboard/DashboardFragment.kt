@@ -181,28 +181,28 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
-        val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
-        if (!isLoggingOn) {
-            Accsw.setOnCheckedChangeListener { _, onSwitch ->
-                if(onSwitch) {
-                    //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
-
-                    accOn = true
-                }
-                else {
-                    Acctxt.text = "----"
-                    accOn = false
-                }
-            }
-        }
-        else {
-            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-        }
+        //val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
+        //val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
+//        if (!isLoggingOn) {
+//            Accsw.setOnCheckedChangeListener { _, onSwitch ->
+//                if(onSwitch) {
+//                    //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
+//                    EDAsw.isChecked = false
+//                    ECGsw.isChecked = false
+//                    PPGsw.isChecked = false
+//                    tempsw.isChecked = false
+//
+//                    accOn = true
+//                }
+//                else {
+//                    Acctxt.text = "----"
+//                    accOn = false
+//                }
+//            }
+//        }
+//        else {
+//            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+//        }
 
         val ScanButton: Button = root.findViewById(R.id.ScanButton)
         ScanButton.setOnClickListener {
