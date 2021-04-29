@@ -82,6 +82,7 @@ class TempFragment : Fragment() {
         val tempLeftAxis: YAxis = tempChart.axisLeft
         tempLeftAxis.textColor = Color.WHITE
         tempLeftAxis.setDrawGridLines(false)
+        tempLeftAxis.setLabelCount(3, true)
 
         val tempRightAxis: YAxis = tempChart.axisRight
         tempRightAxis.isEnabled = false
@@ -96,6 +97,9 @@ class TempFragment : Fragment() {
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
         set.color = Color.rgb(255, 51, 0)
+        set.fillColor = Color.rgb(255, 51, 0)
+        set.fillAlpha = 80
+        set.setDrawFilled(true)
         set.isHighlightEnabled = false
         set.setDrawValues(false)
         set.setDrawCircles(false)
@@ -119,25 +123,16 @@ class TempFragment : Fragment() {
                 data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
             }
 
-//            data.notifyDataChanged()
-//
-//            // let the chart know it's data has changed
-//            tempChart.notifyDataSetChanged()
-//
-//            // limit the number of visible entries
-//            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-//
-//            // move to the latest entry
-//            tempChart.moveViewToX(data.entryCount.toFloat())
-
-            if (set.entryCount > maxEntry) {
+            if (set.entryCount >= maxEntry) {
                 data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
                 removalCounter++
             }
 
             data.notifyDataChanged()
             tempChart.notifyDataSetChanged()
             tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            tempChart.moveViewToX((set.entryCount + removalCounter).toFloat())
             tempChart.invalidate()
         }
     }

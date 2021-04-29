@@ -85,13 +85,12 @@ class PPGFragment : Fragment() {
         val ppgLeftAxis: YAxis = ppgChart.axisLeft
         ppgLeftAxis.textColor = Color.WHITE
         ppgLeftAxis.setDrawGridLines(false)
+        ppgLeftAxis.setLabelCount(3, true)
 
         val ppgRightAxis: YAxis = ppgChart.axisRight
         ppgRightAxis.isEnabled = false
 
         ppgChart.setDrawBorders(true)
-
-        //feedMultiple()
 
         return root
     }
@@ -101,6 +100,9 @@ class PPGFragment : Fragment() {
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
         set.color = Color.rgb(255, 51, 0)
+        set.fillColor = Color.rgb(255, 51, 0)
+        set.fillAlpha = 80
+        set.setDrawFilled(true)
         set.isHighlightEnabled = false
         set.setDrawValues(false)
         set.setDrawCircles(false)
@@ -121,30 +123,24 @@ class PPGFragment : Fragment() {
 
             for (i in PPGdata.payload.streamData) {
                 if (i != null) {
-                    println(i.ppgData)
                     data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ppgData.toFloat()), 0)
+                    val xval = set.entryCount + removalCounter
+                    println("X:$xval")
+                    println("Y:" + i.ppgData)
+                    println("\n")
                 }
             }
 
-            if (set.entryCount > maxEntry) {
+            if (set.entryCount >= maxEntry) {
                 data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
                 removalCounter++
             }
-
-//            data.notifyDataChanged()
-//
-//            // let the chart know it's data has changed
-//            ppgChart.notifyDataSetChanged()
-//
-//            // limit the number of visible entries
-//            ppgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-//
-//            // move to the latest entry
-//            ppgChart.moveViewToX(data.entryCount.toFloat())
 
             data.notifyDataChanged()
             ppgChart.notifyDataSetChanged()
             ppgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ppgChart.moveViewToX((set.entryCount + removalCounter).toFloat())
             ppgChart.invalidate()
         }
     }

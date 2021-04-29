@@ -216,9 +216,9 @@ class DashboardFragment : Fragment() {
             ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
             ppg.setSyncPPGCallback{ PPGDataPacket ->
                 (cf as ChartFragment).addEntry(PPGDataPacket)
-                //(ppgF as PPGFragment).addEntry(PPGDataPacket)
-                //(cf as ChartFragment).addEntryADXL(PPGDataPacket)
-                //(adxlF as ADXLFragment).addEntry(PPGDataPacket)
+                (ppgF as PPGFragment).addEntry(PPGDataPacket)
+                (cf as ChartFragment).addEntryADXL(PPGDataPacket)
+                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket)
 
                 runOnUiThread {
                     PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()

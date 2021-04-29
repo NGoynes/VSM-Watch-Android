@@ -23,9 +23,9 @@ class ADXLFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var accChart: LineChart
-    private var prevX = 0
     private var maxEntry = 300
     private var removalCounter: Long = 0
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -80,6 +80,7 @@ class ADXLFragment : Fragment() {
         val leftAxis: YAxis = accChart.axisLeft
         leftAxis.textColor = Color.WHITE
         leftAxis.setDrawGridLines(false)
+        leftAxis.setLabelCount(3, true)
 
         val rightAxis: YAxis = accChart.axisRight
         rightAxis.isEnabled = false
@@ -128,7 +129,7 @@ class ADXLFragment : Fragment() {
         return set
     }
 
-    fun addEntry(ACCdata: SYNCPPGDataPacket) {
+    fun addEntryADXL(ACCdata: SYNCPPGDataPacket) {
         var data: LineData = accChart.data
 
         if (data != null) {
@@ -172,12 +173,16 @@ class ADXLFragment : Fragment() {
                 data.removeEntry(removalCounter.toFloat(), 0)
                 data.removeEntry(removalCounter.toFloat(), 1)
                 data.removeEntry(removalCounter.toFloat(), 2)
+                setX.removeFirst()
+                setY.removeFirst()
+                setZ.removeFirst()
                 removalCounter++
             }
 
             data.notifyDataChanged()
             accChart.notifyDataSetChanged()
             accChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            accChart.moveViewToX((setX.entryCount + removalCounter).toFloat())
             accChart.invalidate()
         }
     }

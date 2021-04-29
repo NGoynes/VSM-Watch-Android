@@ -48,7 +48,7 @@ class ECGFragment : Fragment() {
         ecgChart.setTouchEnabled(true)
 
         // enable scaling and dragging
-        ecgChart.isDragEnabled = false
+        ecgChart.isDragEnabled = true
         ecgChart.setScaleEnabled(true)
         ecgChart.setDrawGridBackground(false)
         ecgChart.isAutoScaleMinMaxEnabled = true
@@ -82,6 +82,7 @@ class ECGFragment : Fragment() {
         val leftAxis: YAxis = ecgChart.axisLeft
         leftAxis.textColor = Color.WHITE
         leftAxis.setDrawGridLines(false)
+        leftAxis.setLabelCount(3, true)
 
         val rightAxis: YAxis = ecgChart.axisRight
         rightAxis.isEnabled = false
@@ -120,25 +121,17 @@ class ECGFragment : Fragment() {
                     data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ecgData.toFloat()), 0)
                 }
             }
-//            data.notifyDataChanged()
-//
-//            // let the chart know it's data has changed
-//            ecgChart.notifyDataSetChanged()
-//
-//            // limit the number of visible entries
-//            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-//
-//            // move to the latest entry
-//            ecgChart.moveViewToX(data.entryCount.toFloat())
 
-            if (set.entryCount > maxEntry) {
+            if (set.entryCount >= maxEntry) {
                 data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
                 removalCounter++
             }
 
             data.notifyDataChanged()
             ecgChart.notifyDataSetChanged()
             ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ecgChart.moveViewToX((set.entryCount + removalCounter).toFloat())
             ecgChart.invalidate()
         }
     }

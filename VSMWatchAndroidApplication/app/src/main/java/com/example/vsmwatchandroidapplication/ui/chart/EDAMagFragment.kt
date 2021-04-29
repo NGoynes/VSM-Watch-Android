@@ -28,7 +28,7 @@ class EDAMagFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private lateinit var edaMagChart: LineChart
     private var thread: Thread = Thread()
-    private var maxEntry = 300
+    private var maxEntry = 200
     private var removalCounter: Long = 0
 
     override fun onCreateView(
@@ -84,6 +84,7 @@ class EDAMagFragment : Fragment() {
         val leftAxis: YAxis = edaMagChart.axisLeft
         leftAxis.textColor = Color.WHITE
         leftAxis.setDrawGridLines(false)
+        leftAxis.setLabelCount(3, true)
 
         val rightAxis: YAxis = edaMagChart.axisRight
         rightAxis.isEnabled = false
@@ -98,8 +99,8 @@ class EDAMagFragment : Fragment() {
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 3f
         set.color = Color.rgb(255, 51, 0)
-        set.fillColor = Color.rgb(233, 179, 179)
-        set.fillAlpha = 250
+        set.fillColor = Color.rgb(255, 51, 0)
+        set.fillAlpha = 80
         set.setDrawFilled(true)
         set.isHighlightEnabled = false
         set.setDrawValues(false)
@@ -125,25 +126,17 @@ class EDAMagFragment : Fragment() {
                     data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), mag), 0)
                 }
             }
-//            data.notifyDataChanged()
-//
-//            // let the chart know it's data has changed
-//            edaMagChart.notifyDataSetChanged()
-//
-//            // limit the number of visible entries
-//            edaMagChart.setVisibleXRangeMaximum(100F)
-//
-//            // move to the latest entry
-//            edaMagChart.moveViewToX(data.entryCount.toFloat())
 
-            if (set.entryCount > maxEntry) {
+            if (set.entryCount >= maxEntry) {
                 data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
                 removalCounter++
             }
 
             data.notifyDataChanged()
             edaMagChart.notifyDataSetChanged()
             edaMagChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            edaMagChart.moveViewToX((set.entryCount + removalCounter).toFloat())
             edaMagChart.invalidate()
         }
     }
