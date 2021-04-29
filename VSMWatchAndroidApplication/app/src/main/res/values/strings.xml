@@ -2,6 +2,8 @@
     <string name="app_name">VSM Watch Android Application</string>
     <string name="title_chart">Chart</string>
     <string name="title_dashboard">Dashboard</string>
+    <string name="dropdown">PPG Sensor</string>
+    <string name="dropdown2">ECG Decimation</string>
 
     <!-- Chart Strings -->
     <string name="graph_amplitude">Amplitude</string>

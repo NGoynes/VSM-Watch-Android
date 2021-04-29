@@ -213,7 +213,7 @@ class DashboardFragment : Fragment() {
     }
     private fun readPPG() {
         if (watchSdk != null) {
-            ppg.setLibraryConfiguration(PPGLcfgID.LCFG_ID_ADPD4000)
+            ppg.setLibraryConfiguration(ppgSensor)
             ppg.setSyncPPGCallback{ PPGDataPacket ->
                 (cf as ChartFragment).addEntry(PPGDataPacket)
                 (ppgF as PPGFragment).addEntry(PPGDataPacket)
@@ -256,6 +256,7 @@ class DashboardFragment : Fragment() {
     private fun readECG() {
         if (watchSdk != null) {
             val ecg = watchSdk!!.ecgApplication
+            ecg.setDecimationFactor(ecgDec)
             ecg.setCallback { ECGdata ->
                 (cf as ChartFragment).addEntry(ECGdata)
                 (ecgF as ECGFragment).addEntry(ECGdata)
@@ -301,6 +302,7 @@ class DashboardFragment : Fragment() {
     private fun readEDA() {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
+            eda.setDecimationFactor(edaDec)
             eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
 //            val filepath: URI = URI.create("android.resource://com.example.vsmwatchandroidapplication/raw/eda_dcb")
@@ -321,7 +323,7 @@ class DashboardFragment : Fragment() {
                                 val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
                                 val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
 
-                                (lf as LoggingFragment).recordVital(i.timestamp, mag, phase)
+                                (lf as LoggingFragment).recordVital(i.timestamp, i.realData, i.imaginaryData, mag, phase)
                             }
                         }
                     }

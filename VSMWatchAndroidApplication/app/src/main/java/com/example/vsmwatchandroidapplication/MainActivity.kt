@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.analog.study_watch_sdk.application.*
 import com.analog.study_watch_sdk.core.SDK
+import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.example.vsmwatchandroidapplication.ui.dashboard.ScanFragment
@@ -39,6 +40,9 @@ var ecgF : Fragment? = null
 var edaMagF : Fragment? = null
 var edaPhaseF : Fragment? = null
 var tempF : Fragment? = null
+var ppgSensor = PPGLcfgID.LCFG_ID_ADPD4000
+var ecgDec = 1
+var edaDec = 1
 var fragman : FragmentManager? = null
 
 class MainActivity : AppCompatActivity() {

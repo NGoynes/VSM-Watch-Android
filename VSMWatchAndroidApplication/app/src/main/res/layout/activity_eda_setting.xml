@@ -4,68 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.EDASetting">
+    tools:context=".ui.settings.PPGSetting">
 
     <TextView
-        android:id="@+id/EDA_Duration"
-        android:layout_width="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="@string/EDA_Duration"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/EDA_Duration_EditText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/EDA_Duration_EditText"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:autofillHints="1"
-        android:ems="10"
-        android:inputType="number"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Decimation Factor:"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="LabelFor" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="112dp" />
 
-    <View
-        android:id="@+id/subdivider1"
-        android:layout_width="375dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/darker_gray"
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="368dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:prompt="@string/dropdown"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EDA_Duration" />
-
-    <TextView
-        android:id="@+id/EDA_Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/EDA_Filter"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/EDA_Filter_EditText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subdivider1" />
-
-    <EditText
-        android:id="@+id/EDA_Filter_EditText"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:autofillHints="1"
-        android:ems="10"
-        android:inputType="number"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subdivider1"
-        tools:ignore="LabelFor" />
-
+        app:layout_constraintTop_toTopOf="@+id/textView2"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>

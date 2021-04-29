@@ -182,7 +182,7 @@
         android:id="@+id/ScanButton"
         android:layout_width="531dp"
         android:layout_height="49dp"
-        android:text="Scan for device"
+        android:text="Disconnect Device"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
