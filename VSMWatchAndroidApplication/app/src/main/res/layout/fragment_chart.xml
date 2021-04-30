@@ -22,33 +22,32 @@
                 android:id="@+id/ppgSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.94" />
+                app:layout_constraintTop_toBottomOf="@+id/ppgChart" />
 
             <TextView
                 android:id="@+id/ppgTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/graph_ppg"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/ppgAmp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
                 android:rotation="-90"
                 android:text="@string/graph_amplitude"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -58,16 +57,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ppgTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/ppgAmp"
+                app:layout_constraintTop_toBottomOf="@+id/ppgTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
@@ -85,33 +81,33 @@
                 android:id="@+id/ecgSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ecgChart"
                 app:layout_constraintVertical_bias="0.94" />
 
             <TextView
                 android:id="@+id/ecgTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/graph_ecg"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/ecgAmp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
                 android:rotation="-90"
                 android:text="@string/graph_amplitude"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -121,16 +117,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ecgTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/ecgAmp"
+                app:layout_constraintTop_toBottomOf="@+id/ecgTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
@@ -148,33 +141,32 @@
                 android:id="@+id/edaMagSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.94" />
+                app:layout_constraintTop_toBottomOf="@+id/edaMagChart" />
 
             <TextView
                 android:id="@+id/edaMagTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/graph_edaMag"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/edaMag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
                 android:rotation="-90"
                 android:text="@string/graph_magnitude"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -184,16 +176,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edaMagTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/edaMag"
+                app:layout_constraintTop_toBottomOf="@+id/edaMagTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
@@ -211,11 +200,13 @@
                 android:id="@+id/edaPhaseSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edaPhaseChart"
                 app:layout_constraintVertical_bias="0.94" />
 
             <TextView
@@ -233,11 +224,11 @@
                 android:id="@+id/edaPhase"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
+                android:layout_marginStart="8dp"
                 android:rotation="-90"
                 android:text="@string/graph_phase"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -247,16 +238,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edaPhaseTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/edaPhase"
+                app:layout_constraintTop_toBottomOf="@+id/edaPhaseTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
@@ -274,33 +262,33 @@
                 android:id="@+id/accSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/accChart"
                 app:layout_constraintVertical_bias="0.94" />
 
             <TextView
                 android:id="@+id/accTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/graph_acc"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/accMag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
                 android:rotation="-90"
                 android:text="@string/graph_magnitude"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -310,16 +298,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/accTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/accMag"
+                app:layout_constraintTop_toBottomOf="@+id/accTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
@@ -337,33 +322,33 @@
                 android:id="@+id/tempSeconds"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/graph_samples"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tempChart"
                 app:layout_constraintVertical_bias="0.94" />
 
             <TextView
                 android:id="@+id/tempTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/graph_temp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.059" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tempCurr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="368dp"
                 android:rotation="-90"
                 android:text="@string/graph_tempCurr"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.502" />
 
@@ -373,16 +358,13 @@
                 android:layout_height="175dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tempTitle"
-                app:layout_constraintVertical_bias="0.53">
+                app:layout_constraintStart_toEndOf="@+id/tempCurr"
+                app:layout_constraintTop_toBottomOf="@+id/tempTitle">
 
             </com.github.mikephil.charting.charts.LineChart>
 
