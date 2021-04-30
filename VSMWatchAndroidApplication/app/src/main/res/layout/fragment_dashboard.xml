@@ -12,57 +12,91 @@
         android:id="@+id/dbtemp_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="47dp"
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.752"
-        app:layout_constraintStart_toEndOf="@+id/dbtemp_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_data" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider3" />
 
     <TextView
         android:id="@+id/dbtemp_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:text="Temperature"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        app:layout_constraintEnd_toStartOf="@+id/dbtemp_data"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/dbtemp_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider3" />
+
+    <View
+        android:id="@+id/subdivider1"
+        android:layout_width="375dp"
+        android:layout_height="1dp"
+
+        android:layout_marginTop="24dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dbppg_text" />
 
     <TextView
         android:id="@+id/dbecg_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:text="ECG"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintEnd_toStartOf="@+id/dbecg_data"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/dbecg_switch"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_text" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider1" />
 
     <TextView
         android:id="@+id/dbeda_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:text="EDA"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintEnd_toStartOf="@+id/dbeda_data"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/dbeda_switch"
+        app:layout_constraintTop_toBottomOf="@+id/subdivider2" />
+
+    <View
+        android:id="@+id/subdivider3"
+        android:layout_width="375dp"
+        android:layout_height="1dp"
+
+        android:layout_marginTop="24dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dbeda_text" />
+
+    <View
+        android:id="@+id/subdivider2"
+        android:layout_width="375dp"
+        android:layout_height="1dp"
+
+        android:layout_marginTop="24dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dbecg_text" />
 
     <Switch
         android:id="@+id/dbppg_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,41 +104,39 @@
         android:id="@+id/dbtemp_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbeda_switch" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider3" />
 
     <Switch
         android:id="@+id/dbeda_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbecg_switch" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider2" />
 
     <Switch
         android:id="@+id/dbecg_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_switch" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider1" />
 
     <TextView
         android:id="@+id/dbppg_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:text="PPG"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintEnd_toStartOf="@+id/dbppg_data"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/dbppg_switch"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -112,47 +144,43 @@
         android:id="@+id/dbecg_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="47dp"
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
-        app:layout_constraintStart_toEndOf="@+id/dbecg_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbppg_data" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider1" />
 
     <TextView
         android:id="@+id/dbeda_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="47dp"
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.824"
-        app:layout_constraintStart_toEndOf="@+id/dbeda_text"
-        app:layout_constraintTop_toBottomOf="@+id/dbecg_data" />
+        app:layout_constraintTop_toBottomOf="@+id/subdivider2" />
 
     <TextView
         android:id="@+id/dbppg_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="47dp"
         android:text="----"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
-        app:layout_constraintStart_toEndOf="@+id/dbppg_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ScanButton"
         android:layout_width="531dp"
         android:layout_height="49dp"
+        android:layout_marginBottom="32dp"
         android:text="Disconnect Device"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.939" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

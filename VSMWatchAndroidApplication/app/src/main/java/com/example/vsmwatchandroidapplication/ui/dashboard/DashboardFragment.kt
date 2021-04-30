@@ -34,7 +34,6 @@ var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
-var accOn = false
 
 class DashboardFragment : Fragment() {
 
@@ -72,19 +71,23 @@ class DashboardFragment : Fragment() {
         PPGsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                EDAsw.isChecked = false
-                ECGsw.isChecked = false
-                tempsw.isChecked = false
-                resetVal()
+                if (!isLoggingOn) {
+                    EDAsw.isChecked = false
+                    ECGsw.isChecked = false
+                    tempsw.isChecked = false
+                    resetVal()
 
-                stopECG(true)
-                stopEDA(true)
-                stopTemp(true)
+                    stopECG(true)
+                    stopEDA(true)
+                    stopTemp(true)
 
-                // Begin reading PPG
-                readPPG()
-                ppgOn = true
-
+                    // Begin reading PPG
+                    readPPG()
+                    ppgOn = true
+                } else {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    PPGsw.isChecked = false
+                }
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -100,18 +103,23 @@ class DashboardFragment : Fragment() {
         EDAsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                ECGsw.isChecked = false
-                PPGsw.isChecked = false
-                tempsw.isChecked = false
-                resetVal()
+                if (!isLoggingOn) {
+                    ECGsw.isChecked = false
+                    PPGsw.isChecked = false
+                    tempsw.isChecked = false
+                    resetVal()
 
-                stopPPG(true)
-                stopECG(true)
-                stopTemp(true)
+                    stopPPG(true)
+                    stopECG(true)
+                    stopTemp(true)
 
-                // Begin reading EDA
-                readEDA()
-                edaOn = true
+                    // Begin reading EDA
+                    readEDA()
+                    edaOn = true
+                } else {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    EDAsw.isChecked = false
+                }
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -127,7 +135,7 @@ class DashboardFragment : Fragment() {
         ECGsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                if (EDAsw.isChecked)
+                if (!isLoggingOn) {
                     EDAsw.isChecked = false
                     PPGsw.isChecked = false
                     tempsw.isChecked = false
@@ -140,6 +148,10 @@ class DashboardFragment : Fragment() {
                     // Begin reading ECG
                     readECG()
                     ecgOn = true
+                } else {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    ECGsw.isChecked = false
+                }
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -156,18 +168,23 @@ class DashboardFragment : Fragment() {
         tempsw.setOnCheckedChangeListener { _, onSwitch ->
             if (onSwitch) {
                 // Turn off other signals
-                EDAsw.isChecked = false
-                ECGsw.isChecked = false
-                PPGsw.isChecked = false
-                resetVal()
+                if(!isLoggingOn) {
+                    EDAsw.isChecked = false
+                    ECGsw.isChecked = false
+                    PPGsw.isChecked = false
+                    resetVal()
 
-                stopPPG(true)
-                stopEDA(true)
-                stopECG(true)
+                    stopPPG(true)
+                    stopEDA(true)
+                    stopECG(true)
 
-                // Begin reading temperature
-                readTemp()
-                tempOn = true
+                    // Begin reading temperature
+                    readTemp()
+                    tempOn = true
+                } else {
+                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    tempsw.isChecked = false
+                }
             }
             else {
                 if(isLoggingOn) {
@@ -243,11 +260,6 @@ class DashboardFragment : Fragment() {
             ppg.stopSensor()
             ppg.stopAndUnsubscribeStream()
 
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "PPGData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("PPG", fileName)
-            }
             resetVal()
         }
     }
@@ -288,12 +300,6 @@ class DashboardFragment : Fragment() {
             ecg.stopAndUnsubscribeStream()
             ecg.setTimeout(5)
 
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "ECGData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("ECG", fileName)
-            }
-
             resetVal()
         }
     }
@@ -319,9 +325,9 @@ class DashboardFragment : Fragment() {
 
                     if (isLoggingOn && edaOn) {
                         for (i in EDADataPacket.payload.streamData) {
-                            if (i != null) {
-                                val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                                val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
+                            if (i != null && i.realData != 0) {
+                                val mag = kotlin.math.sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                                val phase = kotlin.math.atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
 
                                 (lf as LoggingFragment).recordVital(i.timestamp, i.realData, i.imaginaryData, mag, phase)
                             }
@@ -339,21 +345,16 @@ class DashboardFragment : Fragment() {
     {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
-            resetVal()
-
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "EDAData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("EDA", fileName)
-            }
 
             eda.stopSensor()
             eda.stopAndUnsubscribeStream()
+
+            resetVal()
         }
 
     }
 
-    fun readTemp() {
+    private fun readTemp() {
         if (watchSdk != null) {
             val temps = watchSdk!!.temperatureApplication
             temps.setCallback { TemperatureDataPacket ->
@@ -381,12 +382,6 @@ class DashboardFragment : Fragment() {
 
             temp.stopSensor()
             temp.stopAndUnsubscribeStream()
-
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "TemperatureData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("Temperature", fileName)
-            }
 
             resetVal()
         }

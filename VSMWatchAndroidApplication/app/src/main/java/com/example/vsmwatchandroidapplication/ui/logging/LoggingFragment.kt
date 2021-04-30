@@ -25,6 +25,7 @@ import com.example.vsmwatchandroidapplication.ui.dashboard.ppgOn
 import com.example.vsmwatchandroidapplication.ui.dashboard.tempOn
 import java.lang.Exception
 import java.lang.StringBuilder
+import java.time.LocalDateTime
 
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -43,10 +44,6 @@ class LoggingFragment : Fragment() {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switchEDA: Switch
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private lateinit var switchAccelerometer: Switch
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private lateinit var switchPedometer: Switch
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switchTemperature: Switch
 
     private lateinit var driveButton: Button
@@ -60,7 +57,7 @@ class LoggingFragment : Fragment() {
     private var edaSeconds: Double = 0.0
     private val edaData = StringBuilder()
 
-    @SuppressLint("UseRequireInsteadOfGet")
+    @SuppressLint("UseRequireInsteadOfGet", "NewApi")
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -78,8 +75,6 @@ class LoggingFragment : Fragment() {
         switchPPG = root.findViewById(R.id.switch_PPG)
         switchECG = root.findViewById(R.id.switch_ECG)
         switchEDA = root.findViewById(R.id.switch_EDA)
-        switchAccelerometer = root.findViewById(R.id.switch_Accelerometer)
-        switchPedometer = root.findViewById(R.id.switch_Pedometer)
         switchTemperature = root.findViewById(R.id.switch_Temperature)
 
         // Checks if PPG in Dashboard is checked
@@ -118,14 +113,6 @@ class LoggingFragment : Fragment() {
             }
         }
 
-        // Checks if Accelerometer in Dashboard is checked
-        switchAccelerometer.setOnCheckedChangeListener { _, _ ->
-            /*if (dashboardAccelSwitch) {
-                Toast.makeText(context?.applicationContext, "Accelerometer is Not Checked in Dashboard", Toast.LENGTH_SHORT).show()
-                switchAccelerometer.isChecked = false
-            }*/
-        }
-
         // Checks if Temperature in Dashboard is checked
         switchTemperature.setOnCheckedChangeListener { _, _ ->
             if (!tempOn) {
@@ -159,7 +146,6 @@ class LoggingFragment : Fragment() {
                     edaData.append(",")
                     edaData.append("Real Data")
                     edaData.append(",")
-                    edaData.append(",")
                     edaData.append("Imaginary Data")
                     edaData.append(",")
                     edaData.append("Magnitude")
@@ -178,12 +164,32 @@ class LoggingFragment : Fragment() {
                 hasLogged = true
             }
             else if ( (switchPPG.isChecked || switchECG.isChecked || switchEDA.isChecked || switchTemperature.isChecked) && !isLoggingChecked) {
-                Toast.makeText(context?.applicationContext, "Stopped Logging", Toast.LENGTH_SHORT).show()
                 isLoggingOn = false
                 switchPPG.isChecked = false
                 switchECG.isChecked = false
                 switchEDA.isChecked = false
                 switchTemperature.isChecked = false
+
+                if (ppgOn) { // If PPG was on, log data to csv right away
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "PPGData$currentDateTime.csv"
+                    writeToFile("PPG", fileName)
+                }
+                else if (ecgOn) { // If ECG was on, log data to csv right away
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "ECGData$currentDateTime.csv"
+                    writeToFile("ECG", fileName)
+                }
+                else if (edaOn) {
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "EDAData$currentDateTime.csv"
+                    writeToFile("EDA", fileName)
+                }
+                else if (tempOn) {
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "TemperatureData$currentDateTime.csv"
+                    writeToFile("Temperature", fileName)
+                }
             }
             else {
                 Toast.makeText(context?.applicationContext, "Select Measurement", Toast.LENGTH_SHORT).show()
@@ -241,6 +247,7 @@ class LoggingFragment : Fragment() {
     fun recordVital(timestamp: Long, real: Int, imaginary: Int, mag: Float, phase: Float) {
         edaSeconds += timestamp.toDouble()  / (1e9).toDouble()
         edaData.append(edaSeconds)
+        edaData.append(",")
         edaData.append(real)
         edaData.append(",")
         edaData.append(imaginary)
@@ -255,9 +262,15 @@ class LoggingFragment : Fragment() {
 
         when(vital) {
             "PPG" -> {
-                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "PPG File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "PPG File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
 
                 // Reset data
                 ecg_ppg_tempData.clear()
@@ -265,9 +278,15 @@ class LoggingFragment : Fragment() {
                 hasLogged = false
             }
             "ECG" -> {
-                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "ECG File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "ECG File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
 
                 // Reset data
                 ecg_ppg_tempData.clear()
@@ -275,29 +294,31 @@ class LoggingFragment : Fragment() {
                 hasLogged = false
             }
             "EDA" -> {
-                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(edaData.toString().toByteArray())
-                out.close()
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(edaData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "EDA File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "EDA File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
 
                 // Reset data
                 edaData.clear()
                 edaSeconds = 0.0
                 hasLogged = false
             }
-            "Accelerometer" -> {
-                /*val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()*/
-
-                // Reset data
-                /*ecg_ppg_tempData.clear()
-                ecg_ppg_tempSeconds = 0.0*/
-                //hasLogged = false
-            }
             "Temperature" -> {
-                val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
-                out.write(ecg_ppg_tempData.toString().toByteArray())
-                out.close()
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "Temperature File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "Temperature File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
 
                 // Reset data
                 ecg_ppg_tempData.clear()
