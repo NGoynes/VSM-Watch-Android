@@ -20,14 +20,17 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.common.base.Stopwatch
+import java.util.concurrent.TimeUnit
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class ECGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
-    private var maxEntry = 300
-    private var removalCounter: Long = 0
+    private var prevX = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -105,34 +108,32 @@ class ECGFragment : Fragment() {
         return set
     }
 
-    fun addEntry(ECGdata: ECGDataPacket) {
+    fun addEntry(ECGdata: ECGDataPacket, ECGTimer: Stopwatch) {
         var data: LineData = ecgChart.data
 
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
                 set = createSet()
-                set.setDrawFilled(false)
                 data.addDataSet(set)
             }
-
-            for (i in ECGdata.payload.streamData) {
-                if (i != null) {
-                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ecgData.toFloat()), 0)
+            if (ECGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
+                for (i in ECGdata.payload.streamData) {
+                    if (i != null) {
+                        data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
+                    }
                 }
-            }
+                data.notifyDataChanged()
 
-            if (set.entryCount >= maxEntry) {
-                data.removeEntry(removalCounter.toFloat(), 0)
-                set.removeFirst()
-                removalCounter++
-            }
+                // let the chart know it's data has changed
+                ecgChart.notifyDataSetChanged()
 
-            data.notifyDataChanged()
-            ecgChart.notifyDataSetChanged()
-            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-            ecgChart.moveViewToX((set.entryCount + removalCounter).toFloat())
-            ecgChart.invalidate()
+                // limit the number of visible entries
+                ecgChart.setVisibleXRangeMaximum(2700f)
+
+                // move to the latest entry
+                ecgChart.moveViewToX(data.xMax)
+            }
         }
     }
 

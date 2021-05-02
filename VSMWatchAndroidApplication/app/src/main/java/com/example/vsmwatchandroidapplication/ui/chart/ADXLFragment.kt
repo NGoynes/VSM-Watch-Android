@@ -17,14 +17,15 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.common.base.Stopwatch
+import java.util.concurrent.TimeUnit
 
 class ADXLFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var accChart: LineChart
-    private var maxEntry = 300
-    private var removalCounter: Long = 0
+    private var prevX = 0
 
 
     override fun onCreateView(
@@ -129,7 +130,7 @@ class ADXLFragment : Fragment() {
         return set
     }
 
-    fun addEntryADXL(ACCdata: SYNCPPGDataPacket) {
+    fun addEntryADXL(ACCdata: SYNCPPGDataPacket, ADXLTimer: Stopwatch) {
         var data: LineData = accChart.data
 
         if (data != null) {
@@ -146,44 +147,40 @@ class ADXLFragment : Fragment() {
                 data.addDataSet(setZ)
             }
 
-            for (i in ACCdata.payload.streamData) {
-                if (i != null) {
-                    if (i.adxlX.toFloat() > 65000) {
-                        data.getDataSetByIndex(0).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), 65000 - i.adxlX.toFloat()))
-                    }
-                    else {
-                        data.getDataSetByIndex(0).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), i.adxlX.toFloat()))
-                    }
-                    if (i.adxlY.toFloat() > 65000) {
-                        data.getDataSetByIndex(1).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), 65000 - i.adxlY.toFloat()))
-                    }
-                    else {
-                        data.getDataSetByIndex(1).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), i.adxlY.toFloat()))
-                    }
-                    if (i.adxlZ.toFloat() > 65000) {
-                        data.getDataSetByIndex(2).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), 65000 - i.adxlZ.toFloat()))
-                    }
-                    else {
-                        data.getDataSetByIndex(2).addEntry(Entry((setX.entryCount + removalCounter).toFloat(), i.adxlZ.toFloat()))
+            if (ADXLTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
+                for (i in ACCdata.payload.streamData) {
+                    if (i != null) {
+                        if (i.adxlX.toFloat() > 65000) {
+                            data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlX.toFloat()))
+                        }
+                        else {
+                            data.getDataSetByIndex(0).addEntry(Entry(prevX++.toFloat(), i.adxlX.toFloat()))
+                        }
+                        if (i.adxlY.toFloat() > 65000) {
+                            data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlY.toFloat()))
+                        }
+                        else {
+                            data.getDataSetByIndex(1).addEntry(Entry(prevX++.toFloat(), i.adxlY.toFloat()))
+                        }
+                        if (i.adxlZ.toFloat() > 65000) {
+                            data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), 65000 - i.adxlZ.toFloat()))
+                        }
+                        else {
+                            data.getDataSetByIndex(2).addEntry(Entry(prevX++.toFloat(), i.adxlZ.toFloat()))
+                        }
                     }
                 }
-            }
+                data.notifyDataChanged()
 
-            if (setX.entryCount > maxEntry) {
-                data.removeEntry(removalCounter.toFloat(), 0)
-                data.removeEntry(removalCounter.toFloat(), 1)
-                data.removeEntry(removalCounter.toFloat(), 2)
-                setX.removeFirst()
-                setY.removeFirst()
-                setZ.removeFirst()
-                removalCounter++
-            }
+                // let the chart know it's data has changed
+                accChart.notifyDataSetChanged()
 
-            data.notifyDataChanged()
-            accChart.notifyDataSetChanged()
-            accChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-            accChart.moveViewToX((setX.entryCount + removalCounter).toFloat())
-            accChart.invalidate()
+                // limit the number of visible entries
+                accChart.setVisibleXRangeMaximum(4500f)
+
+                // move to the latest entry
+                accChart.moveViewToX(data.xMax)
+            }
         }
     }
 

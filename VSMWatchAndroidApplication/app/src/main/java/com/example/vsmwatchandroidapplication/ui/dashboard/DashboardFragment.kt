@@ -23,10 +23,12 @@ import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
+import com.google.common.base.Stopwatch
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.math.pow
 
 
@@ -34,7 +36,7 @@ var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
-var accOn = false
+
 
 class DashboardFragment : Fragment() {
 
@@ -214,11 +216,15 @@ class DashboardFragment : Fragment() {
     private fun readPPG() {
         if (watchSdk != null) {
             ppg.setLibraryConfiguration(ppgSensor)
+            var ppgTimer: Stopwatch = Stopwatch.createUnstarted()
             ppg.setSyncPPGCallback{ PPGDataPacket ->
-                (cf as ChartFragment).addEntry(PPGDataPacket)
-                (ppgF as PPGFragment).addEntry(PPGDataPacket)
-                (cf as ChartFragment).addEntryADXL(PPGDataPacket)
-                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket)
+                if (!ppgTimer.isRunning) {
+                    ppgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(PPGDataPacket, ppgTimer)
+                (ppgF as PPGFragment).addEntry(PPGDataPacket, ppgTimer)
+                (cf as ChartFragment).addEntryADXL(PPGDataPacket, ppgTimer)
+                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket, ppgTimer)
 
                 runOnUiThread {
                     PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
@@ -257,9 +263,13 @@ class DashboardFragment : Fragment() {
         if (watchSdk != null) {
             val ecg = watchSdk!!.ecgApplication
             ecg.setDecimationFactor(ecgDec)
+            var ecgTimer: Stopwatch = Stopwatch.createUnstarted()
             ecg.setCallback { ECGdata ->
-                (cf as ChartFragment).addEntry(ECGdata)
-                (ecgF as ECGFragment).addEntry(ECGdata)
+                if (!ecgTimer.isRunning) {
+                    ecgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(ECGdata, ecgTimer)
+                (ecgF as ECGFragment).addEntry(ECGdata, ecgTimer)
 
                 runOnUiThread {
                     ECGtxt?.text = ECGdata.payload.ecgInfo.toString()
@@ -305,17 +315,16 @@ class DashboardFragment : Fragment() {
             eda.setDecimationFactor(edaDec)
             eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
-//            val filepath: URI = URI.create("android.resource://com.example.vsmwatchandroidapplication/raw/eda_dcb")
-//            val myObj = File(filepath)
-//            eda.writeDeviceConfigurationBlockFromFile(myObj)
-//            eda.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x1E)))
-//            eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x0, 0x1E)))
+            var edaTimer: Stopwatch = Stopwatch.createUnstarted()
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
-                    (cf as ChartFragment).addEntryMag(EDADataPacket)
-                    (cf as ChartFragment).addEntryPhase(EDADataPacket)
-                    (edaMagF as EDAMagFragment).addEntryMag(EDADataPacket)
-                    (edaPhaseF as EDAPhaseFragment).addEntryPhase(EDADataPacket)
+                    if (!edaTimer.isRunning) {
+                        edaTimer.start()
+                    }
+                    (cf as ChartFragment).addEntryMag(EDADataPacket, edaTimer)
+                    (edaMagF as EDAMagFragment).addEntryMag(EDADataPacket, edaTimer)
+                    (cf as ChartFragment).addEntryPhase(EDADataPacket, edaTimer)
+                    (edaPhaseF as EDAPhaseFragment).addEntryPhase(EDADataPacket, edaTimer)
 
                     if (isLoggingOn && edaOn) {
                         for (i in EDADataPacket.payload.streamData) {
@@ -356,9 +365,13 @@ class DashboardFragment : Fragment() {
     fun readTemp() {
         if (watchSdk != null) {
             val temps = watchSdk!!.temperatureApplication
+            val tempTimer = Stopwatch.createUnstarted()
             temps.setCallback { TemperatureDataPacket ->
-                (cf as ChartFragment).addEntry(TemperatureDataPacket)
-                (tempF as TempFragment).addEntry(TemperatureDataPacket)
+                if (!tempTimer.isRunning) {
+                    tempTimer.start()
+                }
+                (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
+                (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
 
                 var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {

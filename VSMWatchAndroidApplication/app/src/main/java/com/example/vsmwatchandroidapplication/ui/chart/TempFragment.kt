@@ -20,14 +20,15 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.common.base.Stopwatch
+import java.util.concurrent.TimeUnit
 
 class TempFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     private lateinit var tempChart: LineChart
-    private var maxEntry = 300
-    private var removalCounter: Long = 0
+    private var prevX = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -108,7 +109,7 @@ class TempFragment : Fragment() {
         return set
     }
 
-    fun addEntry(TempData: TemperatureDataPacket) {
+    fun addEntry(TempData: TemperatureDataPacket, TempTimer: Stopwatch) {
         var data: LineData = tempChart.data
 
         if (data != null) {
@@ -117,23 +118,23 @@ class TempFragment : Fragment() {
                 set = createSet()
                 data.addDataSet(set)
             }
+            if (TempTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
+                if (TempData.payload != null) {
+                    data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+                }
 
 
-            if (TempData.payload != null) {
-                data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+                data.notifyDataChanged()
+
+                // let the chart know it's data has changed
+                tempChart.notifyDataSetChanged()
+
+                // limit the number of visible entries
+                tempChart.setVisibleXRangeMaximum(60f)
+
+                // move to the latest entry
+                tempChart.moveViewToX(data.xMax)
             }
-
-            if (set.entryCount >= maxEntry) {
-                data.removeEntry(removalCounter.toFloat(), 0)
-                set.removeFirst()
-                removalCounter++
-            }
-
-            data.notifyDataChanged()
-            tempChart.notifyDataSetChanged()
-            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-            tempChart.moveViewToX((set.entryCount + removalCounter).toFloat())
-            tempChart.invalidate()
         }
     }
 

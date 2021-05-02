@@ -20,6 +20,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.common.base.Stopwatch
+import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -28,8 +30,7 @@ class EDAMagFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private lateinit var edaMagChart: LineChart
     private var thread: Thread = Thread()
-    private var maxEntry = 200
-    private var removalCounter: Long = 0
+    private var prevX = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -110,7 +111,7 @@ class EDAMagFragment : Fragment() {
         return set
     }
 
-    fun addEntryMag(EDAdata: EDADataPacket) {
+    fun addEntryMag(EDAdata: EDADataPacket, EDATimer: Stopwatch) {
         val data: LineData = edaMagChart.data
 
         if (data != null) {
@@ -119,25 +120,24 @@ class EDAMagFragment : Fragment() {
                 set = createSet()
                 data.addDataSet(set)
             }
-
-            for (i in EDAdata.payload.streamData) {
-                if (i != null) {
-                    val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), mag), 0)
+            if (EDATimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
+                for (i in EDAdata.payload.streamData) {
+                    if (i != null) {
+                        val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                        data.addEntry(Entry(prevX++.toFloat(), mag), 0)
+                    }
                 }
-            }
+                data.notifyDataChanged()
 
-            if (set.entryCount >= maxEntry) {
-                data.removeEntry(removalCounter.toFloat(), 0)
-                set.removeFirst()
-                removalCounter++
-            }
+                // let the chart know it's data has changed
+                edaMagChart.notifyDataSetChanged()
 
-            data.notifyDataChanged()
-            edaMagChart.notifyDataSetChanged()
-            edaMagChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-            edaMagChart.moveViewToX((set.entryCount + removalCounter).toFloat())
-            edaMagChart.invalidate()
+                // limit the number of visible entries
+                edaMagChart.setVisibleXRangeMaximum(540f)
+
+                // move to the latest entry
+                edaMagChart.moveViewToX(data.xMax)
+            }
         }
     }
 
