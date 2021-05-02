@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.EDADFTWindow
-import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.enums.ScaleResistor
 import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.*
@@ -28,7 +28,6 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.math.pow
 
 
@@ -315,6 +314,10 @@ class DashboardFragment : Fragment() {
             eda.setDecimationFactor(edaDec)
             eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
+            val packet = eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x0, 0x1E)))
+            Log.d("test", packet.toString())
+
+            
             var edaTimer: Stopwatch = Stopwatch.createUnstarted()
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
