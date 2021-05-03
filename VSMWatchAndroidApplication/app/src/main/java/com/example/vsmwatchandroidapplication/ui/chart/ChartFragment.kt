@@ -33,12 +33,11 @@ class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private var maxPPGEntry = 1000
-    private var maxEntry = 300
     private var prevX = 0
     private var prevEDAPhaseX = 0
     private var prevEDAMagX = 0
     private var prevADXLX = 0
+    private var range = 30
 
     private lateinit var ecgChart: LineChart
     private lateinit var accChart: LineChart
@@ -543,8 +542,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 ecgChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (ECGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / ECGTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum(2700f)
+                ecgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 ecgChart.moveViewToX(data.xMax)
@@ -597,8 +601,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 accChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (ADXLTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevADXLX / ADXLTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum(4500f)
+                accChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 accChart.moveViewToX(data.xMax)
@@ -627,8 +636,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 edaMagChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (EDATimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevEDAMagX / EDATimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                edaMagChart.setVisibleXRangeMaximum(540f)
+                edaMagChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 edaMagChart.moveViewToX(data.xMax)
@@ -657,8 +671,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 edaPhaseChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (EDATimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevEDAPhaseX / EDATimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum(540f)
+                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 edaPhaseChart.moveViewToX(data.xMax)
@@ -687,8 +706,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 ppgChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (PPGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / PPGTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum(3000f)
+                ppgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)
@@ -716,8 +740,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 tempChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / TempTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum(60f)
+                tempChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

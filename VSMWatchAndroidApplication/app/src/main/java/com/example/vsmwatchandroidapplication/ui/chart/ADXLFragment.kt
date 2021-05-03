@@ -26,6 +26,7 @@ class ADXLFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var accChart: LineChart
     private var prevX = 0
+    private var range = 30
 
 
     override fun onCreateView(
@@ -175,8 +176,13 @@ class ADXLFragment : Fragment() {
                 // let the chart know it's data has changed
                 accChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (ADXLTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / ADXLTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum(4500f)
+                accChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 accChart.moveViewToX(data.xMax)

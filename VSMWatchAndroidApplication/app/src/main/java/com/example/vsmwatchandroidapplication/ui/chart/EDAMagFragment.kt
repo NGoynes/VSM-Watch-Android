@@ -31,6 +31,7 @@ class EDAMagFragment : Fragment() {
     private lateinit var edaMagChart: LineChart
     private var thread: Thread = Thread()
     private var prevX = 0
+    private var range = 60
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -132,8 +133,13 @@ class EDAMagFragment : Fragment() {
                 // let the chart know it's data has changed
                 edaMagChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (EDATimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / EDATimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                edaMagChart.setVisibleXRangeMaximum(540f)
+                edaMagChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 edaMagChart.moveViewToX(data.xMax)

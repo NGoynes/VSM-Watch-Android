@@ -29,6 +29,7 @@ class TempFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var tempChart: LineChart
     private var prevX = 0
+    private var range = 60
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -129,8 +130,13 @@ class TempFragment : Fragment() {
                 // let the chart know it's data has changed
                 tempChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / TempTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum(60f)
+                tempChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

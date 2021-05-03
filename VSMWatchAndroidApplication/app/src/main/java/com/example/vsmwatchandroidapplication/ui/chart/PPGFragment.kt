@@ -31,7 +31,7 @@ class PPGFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var ppgChart: LineChart
     private var prevX = 0
-
+    private var range = 30
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -135,8 +135,13 @@ class PPGFragment : Fragment() {
                 // let the chart know it's data has changed
                 ppgChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (PPGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / PPGTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum(3000f)
+                ppgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)

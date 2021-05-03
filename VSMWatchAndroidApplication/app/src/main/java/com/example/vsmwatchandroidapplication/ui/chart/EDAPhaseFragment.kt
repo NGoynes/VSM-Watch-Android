@@ -32,6 +32,7 @@ class EDAPhaseFragment : Fragment() {
     private lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
     private var prevX = 0
+    private var range = 60
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -133,8 +134,13 @@ class EDAPhaseFragment : Fragment() {
                 // let the chart know it's data has changed
                 edaPhaseChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (EDATimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / EDATimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum(540f)
+                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 edaPhaseChart.moveViewToX(data.xMax)

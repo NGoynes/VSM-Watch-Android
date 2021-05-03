@@ -31,6 +31,7 @@ class ECGFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
     private var prevX = 0
+    private var range = 30
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -128,8 +129,13 @@ class ECGFragment : Fragment() {
                 // let the chart know it's data has changed
                 ecgChart.notifyDataSetChanged()
 
+                var sampleRate: Long = 1
+                if (ECGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+                    sampleRate = prevX / ECGTimer.elapsed(TimeUnit.SECONDS)
+                }
+
                 // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum(2700f)
+                ecgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
 
                 // move to the latest entry
                 ecgChart.moveViewToX(data.xMax)
