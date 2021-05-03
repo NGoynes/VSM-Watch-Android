@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.core.packets.stream.ADXLDataPacket
 import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.adxlRange
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -26,7 +27,7 @@ class ADXLFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var accChart: LineChart
     private var prevX = 0
-    private var range = 30
+    //private var range = 30
 
 
     override fun onCreateView(
@@ -182,7 +183,7 @@ class ADXLFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                accChart.setVisibleXRangeMaximum((sampleRate * adxlRange).toFloat())
 
                 // move to the latest entry
                 accChart.moveViewToX(data.xMax)

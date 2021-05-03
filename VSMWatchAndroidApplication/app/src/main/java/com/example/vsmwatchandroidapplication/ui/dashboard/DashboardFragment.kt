@@ -215,6 +215,10 @@ class DashboardFragment : Fragment() {
     private fun readPPG() {
         if (watchSdk != null) {
             ppg.setLibraryConfiguration(ppgSensor)
+            //ppg.writeDCBToLCFG()
+            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x00, ppgSamp)))
+            val packet = ppg.readLibraryConfiguration(longArrayOf(0x00))
+            Log.d("test", packet.toString())
             var ppgTimer: Stopwatch = Stopwatch.createUnstarted()
             ppg.setSyncPPGCallback{ PPGDataPacket ->
                 if (!ppgTimer.isRunning) {
@@ -262,6 +266,10 @@ class DashboardFragment : Fragment() {
         if (watchSdk != null) {
             val ecg = watchSdk!!.ecgApplication
             ecg.setDecimationFactor(ecgDec)
+            ecg.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x00, ecgSamp)))
+            ecg.writeDCBToLCFG()
+            val packet = ecg.readLibraryConfiguration(longArrayOf(0x00))
+            Log.d("test", packet.toString())
             var ecgTimer: Stopwatch = Stopwatch.createUnstarted()
             ecg.setCallback { ECGdata ->
                 if (!ecgTimer.isRunning) {
@@ -314,7 +322,10 @@ class DashboardFragment : Fragment() {
             eda.setDecimationFactor(edaDec)
             eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
-            val packet = eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x0, 0x1E)))
+            println(edaSamp)
+            eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x00, edaSamp)))
+            eda.writeDCBToLCFG()
+            val packet = eda.readLibraryConfiguration(longArrayOf(0x00))
             Log.d("test", packet.toString())
 
             
@@ -375,10 +386,16 @@ class DashboardFragment : Fragment() {
                 }
                 (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
                 (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
-
                 var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
+                var Fahrenheit = (Celsius*(9/5)+32)
                 runOnUiThread {
-                    temptxt?.text = Celsius.toString() + "C"
+                    if(tempCel == true){
+                        temptxt?.text = Celsius.toString() + "°C"
+                    }
+                    else{
+                        temptxt?.text = Fahrenheit.toString() + "°F"
+                    }
+
 
                     (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, Celsius)
                 }

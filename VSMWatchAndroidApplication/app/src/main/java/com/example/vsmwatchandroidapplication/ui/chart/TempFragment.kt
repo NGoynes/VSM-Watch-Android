@@ -13,6 +13,7 @@ import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.cf
 import com.example.vsmwatchandroidapplication.fragman
+import com.example.vsmwatchandroidapplication.tempRange
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -29,7 +30,7 @@ class TempFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var tempChart: LineChart
     private var prevX = 0
-    private var range = 60
+    //private var range = 60
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -136,7 +137,7 @@ class TempFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                tempChart.setVisibleXRangeMaximum((sampleRate * tempRange).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

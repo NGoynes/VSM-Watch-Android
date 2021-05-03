@@ -12,6 +12,7 @@ import com.analog.study_watch_sdk.application.EDAApplication
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.edaRange
 import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -32,7 +33,7 @@ class EDAPhaseFragment : Fragment() {
     private lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
     private var prevX = 0
-    private var range = 60
+    //private var range = 60
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -140,7 +141,7 @@ class EDAPhaseFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * edaRange).toFloat())
 
                 // move to the latest entry
                 edaPhaseChart.moveViewToX(data.xMax)

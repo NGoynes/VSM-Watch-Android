@@ -12,6 +12,7 @@ import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.ecgRange
 import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -31,7 +32,7 @@ class ECGFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var ecgChart: LineChart
     private var prevX = 0
-    private var range = 30
+    //private var range = 30
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -135,7 +136,7 @@ class ECGFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                ecgChart.setVisibleXRangeMaximum((sampleRate * ecgRange).toFloat())
 
                 // move to the latest entry
                 ecgChart.moveViewToX(data.xMax)

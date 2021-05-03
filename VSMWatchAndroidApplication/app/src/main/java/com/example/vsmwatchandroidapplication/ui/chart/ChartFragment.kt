@@ -37,7 +37,7 @@ class ChartFragment : Fragment() {
     private var prevEDAPhaseX = 0
     private var prevEDAMagX = 0
     private var prevADXLX = 0
-    private var range = 30
+    //private var range = 90
 
     private lateinit var ecgChart: LineChart
     private lateinit var accChart: LineChart
@@ -548,7 +548,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                ecgChart.setVisibleXRangeMaximum((sampleRate * ecgRange).toFloat())
 
                 // move to the latest entry
                 ecgChart.moveViewToX(data.xMax)
@@ -607,7 +607,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                accChart.setVisibleXRangeMaximum((sampleRate * adxlRange).toFloat())
 
                 // move to the latest entry
                 accChart.moveViewToX(data.xMax)
@@ -642,7 +642,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                edaMagChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                edaMagChart.setVisibleXRangeMaximum((sampleRate * edaRange).toFloat())
 
                 // move to the latest entry
                 edaMagChart.moveViewToX(data.xMax)
@@ -677,7 +677,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                edaPhaseChart.setVisibleXRangeMaximum((sampleRate * edaRange).toFloat())
 
                 // move to the latest entry
                 edaPhaseChart.moveViewToX(data.xMax)
@@ -712,7 +712,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                ppgChart.setVisibleXRangeMaximum((sampleRate * ppgRange).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)
@@ -731,7 +731,13 @@ class ChartFragment : Fragment() {
             }
             if (TempTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
                 if (TempData.payload != null) {
-                    data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+                    if(tempCel){
+                        data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+                    }
+                    else{
+                        data.addEntry(Entry(prevX++.toFloat(), (TempData.payload.temperature1.toFloat() / 10)*(9/5) + 32), 0)
+                    }
+
                 }
 
 
@@ -746,7 +752,7 @@ class ChartFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                tempChart.setVisibleXRangeMaximum((sampleRate * tempRange).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

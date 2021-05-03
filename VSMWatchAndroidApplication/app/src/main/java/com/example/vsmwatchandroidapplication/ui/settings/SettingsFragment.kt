@@ -34,6 +34,7 @@ class SettingsFragment : Fragment() {
         vitalStrings.add("PPG")
         vitalStrings.add("ECG")
         vitalStrings.add("EDA")
+        vitalStrings.add("Temperature")
         vitalStrings.add("System Information")
 
         vitalSettings = root.findViewById(R.id.vital_settings)
@@ -54,6 +55,10 @@ class SettingsFragment : Fragment() {
                 }
                 "EDA" -> {
                     val intent = Intent(context?.applicationContext, EDASetting::class.java)
+                    startActivity(intent)
+                }
+                "Temperature" -> {
+                    val intent = Intent(context?.applicationContext, TempSetting::class.java)
                     startActivity(intent)
                 }
                 else -> {

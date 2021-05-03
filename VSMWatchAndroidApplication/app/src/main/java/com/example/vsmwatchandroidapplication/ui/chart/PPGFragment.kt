@@ -11,6 +11,7 @@ import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.df
+import com.example.vsmwatchandroidapplication.ppgRange
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -31,7 +32,7 @@ class PPGFragment : Fragment() {
     private var thread: Thread = Thread()
     private lateinit var ppgChart: LineChart
     private var prevX = 0
-    private var range = 30
+    //private var range = 30
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -141,7 +142,7 @@ class PPGFragment : Fragment() {
                 }
 
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum((sampleRate * range).toFloat())
+                ppgChart.setVisibleXRangeMaximum((sampleRate * ppgRange).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)

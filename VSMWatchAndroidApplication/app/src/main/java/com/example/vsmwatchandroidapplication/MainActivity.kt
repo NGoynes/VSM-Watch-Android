@@ -43,6 +43,15 @@ var tempF : Fragment? = null
 var ppgSensor = PPGLcfgID.LCFG_ID_ADPD4000
 var ecgDec = 1
 var edaDec = 1
+var edaSamp= 0x1EL
+var ecgSamp= 0xFAL
+var ppgSamp= 0xFAL
+var ppgRange = 90
+var edaRange = 90
+var ecgRange = 90
+var tempRange = 90
+var adxlRange = 90
+var tempCel = true
 var fragman : FragmentManager? = null
 
 class MainActivity : AppCompatActivity() {
