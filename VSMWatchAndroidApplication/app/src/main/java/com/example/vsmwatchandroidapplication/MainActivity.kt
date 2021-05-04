@@ -7,9 +7,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,9 +30,11 @@ import com.example.vsmwatchandroidapplication.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 var watchSdk // sdk reference variable
 : SDK? = null
+var runnable: Runnable? = null
+var delay = 10000
+
 var df : Fragment? = null
 var cf : Fragment? = null
 var lf : Fragment? = null
@@ -53,6 +58,7 @@ var tempRange = 90
 var adxlRange = 90
 var tempCel = true
 var fragman : FragmentManager? = null
+
 
 class MainActivity : AppCompatActivity() {
     private val CHANNEL_ID = "channel_id_01"
@@ -202,14 +208,14 @@ class MainActivity : AppCompatActivity() {
         var batteryPct = ScanFragment().readBatter()
         batterytxt.setText(batteryPct.toString() + "%")
         if (batteryPct != null) {
-            if (batteryPct <= 30) {
+            if (batteryPct <= 10) {
                 batteryImage.setImageResource(R.drawable.low_battery)
                 if (notified == false) {
                     sendNotification()
                     notified = true
                 }
             } else {
-                batteryImage.setImageResource(R.drawable.low_battery)
+                batteryImage.setImageResource(R.drawable.full_battery)
                 notified = false
             }
         }
@@ -229,5 +235,18 @@ class MainActivity : AppCompatActivity() {
                 .hide(tempF as TempFragment)
                 .show(cf as ChartFragment)
                 .commit()
+    }
+    var handler: Handler = Handler()
+
+    override fun onResume() {
+        handler.postDelayed(Runnable {
+            handler.postDelayed(runnable!!, delay.toLong())
+            checkBattery()
+        }.also { runnable = it }, delay.toLong())
+        super.onResume()
+    }
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(runnable!!)
     }
 }

@@ -64,7 +64,6 @@ class ChartFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_chart, container, false)
 
         (activity as MainActivity)?.supportActionBar?.title = "Chart"
-        (activity as MainActivity).checkBattery()
         ppgChart = root.findViewById((R.id.ppgChart))
         ecgChart = root.findViewById((R.id.ecgChart))
         edaPhaseChart = root.findViewById((R.id.edaPhaseChart))

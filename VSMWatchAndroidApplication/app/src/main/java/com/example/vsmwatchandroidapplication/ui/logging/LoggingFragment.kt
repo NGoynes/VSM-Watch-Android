@@ -71,7 +71,6 @@ class LoggingFragment : Fragment() {
         val f: String = context!!.filesDir.path
 
         (activity as MainActivity).supportActionBar?.title = "Logging"
-        (activity as MainActivity).checkBattery()
 
         // Initialize Switches
         switchStartLog = root.findViewById(R.id.switch_startLogging)

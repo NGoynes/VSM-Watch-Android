@@ -59,7 +59,6 @@ class DashboardFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         (activity as MainActivity).supportActionBar?.title = "Dashboard"
-        (activity as MainActivity).checkBattery()
 
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
