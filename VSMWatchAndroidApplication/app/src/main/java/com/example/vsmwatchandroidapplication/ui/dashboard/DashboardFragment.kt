@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +17,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.PPGApplication
 import com.analog.study_watch_sdk.core.enums.EDADFTWindow
-import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.enums.ScaleResistor
 import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
+import com.github.mikephil.charting.data.LineData
+import com.google.common.base.Stopwatch
+import kotlinx.android.synthetic.main.fragment_chart.*
+import org.jetbrains.anko.support.v4.find
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt
@@ -34,6 +38,7 @@ var ppgOn = false
 var edaOn = false
 var ecgOn = false
 var tempOn = false
+
 
 class DashboardFragment : Fragment() {
 
@@ -57,7 +62,6 @@ class DashboardFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         (activity as MainActivity).supportActionBar?.title = "Dashboard"
-        (activity as MainActivity).checkBattery()
 
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
@@ -71,23 +75,33 @@ class DashboardFragment : Fragment() {
         PPGsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                if (!isLoggingOn) {
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    tempsw.isChecked = false
-                    resetVal()
+                EDAsw.isChecked = false
+                ECGsw.isChecked = false
+                tempsw.isChecked = false
+                resetVal()
 
-                    stopECG(true)
-                    stopEDA(true)
-                    stopTemp(true)
+                stopECG(true)
+                stopEDA(true)
+                stopTemp(true)
 
-                    // Begin reading PPG
-                    readPPG()
-                    ppgOn = true
-                } else {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                    PPGsw.isChecked = false
-                }
+                //reset graph
+                val ppgData = LineData()
+                val ppgIndData = LineData()
+                (cf as ChartFragment).ppgChart.fitScreen()
+                (cf as ChartFragment).ppgChart.invalidate()
+                (cf as ChartFragment).ppgChart.clear()
+                (cf as ChartFragment).ppgChart.data = ppgData
+                (cf as ChartFragment).prevPPGX = 0
+                (ppgF as PPGFragment).ppgChart.fitScreen()
+                (ppgF as PPGFragment).ppgChart.invalidate()
+                (ppgF as PPGFragment).ppgChart.clear()
+                (ppgF as PPGFragment).ppgChart.data = ppgIndData
+                (ppgF as PPGFragment).prevX = 0
+
+                // Begin reading PPG
+                readPPG()
+                ppgOn = true
+
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -103,23 +117,45 @@ class DashboardFragment : Fragment() {
         EDAsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                if (!isLoggingOn) {
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
-                    resetVal()
+                ECGsw.isChecked = false
+                PPGsw.isChecked = false
+                tempsw.isChecked = false
+                resetVal()
 
-                    stopPPG(true)
-                    stopECG(true)
-                    stopTemp(true)
+                stopPPG(true)
+                stopECG(true)
+                stopTemp(true)
 
-                    // Begin reading EDA
-                    readEDA()
-                    edaOn = true
-                } else {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                    EDAsw.isChecked = false
-                }
+                //reset graph
+                //reset graph
+                val edaMagData = LineData()
+                val edaPhaseData = LineData()
+                val edaMagIndData = LineData()
+                val edaPhaseIndData = LineData()
+                (cf as ChartFragment).edaMagChart.fitScreen()
+                (cf as ChartFragment).edaMagChart.invalidate()
+                (cf as ChartFragment).edaMagChart.clear()
+                (cf as ChartFragment).edaMagChart.data = edaMagData
+                (cf as ChartFragment).prevEDAMagX = 0
+                (cf as ChartFragment).edaPhaseChart.fitScreen()
+                (cf as ChartFragment).edaPhaseChart.invalidate()
+                (cf as ChartFragment).edaPhaseChart.clear()
+                (cf as ChartFragment).edaPhaseChart.data = edaPhaseData
+                (cf as ChartFragment).prevEDAPhaseX = 0
+                (edaMagF as EDAMagFragment).edaMagChart.fitScreen()
+                (edaMagF as EDAMagFragment).edaMagChart.invalidate()
+                (edaMagF as EDAMagFragment).edaMagChart.clear()
+                (edaMagF as EDAMagFragment).edaMagChart.data = edaMagIndData
+                (edaMagF as EDAMagFragment).prevX = 0
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.fitScreen()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.invalidate()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.clear()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.data = edaPhaseIndData
+                (edaPhaseF as EDAPhaseFragment).prevX = 0
+
+                // Begin reading EDA
+                readEDA()
+                edaOn = true
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -135,7 +171,7 @@ class DashboardFragment : Fragment() {
         ECGsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                if (!isLoggingOn) {
+
                     EDAsw.isChecked = false
                     PPGsw.isChecked = false
                     tempsw.isChecked = false
@@ -145,13 +181,23 @@ class DashboardFragment : Fragment() {
                     stopEDA(true)
                     stopTemp(true)
 
+                    //reset graph
+                    val ecgData = LineData()
+                    val ecgIndData = LineData()
+                    (cf as ChartFragment).ecgChart.fitScreen()
+                    (cf as ChartFragment).ecgChart.invalidate()
+                    (cf as ChartFragment).ecgChart.clear()
+                    (cf as ChartFragment).ecgChart.data = ecgData
+                    (cf as ChartFragment).prevECGX = 0
+                    (ecgF as ECGFragment).ecgChart.fitScreen()
+                    (ecgF as ECGFragment).ecgChart.invalidate()
+                    (ecgF as ECGFragment).ecgChart.clear()
+                    (ecgF as ECGFragment).ecgChart.data = ecgIndData
+                    (ecgF as ECGFragment).prevX = 0
+
                     // Begin reading ECG
                     readECG()
                     ecgOn = true
-                } else {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                    ECGsw.isChecked = false
-                }
             } else {
                 if(isLoggingOn) {
                     Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
@@ -168,23 +214,32 @@ class DashboardFragment : Fragment() {
         tempsw.setOnCheckedChangeListener { _, onSwitch ->
             if (onSwitch) {
                 // Turn off other signals
-                if(!isLoggingOn) {
-                    EDAsw.isChecked = false
-                    ECGsw.isChecked = false
-                    PPGsw.isChecked = false
-                    resetVal()
+                EDAsw.isChecked = false
+                ECGsw.isChecked = false
+                PPGsw.isChecked = false
+                resetVal()
 
-                    stopPPG(true)
-                    stopEDA(true)
-                    stopECG(true)
+                stopPPG(true)
+                stopEDA(true)
+                stopECG(true)
 
-                    // Begin reading temperature
-                    readTemp()
-                    tempOn = true
-                } else {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-                    tempsw.isChecked = false
-                }
+                //reset graph
+                val tempData = LineData()
+                val tempIndData = LineData()
+                (cf as ChartFragment).tempChart.fitScreen()
+                (cf as ChartFragment).tempChart.invalidate()
+                (cf as ChartFragment).tempChart.clear()
+                (cf as ChartFragment).tempChart.data = tempData
+                (cf as ChartFragment).prevTempX = 0
+                (tempF as TempFragment).tempChart.fitScreen()
+                (tempF as TempFragment).tempChart.invalidate()
+                (tempF as TempFragment).tempChart.clear()
+                (tempF as TempFragment).tempChart.data = tempIndData
+                (tempF as TempFragment).prevX = 0
+
+                // Begin reading temperature
+                readTemp()
+                tempOn = true
             }
             else {
                 if(isLoggingOn) {
@@ -231,11 +286,19 @@ class DashboardFragment : Fragment() {
     private fun readPPG() {
         if (watchSdk != null) {
             ppg.setLibraryConfiguration(ppgSensor)
+            //ppg.writeDCBToLCFG()
+            ppg.writeLibraryConfiguration(arrayOf(longArrayOf(0x00, ppgSamp)))
+            val packet = ppg.readLibraryConfiguration(longArrayOf(0x00))
+            Log.d("test", packet.toString())
+            var ppgTimer: Stopwatch = Stopwatch.createUnstarted()
             ppg.setSyncPPGCallback{ PPGDataPacket ->
-                (cf as ChartFragment).addEntry(PPGDataPacket)
-                (ppgF as PPGFragment).addEntry(PPGDataPacket)
-                (cf as ChartFragment).addEntryADXL(PPGDataPacket)
-                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket)
+                if (!ppgTimer.isRunning) {
+                    ppgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(PPGDataPacket, ppgTimer)
+                (ppgF as PPGFragment).addEntry(PPGDataPacket, ppgTimer)
+                (cf as ChartFragment).addEntryADXL(PPGDataPacket, ppgTimer)
+                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket, ppgTimer)
 
                 runOnUiThread {
                     PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
@@ -260,6 +323,11 @@ class DashboardFragment : Fragment() {
             ppg.stopSensor()
             ppg.stopAndUnsubscribeStream()
 
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "PPGData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("PPG", fileName)
+            }
             resetVal()
         }
     }
@@ -269,9 +337,17 @@ class DashboardFragment : Fragment() {
         if (watchSdk != null) {
             val ecg = watchSdk!!.ecgApplication
             ecg.setDecimationFactor(ecgDec)
+            ecg.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x00, ecgSamp)))
+            ecg.writeDCBToLCFG()
+            val packet = ecg.readLibraryConfiguration(longArrayOf(0x00))
+            Log.d("test", packet.toString())
+            var ecgTimer: Stopwatch = Stopwatch.createUnstarted()
             ecg.setCallback { ECGdata ->
-                (cf as ChartFragment).addEntry(ECGdata)
-                (ecgF as ECGFragment).addEntry(ECGdata)
+                if (!ecgTimer.isRunning) {
+                    ecgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(ECGdata, ecgTimer)
+                (ecgF as ECGFragment).addEntry(ECGdata, ecgTimer)
 
                 runOnUiThread {
                     ECGtxt?.text = ECGdata.payload.ecgInfo.toString()
@@ -300,6 +376,12 @@ class DashboardFragment : Fragment() {
             ecg.stopAndUnsubscribeStream()
             ecg.setTimeout(5)
 
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "ECGData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("ECG", fileName)
+            }
+
             resetVal()
         }
     }
@@ -311,23 +393,29 @@ class DashboardFragment : Fragment() {
             eda.setDecimationFactor(edaDec)
             eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
-//            val filepath: URI = URI.create("android.resource://com.example.vsmwatchandroidapplication/raw/eda_dcb")
-//            val myObj = File(filepath)
-//            eda.writeDeviceConfigurationBlockFromFile(myObj)
-//            eda.writeLibraryConfiguration(arrayOf(longArrayOf(0x0, 0x1E)))
-//            eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x0, 0x1E)))
+            println(edaSamp)
+            eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x00, edaSamp)))
+            eda.writeDCBToLCFG()
+            val packet = eda.readLibraryConfiguration(longArrayOf(0x00))
+            Log.d("test", packet.toString())
+
+            
+            var edaTimer: Stopwatch = Stopwatch.createUnstarted()
             eda.setCallback { EDADataPacket ->
                 runOnUiThread {
-                    (cf as ChartFragment).addEntryMag(EDADataPacket)
-                    (cf as ChartFragment).addEntryPhase(EDADataPacket)
-                    (edaMagF as EDAMagFragment).addEntryMag(EDADataPacket)
-                    (edaPhaseF as EDAPhaseFragment).addEntryPhase(EDADataPacket)
+                    if (!edaTimer.isRunning) {
+                        edaTimer.start()
+                    }
+                    (cf as ChartFragment).addEntryMag(EDADataPacket, edaTimer)
+                    (edaMagF as EDAMagFragment).addEntryMag(EDADataPacket, edaTimer)
+                    (cf as ChartFragment).addEntryPhase(EDADataPacket, edaTimer)
+                    (edaPhaseF as EDAPhaseFragment).addEntryPhase(EDADataPacket, edaTimer)
 
                     if (isLoggingOn && edaOn) {
                         for (i in EDADataPacket.payload.streamData) {
-                            if (i != null && i.realData != 0) {
-                                val mag = kotlin.math.sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                                val phase = kotlin.math.atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
+                            if (i != null) {
+                                val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                                val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
 
                                 (lf as LoggingFragment).recordVital(i.timestamp, i.realData, i.imaginaryData, mag, phase)
                             }
@@ -345,27 +433,53 @@ class DashboardFragment : Fragment() {
     {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
+            resetVal()
+
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "EDAData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("EDA", fileName)
+            }
 
             eda.stopSensor()
             eda.stopAndUnsubscribeStream()
-
-            resetVal()
         }
 
     }
 
-    private fun readTemp() {
+    fun readTemp() {
         if (watchSdk != null) {
             val temps = watchSdk!!.temperatureApplication
+            val tempTimer = Stopwatch.createUnstarted()
             temps.setCallback { TemperatureDataPacket ->
-                (cf as ChartFragment).addEntry(TemperatureDataPacket)
-                (tempF as TempFragment).addEntry(TemperatureDataPacket)
-
-                var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
                 runOnUiThread {
-                    temptxt?.text = Celsius.toString() + "C"
+                    if (!tempTimer.isRunning) {
+                        tempTimer.start()
+                    }
+                    (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
+                    (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
+                    var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
+                    var Fahrenheit = (Celsius*(9/5)+32)
+                    if(tempCel == true){
+                        temptxt?.text = Celsius.toString() + "°C"
+                    }
+                    else{
+                        temptxt?.text = Fahrenheit.toString() + "°F"
+                    }
 
-                    (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, Celsius)
+                    if(isLoggingOn && tempOn) {
+                        if(tempCel == true){
+                            (lf as LoggingFragment).recordVital(
+                                TemperatureDataPacket.payload.timestamp,
+                                Celsius)
+                        }
+                        else{
+                            (lf as LoggingFragment).recordVital(
+                                TemperatureDataPacket.payload.timestamp,
+                                Fahrenheit)
+                        }
+
+                    }
                 }
             }
 
@@ -382,6 +496,12 @@ class DashboardFragment : Fragment() {
 
             temp.stopSensor()
             temp.stopAndUnsubscribeStream()
+
+            if (!forcedSwitchOff && hasLogged) {
+                val currentDateTime = LocalDateTime.now()
+                val fileName = "TemperatureData$currentDateTime.csv"
+                (lf as LoggingFragment).writeToFile("Temperature", fileName)
+            }
 
             resetVal()
         }

@@ -68,7 +68,6 @@ class LoggingFragment : Fragment() {
         val f: String = context!!.filesDir.path
 
         (activity as MainActivity).supportActionBar?.title = "Logging"
-        (activity as MainActivity).checkBattery()
 
         // Initialize Switches
         switchStartLog = root.findViewById(R.id.switch_startLogging)
@@ -156,7 +155,13 @@ class LoggingFragment : Fragment() {
                 if (switchTemperature.isChecked) {
                     ecg_ppg_tempData.append("Time (s)")
                     ecg_ppg_tempData.append(",")
-                    ecg_ppg_tempData.append("Temperature (C)")
+                    if(tempCel){
+                        ecg_ppg_tempData.append("Temperature (C)")
+                    }
+                    else{
+                        ecg_ppg_tempData.append("Temperature (F)")
+                    }
+
                     ecg_ppg_tempData.append('\n')
                 }
 

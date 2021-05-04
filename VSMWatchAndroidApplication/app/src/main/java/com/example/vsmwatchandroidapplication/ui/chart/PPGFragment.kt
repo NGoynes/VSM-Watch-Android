@@ -11,6 +11,8 @@ import com.analog.study_watch_sdk.core.enums.PPGLcfgID
 import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.df
+import com.example.vsmwatchandroidapplication.ppgRange
+import com.example.vsmwatchandroidapplication.ppgSamp
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -19,15 +21,18 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.common.base.Stopwatch
 import org.jetbrains.anko.support.v4.runOnUiThread
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PPGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private lateinit var ppgChart: LineChart
-    private var maxEntry = 300
-    private var removalCounter: Long = 0
+    lateinit var ppgChart: LineChart
+    var prevX = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -80,6 +85,7 @@ class PPGFragment : Fragment() {
         ppgXl.textColor = Color.WHITE
         ppgXl.setDrawGridLines(false)
         ppgXl.setAvoidFirstLastClipping(true)
+        ppgXl.setLabelCount(5, true)
         ppgXl.isEnabled = true
 
         val ppgLeftAxis: YAxis = ppgChart.axisLeft
@@ -111,7 +117,7 @@ class PPGFragment : Fragment() {
         return set
     }
 
-    fun addEntry(PPGdata: SYNCPPGDataPacket) {
+    fun addEntry(PPGdata: SYNCPPGDataPacket, PPGTimer: Stopwatch) {
         var data: LineData = ppgChart.data
 
         if (data != null) {
@@ -121,27 +127,24 @@ class PPGFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            for (i in PPGdata.payload.streamData) {
-                if (i != null) {
-                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ppgData.toFloat()), 0)
-                    val xval = set.entryCount + removalCounter
-                    println("X:$xval")
-                    println("Y:" + i.ppgData)
-                    println("\n")
+            if (PPGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
+                for (i in PPGdata.payload.streamData) {
+                    if (i != null) {
+                        data.addEntry(Entry((prevX++).toFloat(), i.ppgData.toFloat()), 0)
+                    }
                 }
-            }
+                data.notifyDataChanged()
 
-            if (set.entryCount >= maxEntry) {
-                data.removeEntry(removalCounter.toFloat(), 0)
-                set.removeFirst()
-                removalCounter++
-            }
+                // let the chart know it's data has changed
+                ppgChart.notifyDataSetChanged()
 
-            data.notifyDataChanged()
-            ppgChart.notifyDataSetChanged()
-            ppgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
-            ppgChart.moveViewToX((set.entryCount + removalCounter).toFloat())
-            ppgChart.invalidate()
+
+                // limit the number of visible entries
+                ppgChart.setVisibleXRangeMaximum((ppgSamp * ppgRange).toFloat())
+
+                // move to the latest entry
+                ppgChart.moveViewToX(data.xMax)
+            }
         }
     }
 

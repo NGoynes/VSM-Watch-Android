@@ -39,6 +39,9 @@
             android:name=".ui.logging.TemperatureLog"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.settings.TempSetting"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.dashboard.ScanFragment"
             android:screenOrientation="portrait">
             <intent-filter>
