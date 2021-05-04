@@ -5,15 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.TemperatureApplication
 import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.fragman
-import com.example.vsmwatchandroidapplication.tempRange
+import com.example.vsmwatchandroidapplication.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -22,6 +20,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.common.base.Stopwatch
+import kotlinx.android.synthetic.main.fragment_chart.*
 import java.util.concurrent.TimeUnit
 
 class TempFragment : Fragment() {
@@ -29,6 +28,7 @@ class TempFragment : Fragment() {
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
     lateinit var tempChart: LineChart
+    private var Temptitle: TextView? = null
     var prevX = 0
     //private var range = 60
 
@@ -42,6 +42,7 @@ class TempFragment : Fragment() {
 
         tempChart = root.findViewById((R.id.tempChartInd))
 
+        Temptitle = root.findViewById((R.id.tempCurrInd))
         // enable description text
         tempChart.description.isEnabled = true
         tempChart.description.text = "Temperature Sensor Stream"
@@ -113,7 +114,14 @@ class TempFragment : Fragment() {
 
     fun addEntry(TempData: TemperatureDataPacket, TempTimer: Stopwatch) {
         var data: LineData = tempChart.data
+        if(tempCel){
+            Temptitle!!.text = "Temp. (C)"
+        }
+        else{
 
+
+            Temptitle!!.text = "Temp. (F)"
+        }
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
@@ -131,13 +139,8 @@ class TempFragment : Fragment() {
                 // let the chart know it's data has changed
                 tempChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / TempTimer.elapsed(TimeUnit.SECONDS)
-                }
-
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((sampleRate * tempRange).toFloat())
+                tempChart.setVisibleXRangeMaximum((1 * tempRange).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

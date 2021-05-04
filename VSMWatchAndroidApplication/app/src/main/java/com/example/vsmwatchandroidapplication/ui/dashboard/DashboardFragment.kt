@@ -26,6 +26,7 @@ import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import com.github.mikephil.charting.data.LineData
 import com.google.common.base.Stopwatch
 import kotlinx.android.synthetic.main.fragment_chart.*
+import org.jetbrains.anko.support.v4.find
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt

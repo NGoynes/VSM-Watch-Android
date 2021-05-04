@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +24,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.common.base.Stopwatch
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_chart.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.atan
 import kotlin.math.pow
@@ -39,6 +41,7 @@ class ChartFragment : Fragment() {
     var prevEDAPhaseX = 0
     var prevEDAMagX = 0
     var prevADXLX = 0
+    private var Temptitle: TextView? = null
 
     lateinit var ecgChart: LineChart
     lateinit var accChart: LineChart
@@ -65,6 +68,7 @@ class ChartFragment : Fragment() {
         accChart = root.findViewById((R.id.accChart))
         tempChart = root.findViewById((R.id.tempChart))
 
+        Temptitle = root.findViewById(R.id.tempCurr)
         //ECG GRAPHING
         // enable description text
         ecgChart.description.isEnabled = false
@@ -693,7 +697,12 @@ class ChartFragment : Fragment() {
 
     fun addEntry(TempData: TemperatureDataPacket, TempTimer: Stopwatch) {
         var data: LineData = tempChart.data
-
+        if(tempCel){
+             Temptitle?.text = "Temp. (C)"
+        }
+        else{
+            Temptitle?.text = "Temp. (F)"
+        }
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
