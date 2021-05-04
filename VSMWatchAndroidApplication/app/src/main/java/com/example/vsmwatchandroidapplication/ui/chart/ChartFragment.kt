@@ -717,13 +717,13 @@ class ChartFragment : Fragment() {
                 // let the chart know it's data has changed
                 tempChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevTempX / TempTimer.elapsed(TimeUnit.SECONDS)
-                }
+//                var sampleRate: Long = 1
+//                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
+//                    sampleRate = prevTempX / TempTimer.elapsed(TimeUnit.SECONDS)
+//                }
 
                 // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((sampleRate * tempRange).toFloat())
+                tempChart.setVisibleXRangeMaximum((1 * tempRange).toFloat())
 
                 // move to the latest entry
                 tempChart.moveViewToX(data.xMax)

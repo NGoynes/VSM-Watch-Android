@@ -451,14 +451,14 @@ class DashboardFragment : Fragment() {
             val temps = watchSdk!!.temperatureApplication
             val tempTimer = Stopwatch.createUnstarted()
             temps.setCallback { TemperatureDataPacket ->
-                if (!tempTimer.isRunning) {
-                    tempTimer.start()
-                }
-                (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
-                (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
-                var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
-                var Fahrenheit = (Celsius*(9/5)+32)
                 runOnUiThread {
+                    if (!tempTimer.isRunning) {
+                        tempTimer.start()
+                    }
+                    (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
+                    (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
+                    var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
+                    var Fahrenheit = (Celsius*(9/5)+32)
                     if(tempCel == true){
                         temptxt?.text = Celsius.toString() + "°C"
                     }
@@ -466,8 +466,19 @@ class DashboardFragment : Fragment() {
                         temptxt?.text = Fahrenheit.toString() + "°F"
                     }
 
+                    if(isLoggingOn && tempOn) {
+                        if(tempCel == true){
+                            (lf as LoggingFragment).recordVital(
+                                TemperatureDataPacket.payload.timestamp,
+                                Celsius)
+                        }
+                        else{
+                            (lf as LoggingFragment).recordVital(
+                                TemperatureDataPacket.payload.timestamp,
+                                Fahrenheit)
+                        }
 
-                    (lf as LoggingFragment).recordVital(TemperatureDataPacket.payload.timestamp, Celsius)
+                    }
                 }
             }
 

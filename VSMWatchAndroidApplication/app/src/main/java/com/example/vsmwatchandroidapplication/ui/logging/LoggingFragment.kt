@@ -169,7 +169,13 @@ class LoggingFragment : Fragment() {
                 if (switchTemperature.isChecked) {
                     ecg_ppg_tempData.append("Time (s)")
                     ecg_ppg_tempData.append(",")
-                    ecg_ppg_tempData.append("Temperature (C)")
+                    if(tempCel){
+                        ecg_ppg_tempData.append("Temperature (C)")
+                    }
+                    else{
+                        ecg_ppg_tempData.append("Temperature (F)")
+                    }
+
                     ecg_ppg_tempData.append('\n')
                 }
 

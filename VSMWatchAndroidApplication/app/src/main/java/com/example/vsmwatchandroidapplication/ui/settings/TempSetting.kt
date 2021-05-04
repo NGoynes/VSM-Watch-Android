@@ -17,7 +17,7 @@ class TempSetting : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ppg_setting)
+        setContentView(R.layout.activity_temp_setting)
         val spinner = findViewById<View>(R.id.spinner) as Spinner
         val spinnerUnit = findViewById<View>(R.id.spinnerUnit) as Spinner
         spinner.setOnItemSelectedListener(TempSpinnerActivity());
