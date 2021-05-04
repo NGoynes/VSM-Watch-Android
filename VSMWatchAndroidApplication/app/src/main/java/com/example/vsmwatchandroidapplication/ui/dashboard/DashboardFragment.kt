@@ -170,7 +170,7 @@ class DashboardFragment : Fragment() {
         ECGsw.setOnCheckedChangeListener { _, onSwitch ->
             if(onSwitch) {
                 // Turn off other signals
-                if (EDAsw.isChecked)
+
                     EDAsw.isChecked = false
                     PPGsw.isChecked = false
                     tempsw.isChecked = false

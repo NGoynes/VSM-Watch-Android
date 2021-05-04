@@ -10,10 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.ecgRange
-import com.example.vsmwatchandroidapplication.fragman
+import com.example.vsmwatchandroidapplication.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -130,13 +127,9 @@ class ECGFragment : Fragment() {
                 // let the chart know it's data has changed
                 ecgChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (ECGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / ECGTimer.elapsed(TimeUnit.SECONDS)
-                }
 
                 // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum((sampleRate * ecgRange).toFloat())
+                ecgChart.setVisibleXRangeMaximum((ecgSamp * ecgRange).toFloat())
 
                 // move to the latest entry
                 ecgChart.moveViewToX(data.xMax)

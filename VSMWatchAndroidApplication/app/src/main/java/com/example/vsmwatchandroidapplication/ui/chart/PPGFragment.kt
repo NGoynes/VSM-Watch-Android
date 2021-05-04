@@ -12,6 +12,7 @@ import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.df
 import com.example.vsmwatchandroidapplication.ppgRange
+import com.example.vsmwatchandroidapplication.ppgSamp
 import com.example.vsmwatchandroidapplication.ui.dashboard.DashboardFragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -136,13 +137,9 @@ class PPGFragment : Fragment() {
                 // let the chart know it's data has changed
                 ppgChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (PPGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / PPGTimer.elapsed(TimeUnit.SECONDS)
-                }
 
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum((sampleRate * ppgRange).toFloat())
+                ppgChart.setVisibleXRangeMaximum((ppgSamp * ppgRange).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)

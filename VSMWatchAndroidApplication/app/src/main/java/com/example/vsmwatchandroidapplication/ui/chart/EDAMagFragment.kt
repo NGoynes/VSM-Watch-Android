@@ -10,10 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.EDAApplication
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
-import com.example.vsmwatchandroidapplication.R
-import com.example.vsmwatchandroidapplication.cf
-import com.example.vsmwatchandroidapplication.edaRange
-import com.example.vsmwatchandroidapplication.fragman
+import com.example.vsmwatchandroidapplication.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -134,13 +131,9 @@ class EDAMagFragment : Fragment() {
                 // let the chart know it's data has changed
                 edaMagChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (EDATimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / EDATimer.elapsed(TimeUnit.SECONDS)
-                }
 
                 // limit the number of visible entries
-                edaMagChart.setVisibleXRangeMaximum((sampleRate * edaRange).toFloat())
+                edaMagChart.setVisibleXRangeMaximum((edaSamp * edaRange).toFloat())
 
                 // move to the latest entry
                 edaMagChart.moveViewToX(data.xMax)

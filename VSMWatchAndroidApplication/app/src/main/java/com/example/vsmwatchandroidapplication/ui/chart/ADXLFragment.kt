@@ -11,6 +11,8 @@ import com.analog.study_watch_sdk.core.packets.stream.ADXLDataPacket
 import com.analog.study_watch_sdk.core.packets.stream.SYNCPPGDataPacket
 import com.example.vsmwatchandroidapplication.R
 import com.example.vsmwatchandroidapplication.adxlRange
+import com.example.vsmwatchandroidapplication.ppgRange
+import com.example.vsmwatchandroidapplication.ppgSamp
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -177,13 +179,8 @@ class ADXLFragment : Fragment() {
                 // let the chart know it's data has changed
                 accChart.notifyDataSetChanged()
 
-                var sampleRate: Long = 1
-                if (ADXLTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / ADXLTimer.elapsed(TimeUnit.SECONDS)
-                }
-
                 // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum((sampleRate * adxlRange).toFloat())
+                accChart.setVisibleXRangeMaximum((ppgSamp * adxlRange).toFloat())
 
                 // move to the latest entry
                 accChart.moveViewToX(data.xMax)
