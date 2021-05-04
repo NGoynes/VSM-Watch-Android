@@ -30,8 +30,8 @@ class ECGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private lateinit var ecgChart: LineChart
-    private var prevX = 0
+    lateinit var ecgChart: LineChart
+    var prevX = 0
     //private var range = 30
 
     override fun onCreateView(

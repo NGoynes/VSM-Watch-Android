@@ -28,8 +28,8 @@ class TempFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private lateinit var tempChart: LineChart
-    private var prevX = 0
+    lateinit var tempChart: LineChart
+    var prevX = 0
     //private var range = 60
 
     override fun onCreateView(

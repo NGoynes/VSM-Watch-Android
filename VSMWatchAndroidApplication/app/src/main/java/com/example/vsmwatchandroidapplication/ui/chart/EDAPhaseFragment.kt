@@ -30,9 +30,9 @@ import kotlin.math.sqrt
 class EDAPhaseFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-    private lateinit var edaPhaseChart: LineChart
+    lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
-    private var prevX = 0
+    var prevX = 0
     //private var range = 60
 
     override fun onCreateView(

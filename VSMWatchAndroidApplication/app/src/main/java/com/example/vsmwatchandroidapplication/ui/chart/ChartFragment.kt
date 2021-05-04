@@ -33,25 +33,19 @@ class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private var prevX = 0
-    private var prevEDAPhaseX = 0
-    private var prevEDAMagX = 0
-    private var prevADXLX = 0
-    //private var range = 90
+    var prevPPGX = 0
+    var prevECGX = 0
+    var prevTempX = 0
+    var prevEDAPhaseX = 0
+    var prevEDAMagX = 0
+    var prevADXLX = 0
 
-    private lateinit var ecgChart: LineChart
-    private lateinit var accChart: LineChart
-    private lateinit var ppgChart: LineChart
-    private lateinit var edaPhaseChart: LineChart
-    private lateinit var edaMagChart: LineChart
-    private lateinit var tempChart: LineChart
-
-    private var adxlRemovalCounter: Long = 0
-    private var ecgRemovalCounter: Long = 0
-    private var edaMagRemovalCounter: Long = 0
-    private var edaPhaseRemovalCounter: Long = 0
-    private var ppgRemovalCounter: Long = 0
-    private var tempRemovalCounter: Long = 0
+    lateinit var ecgChart: LineChart
+    lateinit var accChart: LineChart
+    lateinit var ppgChart: LineChart
+    lateinit var edaPhaseChart: LineChart
+    lateinit var edaMagChart: LineChart
+    lateinit var tempChart: LineChart
 
     @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
@@ -318,6 +312,7 @@ class ChartFragment : Fragment() {
         ppgXl.textColor = Color.WHITE
         ppgXl.setDrawGridLines(false)
         ppgXl.setAvoidFirstLastClipping(true)
+        ppgXl.setLabelCount(5, true)
         ppgXl.isEnabled = true
 
         val ppgLeftAxis: YAxis = ppgChart.axisLeft
@@ -533,7 +528,7 @@ class ChartFragment : Fragment() {
             if (ECGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
                 for (i in ECGdata.payload.streamData) {
                     if (i != null) {
-                        data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
+                        data.addEntry(Entry(prevECGX++.toFloat(), i.ecgData.toFloat()), 0)
                     }
                 }
                 data.notifyDataChanged()
@@ -543,7 +538,7 @@ class ChartFragment : Fragment() {
 
                 var sampleRate: Long = 1
                 if (ECGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / ECGTimer.elapsed(TimeUnit.SECONDS)
+                    sampleRate = prevECGX / ECGTimer.elapsed(TimeUnit.SECONDS)
                 }
 
                 // limit the number of visible entries
@@ -697,7 +692,7 @@ class ChartFragment : Fragment() {
             if (PPGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
                 for (i in PPGdata.payload.streamData) {
                     if (i != null) {
-                        data.addEntry(Entry((prevX++).toFloat(), i.ppgData.toFloat()), 0)
+                        data.addEntry(Entry((prevPPGX++).toFloat(), i.ppgData.toFloat()), 0)
                     }
                 }
                 data.notifyDataChanged()
@@ -707,11 +702,11 @@ class ChartFragment : Fragment() {
 
                 var sampleRate: Long = 1
                 if (PPGTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / PPGTimer.elapsed(TimeUnit.SECONDS)
+                    sampleRate = prevPPGX / PPGTimer.elapsed(TimeUnit.SECONDS)
                 }
 
                 // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum((sampleRate * ppgRange).toFloat())
+                ppgChart.setVisibleXRangeMaximum((sampleRate * 30).toFloat())
 
                 // move to the latest entry
                 ppgChart.moveViewToX(data.xMax)
@@ -731,10 +726,10 @@ class ChartFragment : Fragment() {
             if (TempTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
                 if (TempData.payload != null) {
                     if(tempCel){
-                        data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
+                        data.addEntry(Entry(prevTempX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
                     }
                     else{
-                        data.addEntry(Entry(prevX++.toFloat(), (TempData.payload.temperature1.toFloat() / 10)*(9/5) + 32), 0)
+                        data.addEntry(Entry(prevTempX++.toFloat(), (TempData.payload.temperature1.toFloat() / 10)*(9/5) + 32), 0)
                     }
 
                 }
@@ -747,7 +742,7 @@ class ChartFragment : Fragment() {
 
                 var sampleRate: Long = 1
                 if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-                    sampleRate = prevX / TempTimer.elapsed(TimeUnit.SECONDS)
+                    sampleRate = prevTempX / TempTimer.elapsed(TimeUnit.SECONDS)
                 }
 
                 // limit the number of visible entries

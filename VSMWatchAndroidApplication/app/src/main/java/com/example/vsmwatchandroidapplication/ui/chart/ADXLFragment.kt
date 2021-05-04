@@ -25,7 +25,7 @@ class ADXLFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private lateinit var accChart: LineChart
+    lateinit var accChart: LineChart
     private var prevX = 0
     //private var range = 30
 

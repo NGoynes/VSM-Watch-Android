@@ -23,7 +23,9 @@ import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
 import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
+import com.github.mikephil.charting.data.LineData
 import com.google.common.base.Stopwatch
+import kotlinx.android.synthetic.main.fragment_chart.*
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt
@@ -81,6 +83,20 @@ class DashboardFragment : Fragment() {
                 stopEDA(true)
                 stopTemp(true)
 
+                //reset graph
+                val ppgData = LineData()
+                val ppgIndData = LineData()
+                (cf as ChartFragment).ppgChart.fitScreen()
+                (cf as ChartFragment).ppgChart.invalidate()
+                (cf as ChartFragment).ppgChart.clear()
+                (cf as ChartFragment).ppgChart.data = ppgData
+                (cf as ChartFragment).prevPPGX = 0
+                (ppgF as PPGFragment).ppgChart.fitScreen()
+                (ppgF as PPGFragment).ppgChart.invalidate()
+                (ppgF as PPGFragment).ppgChart.clear()
+                (ppgF as PPGFragment).ppgChart.data = ppgIndData
+                (ppgF as PPGFragment).prevX = 0
+
                 // Begin reading PPG
                 readPPG()
                 ppgOn = true
@@ -108,6 +124,33 @@ class DashboardFragment : Fragment() {
                 stopPPG(true)
                 stopECG(true)
                 stopTemp(true)
+
+                //reset graph
+                //reset graph
+                val edaMagData = LineData()
+                val edaPhaseData = LineData()
+                val edaMagIndData = LineData()
+                val edaPhaseIndData = LineData()
+                (cf as ChartFragment).edaMagChart.fitScreen()
+                (cf as ChartFragment).edaMagChart.invalidate()
+                (cf as ChartFragment).edaMagChart.clear()
+                (cf as ChartFragment).edaMagChart.data = edaMagData
+                (cf as ChartFragment).prevEDAMagX = 0
+                (cf as ChartFragment).edaPhaseChart.fitScreen()
+                (cf as ChartFragment).edaPhaseChart.invalidate()
+                (cf as ChartFragment).edaPhaseChart.clear()
+                (cf as ChartFragment).edaPhaseChart.data = edaPhaseData
+                (cf as ChartFragment).prevEDAPhaseX = 0
+                (edaMagF as EDAMagFragment).edaMagChart.fitScreen()
+                (edaMagF as EDAMagFragment).edaMagChart.invalidate()
+                (edaMagF as EDAMagFragment).edaMagChart.clear()
+                (edaMagF as EDAMagFragment).edaMagChart.data = edaMagIndData
+                (edaMagF as EDAMagFragment).prevX = 0
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.fitScreen()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.invalidate()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.clear()
+                (edaPhaseF as EDAPhaseFragment).edaPhaseChart.data = edaPhaseIndData
+                (edaPhaseF as EDAPhaseFragment).prevX = 0
 
                 // Begin reading EDA
                 readEDA()
@@ -137,6 +180,20 @@ class DashboardFragment : Fragment() {
                     stopEDA(true)
                     stopTemp(true)
 
+                    //reset graph
+                    val ecgData = LineData()
+                    val ecgIndData = LineData()
+                    (cf as ChartFragment).ecgChart.fitScreen()
+                    (cf as ChartFragment).ecgChart.invalidate()
+                    (cf as ChartFragment).ecgChart.clear()
+                    (cf as ChartFragment).ecgChart.data = ecgData
+                    (cf as ChartFragment).prevECGX = 0
+                    (ecgF as ECGFragment).ecgChart.fitScreen()
+                    (ecgF as ECGFragment).ecgChart.invalidate()
+                    (ecgF as ECGFragment).ecgChart.clear()
+                    (ecgF as ECGFragment).ecgChart.data = ecgIndData
+                    (ecgF as ECGFragment).prevX = 0
+
                     // Begin reading ECG
                     readECG()
                     ecgOn = true
@@ -164,6 +221,20 @@ class DashboardFragment : Fragment() {
                 stopPPG(true)
                 stopEDA(true)
                 stopECG(true)
+
+                //reset graph
+                val tempData = LineData()
+                val tempIndData = LineData()
+                (cf as ChartFragment).tempChart.fitScreen()
+                (cf as ChartFragment).tempChart.invalidate()
+                (cf as ChartFragment).tempChart.clear()
+                (cf as ChartFragment).tempChart.data = tempData
+                (cf as ChartFragment).prevTempX = 0
+                (tempF as TempFragment).tempChart.fitScreen()
+                (tempF as TempFragment).tempChart.invalidate()
+                (tempF as TempFragment).tempChart.clear()
+                (tempF as TempFragment).tempChart.data = tempIndData
+                (tempF as TempFragment).prevX = 0
 
                 // Begin reading temperature
                 readTemp()

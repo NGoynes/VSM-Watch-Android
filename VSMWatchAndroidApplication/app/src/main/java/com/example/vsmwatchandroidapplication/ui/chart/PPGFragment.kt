@@ -30,9 +30,9 @@ class PPGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    private lateinit var ppgChart: LineChart
-    private var prevX = 0
-    //private var range = 30
+    lateinit var ppgChart: LineChart
+    var prevX = 0
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
