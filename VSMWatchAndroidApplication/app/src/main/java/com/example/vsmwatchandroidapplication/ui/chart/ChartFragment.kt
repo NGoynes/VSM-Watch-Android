@@ -107,6 +107,7 @@ class ChartFragment : Fragment() {
         ecgXl.textColor = Color.WHITE
         ecgXl.setDrawGridLines(false)
         ecgXl.setAvoidFirstLastClipping(true)
+        ecgXl.setLabelCount(5, true)
         ecgXl.isEnabled = true
 
         val ecgLeftAxis: YAxis = ecgChart.axisLeft
@@ -158,6 +159,7 @@ class ChartFragment : Fragment() {
         accXl.textColor = Color.WHITE
         accXl.setDrawGridLines(false)
         accXl.setAvoidFirstLastClipping(true)
+        accXl.setLabelCount(5, true)
         accXl.isEnabled = true
 
         val accLeftAxis: YAxis = accChart.axisLeft
@@ -210,6 +212,7 @@ class ChartFragment : Fragment() {
         edaMagXl.textColor = Color.WHITE
         edaMagXl.setDrawGridLines(false)
         edaMagXl.setAvoidFirstLastClipping(true)
+        edaMagXl.setLabelCount(5, true)
         edaMagXl.isEnabled = true
 
         val edaMagLeftAxis: YAxis = edaMagChart.axisLeft
@@ -263,6 +266,7 @@ class ChartFragment : Fragment() {
         edaPhaseXl.textColor = Color.WHITE
         edaPhaseXl.setDrawGridLines(false)
         edaPhaseXl.setAvoidFirstLastClipping(true)
+        edaPhaseXl.setLabelCount(5, true)
         edaPhaseXl.isEnabled = true
 
         val edaPhaseLeftAxis: YAxis = edaPhaseChart.axisLeft
@@ -370,6 +374,7 @@ class ChartFragment : Fragment() {
         tempXl.textColor = Color.WHITE
         tempXl.setDrawGridLines(false)
         tempXl.setAvoidFirstLastClipping(true)
+        tempXl.setLabelCount(5, true)
         tempXl.isEnabled = true
 
         val tempLeftAxis: YAxis = tempChart.axisLeft

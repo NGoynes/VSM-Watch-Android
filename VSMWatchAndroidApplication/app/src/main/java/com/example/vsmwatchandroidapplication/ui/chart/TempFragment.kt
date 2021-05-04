@@ -81,6 +81,7 @@ class TempFragment : Fragment() {
         tempXl.textColor = Color.WHITE
         tempXl.setDrawGridLines(false)
         tempXl.setAvoidFirstLastClipping(true)
+        tempXl.setLabelCount(5, true)
         tempXl.isEnabled = true
 
         val tempLeftAxis: YAxis = tempChart.axisLeft

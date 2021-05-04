@@ -85,6 +85,7 @@ class PPGFragment : Fragment() {
         ppgXl.textColor = Color.WHITE
         ppgXl.setDrawGridLines(false)
         ppgXl.setAvoidFirstLastClipping(true)
+        ppgXl.setLabelCount(5, true)
         ppgXl.isEnabled = true
 
         val ppgLeftAxis: YAxis = ppgChart.axisLeft

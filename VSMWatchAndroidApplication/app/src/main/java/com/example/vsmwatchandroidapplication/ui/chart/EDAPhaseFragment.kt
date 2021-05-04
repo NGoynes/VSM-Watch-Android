@@ -80,6 +80,7 @@ class EDAPhaseFragment : Fragment() {
         xl.textColor = Color.WHITE
         xl.setDrawGridLines(false)
         xl.setAvoidFirstLastClipping(true)
+        xl.setLabelCount(5, true)
         xl.isEnabled = true
 
         val leftAxis: YAxis = edaPhaseChart.axisLeft
