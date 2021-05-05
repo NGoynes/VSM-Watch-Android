@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import java.io.File
@@ -33,6 +31,7 @@ import java.time.LocalDateTime
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 
 var isLoggingOn: Boolean = false
+var hasLogged: Boolean = false
 
 class LoggingFragment : Fragment() {
 
@@ -50,9 +49,13 @@ class LoggingFragment : Fragment() {
     private lateinit var driveButton: Button
     private lateinit var deleteButton: Button
 
-    // File output
-    private lateinit var fileOut: File
-    private var header = StringBuilder()
+    // Data for PPG, ECG, Temp
+    private var ecg_ppg_tempSeconds: Double = 0.0
+    private val ecg_ppg_tempData = StringBuilder()
+
+    // Data for EDA
+    private var edaSeconds: Double = 0.0
+    private val edaData = StringBuilder()
 
     @SuppressLint("UseRequireInsteadOfGet", "NewApi")
     override fun onCreateView(
@@ -126,65 +129,44 @@ class LoggingFragment : Fragment() {
                 Toast.makeText(context?.applicationContext, "Now Logging", Toast.LENGTH_SHORT).show()
 
                 if (switchPPG.isChecked) {
-                    header.append("Time (s)")
-                    header.append(",")
-                    header.append("PPG Amplitude (LSBs)")
-                    header.append('\n')
-
-                    val currentDateTime = LocalDateTime.now()
-                    val fileName = "PPGData$currentDateTime.csv"
-                    fileOut = File(context!!.filesDir, fileName)
-                    fileOut.createNewFile()
-                    fileOut.appendText(header.toString())
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
+                    ecg_ppg_tempData.append("PPG")
+                    ecg_ppg_tempData.append('\n')
                 }
                 if (switchECG.isChecked) {
-                    header.append("Time (s)")
-                    header.append(",")
-                    header.append("ECG Amplitude")
-                    header.append('\n')
-
-                    val currentDateTime = LocalDateTime.now()
-                    val fileName = "ECGData$currentDateTime.csv"
-                    fileOut = File(context!!.filesDir, fileName)
-                    fileOut.createNewFile()
-                    fileOut.appendText(header.toString())
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
+                    ecg_ppg_tempData.append("ECG")
+                    ecg_ppg_tempData.append('\n')
                 }
                 if (switchEDA.isChecked) {
-                    header.append("Time (s)")
-                    header.append(",")
-                    header.append("Imp Real (Ohms)")
-                    header.append(",")
-                    header.append("Imp Img (Ohms)")
-                    header.append(",")
-                    header.append("Imp Magnitude (Ohms)")
-                    header.append(",")
-                    header.append("Imp Phase (Rad)")
-                    header.append('\n')
-
-                    val currentDateTime = LocalDateTime.now()
-                    val fileName = "EDAData$currentDateTime.csv"
-                    fileOut = File(context!!.filesDir, fileName)
-                    fileOut.createNewFile()
-                    fileOut.appendText(header.toString())
+                    edaData.append("Time (s)")
+                    edaData.append(",")
+                    edaData.append("Real Data")
+                    edaData.append(",")
+                    edaData.append("Imaginary Data")
+                    edaData.append(",")
+                    edaData.append("Magnitude")
+                    edaData.append(",")
+                    edaData.append("Phase")
+                    edaData.append('\n')
                 }
                 if (switchTemperature.isChecked) {
-                    header.append("Time (s)")
-                    header.append(",")
+                    ecg_ppg_tempData.append("Time (s)")
+                    ecg_ppg_tempData.append(",")
                     if(tempCel){
-                        header.append("Temperature (C)")
+                        ecg_ppg_tempData.append("Temperature (C)")
                     }
                     else{
-                        header.append("Temperature (F)")
+                        ecg_ppg_tempData.append("Temperature (F)")
                     }
-                    header.append('\n')
 
-                    val currentDateTime = LocalDateTime.now()
-                    val fileName = "TemperatureData$currentDateTime.csv"
-                    fileOut = File(context!!.filesDir, fileName)
-                    fileOut.createNewFile()
-                    fileOut.appendText(header.toString())
+                    ecg_ppg_tempData.append('\n')
                 }
+
                 isLoggingOn = true
+                hasLogged = true
             }
             else if ( (switchPPG.isChecked || switchECG.isChecked || switchEDA.isChecked || switchTemperature.isChecked) && !isLoggingChecked) {
                 isLoggingOn = false
@@ -192,19 +174,26 @@ class LoggingFragment : Fragment() {
                 switchECG.isChecked = false
                 switchEDA.isChecked = false
                 switchTemperature.isChecked = false
-                header.clear()
 
                 if (ppgOn) { // If PPG was on, log data to csv right away
-                    Toast.makeText(context?.applicationContext, "PPG Successfully Logged", Toast.LENGTH_SHORT).show()
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "PPGData$currentDateTime.csv"
+                    writeToFile("PPG", fileName)
                 }
                 else if (ecgOn) { // If ECG was on, log data to csv right away
-                    Toast.makeText(context?.applicationContext, "ECG Successfully Logged", Toast.LENGTH_SHORT).show()
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "ECGData$currentDateTime.csv"
+                    writeToFile("ECG", fileName)
                 }
                 else if (edaOn) {
-                    Toast.makeText(context?.applicationContext, "EDA Successfully Logged", Toast.LENGTH_SHORT).show()
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "EDAData$currentDateTime.csv"
+                    writeToFile("EDA", fileName)
                 }
                 else if (tempOn) {
-                    Toast.makeText(context?.applicationContext, "Temperature Successfully Logged", Toast.LENGTH_SHORT).show()
+                    val currentDateTime = LocalDateTime.now()
+                    val fileName = "TemperatureData$currentDateTime.csv"
+                    writeToFile("Temperature", fileName)
                 }
             }
             else {
@@ -237,37 +226,111 @@ class LoggingFragment : Fragment() {
     }
 
     fun recordVital(timestamp: Long, data: Int) {
-        fileOut.appendText(timestamp.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(data.toString())
-        fileOut.appendText("\n")
+        ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
+        ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
+        ecg_ppg_tempData.append(",")
+        ecg_ppg_tempData.append(data)
+        ecg_ppg_tempData.append('\n')
     }
 
     fun recordVital(timestamp: Long, data: Long) {
-        fileOut.appendText(timestamp.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(data.toString())
-        fileOut.appendText("\n")
+        ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
+        ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
+        ecg_ppg_tempData.append(",")
+        ecg_ppg_tempData.append(data)
+        ecg_ppg_tempData.append('\n')
     }
 
     fun recordVital(timestamp: Long, data: Float) {
-        fileOut.appendText(timestamp.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(data.toString())
-        fileOut.appendText("\n")
+        ecg_ppg_tempSeconds += timestamp.toDouble() / (1e9).toDouble()
+        ecg_ppg_tempData.append(ecg_ppg_tempSeconds)
+        ecg_ppg_tempData.append(",")
+        ecg_ppg_tempData.append(data)
+        ecg_ppg_tempData.append('\n')
     }
 
     fun recordVital(timestamp: Long, real: Int, imaginary: Int, mag: Float, phase: Float) {
-        fileOut.appendText(timestamp.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(real.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(imaginary.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(mag.toString())
-        fileOut.appendText(",")
-        fileOut.appendText(phase.toString())
-        fileOut.appendText("\n")
+        edaSeconds += timestamp.toDouble()  / (1e9).toDouble()
+        edaData.append(edaSeconds)
+        edaData.append(",")
+        edaData.append(real)
+        edaData.append(",")
+        edaData.append(imaginary)
+        edaData.append(",")
+        edaData.append(mag)
+        edaData.append(",")
+        edaData.append(phase)
+        edaData.append('\n')
+    }
+
+    fun writeToFile(vital: String, dataFile: String) {
+
+        when(vital) {
+            "PPG" -> {
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "PPG File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "PPG File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
+            }
+            "ECG" -> {
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "ECG File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "ECG File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
+            }
+            "EDA" -> {
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(edaData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "EDA File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "EDA File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
+
+                // Reset data
+                edaData.clear()
+                edaSeconds = 0.0
+                hasLogged = false
+            }
+            "Temperature" -> {
+                try {
+                    val out: FileOutputStream = requireActivity().applicationContext.openFileOutput(dataFile, Context.MODE_PRIVATE)
+                    out.write(ecg_ppg_tempData.toString().toByteArray())
+                    out.close()
+                    Toast.makeText(context?.applicationContext, "Temperature File Successfully Logged", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context?.applicationContext, "Temperature File Logging Failed", Toast.LENGTH_SHORT).show()
+                }
+
+                // Reset data
+                ecg_ppg_tempData.clear()
+                ecg_ppg_tempSeconds = 0.0
+                hasLogged = false
+            }
+        }
     }
 
     @SuppressLint("NewApi", "QueryPermissionsNeeded")

@@ -42,11 +42,10 @@
 
             <TextView
                 android:id="@+id/ppgAmp"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 android:text="@string/amplitude_lsbs"
-                android:translationX="-17dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -103,7 +102,7 @@
 
             <TextView
                 android:id="@+id/ecgAmp"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 android:text="@string/graph_amplitude"
@@ -162,11 +161,10 @@
 
             <TextView
                 android:id="@+id/edaMag"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 android:text="@string/magnitude_ohms"
-                android:translationX="-20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -224,11 +222,11 @@
 
             <TextView
                 android:id="@+id/edaPhase"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:rotation="-90"
                 android:text="@string/phase_rad"
-                android:translationX="-3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -285,11 +283,10 @@
 
             <TextView
                 android:id="@+id/accMag"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 android:text="@string/amplitude_lsbs"
-                android:translationX="-17dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -346,7 +343,7 @@
 
             <TextView
                 android:id="@+id/tempCurr"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 android:text="Temp. (C)"
