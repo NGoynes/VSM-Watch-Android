@@ -21,7 +21,6 @@ import com.analog.study_watch_sdk.core.enums.ScaleResistor
 import com.example.vsmwatchandroidapplication.*
 import com.example.vsmwatchandroidapplication.ui.chart.*
 import com.example.vsmwatchandroidapplication.ui.logging.LoggingFragment
-import com.example.vsmwatchandroidapplication.ui.logging.hasLogged
 import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import com.github.mikephil.charting.data.LineData
 import com.google.common.base.Stopwatch
@@ -323,11 +322,6 @@ class DashboardFragment : Fragment() {
             ppg.stopSensor()
             ppg.stopAndUnsubscribeStream()
 
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "PPGData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("PPG", fileName)
-            }
             resetVal()
         }
     }
@@ -375,12 +369,6 @@ class DashboardFragment : Fragment() {
             ecg.stopSensor()
             ecg.stopAndUnsubscribeStream()
             ecg.setTimeout(5)
-
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "ECGData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("ECG", fileName)
-            }
 
             resetVal()
         }
@@ -434,12 +422,6 @@ class DashboardFragment : Fragment() {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
             resetVal()
-
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "EDAData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("EDA", fileName)
-            }
 
             eda.stopSensor()
             eda.stopAndUnsubscribeStream()
@@ -496,12 +478,6 @@ class DashboardFragment : Fragment() {
 
             temp.stopSensor()
             temp.stopAndUnsubscribeStream()
-
-            if (!forcedSwitchOff && hasLogged) {
-                val currentDateTime = LocalDateTime.now()
-                val fileName = "TemperatureData$currentDateTime.csv"
-                (lf as LoggingFragment).writeToFile("Temperature", fileName)
-            }
 
             resetVal()
         }
