@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,10 +21,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.common.base.Stopwatch
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_chart.*
-import java.util.concurrent.TimeUnit
 import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -35,20 +31,22 @@ class ChartFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    var prevPPGX = 0
-    var prevECGX = 0
-    var prevTempX = 0
-    var prevEDAPhaseX = 0
-    var prevEDAMagX = 0
-    var prevADXLX = 0
-    private var Temptitle: TextView? = null
+    private var maxPPGEntry = 1000
+    private var maxEntry = 300
 
-    lateinit var ecgChart: LineChart
-    lateinit var accChart: LineChart
-    lateinit var ppgChart: LineChart
-    lateinit var edaPhaseChart: LineChart
-    lateinit var edaMagChart: LineChart
-    lateinit var tempChart: LineChart
+    private lateinit var ecgChart: LineChart
+    private lateinit var accChart: LineChart
+    private lateinit var ppgChart: LineChart
+    private lateinit var edaPhaseChart: LineChart
+    private lateinit var edaMagChart: LineChart
+    private lateinit var tempChart: LineChart
+
+    private var adxlRemovalCounter: Long = 0
+    private var ecgRemovalCounter: Long = 0
+    private var edaMagRemovalCounter: Long = 0
+    private var edaPhaseRemovalCounter: Long = 0
+    private var ppgRemovalCounter: Long = 0
+    private var tempRemovalCounter: Long = 0
 
     @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
@@ -61,6 +59,7 @@ class ChartFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_chart, container, false)
 
         (activity as MainActivity)?.supportActionBar?.title = "Chart"
+        (activity as MainActivity).checkBattery()
         ppgChart = root.findViewById((R.id.ppgChart))
         ecgChart = root.findViewById((R.id.ecgChart))
         edaPhaseChart = root.findViewById((R.id.edaPhaseChart))
@@ -68,7 +67,6 @@ class ChartFragment : Fragment() {
         accChart = root.findViewById((R.id.accChart))
         tempChart = root.findViewById((R.id.tempChart))
 
-        Temptitle = root.findViewById(R.id.tempCurr)
         //ECG GRAPHING
         // enable description text
         ecgChart.description.isEnabled = false
@@ -107,7 +105,6 @@ class ChartFragment : Fragment() {
         ecgXl.textColor = Color.WHITE
         ecgXl.setDrawGridLines(false)
         ecgXl.setAvoidFirstLastClipping(true)
-        ecgXl.setLabelCount(5, true)
         ecgXl.isEnabled = true
 
         val ecgLeftAxis: YAxis = ecgChart.axisLeft
@@ -159,7 +156,6 @@ class ChartFragment : Fragment() {
         accXl.textColor = Color.WHITE
         accXl.setDrawGridLines(false)
         accXl.setAvoidFirstLastClipping(true)
-        accXl.setLabelCount(5, true)
         accXl.isEnabled = true
 
         val accLeftAxis: YAxis = accChart.axisLeft
@@ -212,7 +208,6 @@ class ChartFragment : Fragment() {
         edaMagXl.textColor = Color.WHITE
         edaMagXl.setDrawGridLines(false)
         edaMagXl.setAvoidFirstLastClipping(true)
-        edaMagXl.setLabelCount(5, true)
         edaMagXl.isEnabled = true
 
         val edaMagLeftAxis: YAxis = edaMagChart.axisLeft
@@ -266,7 +261,6 @@ class ChartFragment : Fragment() {
         edaPhaseXl.textColor = Color.WHITE
         edaPhaseXl.setDrawGridLines(false)
         edaPhaseXl.setAvoidFirstLastClipping(true)
-        edaPhaseXl.setLabelCount(5, true)
         edaPhaseXl.isEnabled = true
 
         val edaPhaseLeftAxis: YAxis = edaPhaseChart.axisLeft
@@ -320,7 +314,6 @@ class ChartFragment : Fragment() {
         ppgXl.textColor = Color.WHITE
         ppgXl.setDrawGridLines(false)
         ppgXl.setAvoidFirstLastClipping(true)
-        ppgXl.setLabelCount(5, true)
         ppgXl.isEnabled = true
 
         val ppgLeftAxis: YAxis = ppgChart.axisLeft
@@ -374,7 +367,6 @@ class ChartFragment : Fragment() {
         tempXl.textColor = Color.WHITE
         tempXl.setDrawGridLines(false)
         tempXl.setAvoidFirstLastClipping(true)
-        tempXl.setLabelCount(5, true)
         tempXl.isEnabled = true
 
         val tempLeftAxis: YAxis = tempChart.axisLeft
@@ -524,7 +516,7 @@ class ChartFragment : Fragment() {
         return set
     }
 
-    fun addEntry(ECGdata: ECGDataPacket, ECGTimer: Stopwatch) {
+    fun addEntry(ECGdata: ECGDataPacket) {
         var data: LineData = ecgChart.data
 
         if (data != null) {
@@ -534,27 +526,28 @@ class ChartFragment : Fragment() {
                 set.setDrawFilled(false)
                 data.addDataSet(set)
             }
-            if (ECGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in ECGdata.payload.streamData) {
-                    if (i != null) {
-                        data.addEntry(Entry(prevECGX++.toFloat(), i.ecgData.toFloat()), 0)
-                    }
+
+            for (i in ECGdata.payload.streamData) {
+                if (i != null) {
+                    data.addEntry(Entry((set.entryCount + ecgRemovalCounter).toFloat(), i.ecgData.toFloat()), 0)
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                ecgChart.notifyDataSetChanged()
-
-                // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum((ecgSamp * ecgRange).toFloat())
-
-                // move to the latest entry
-                ecgChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= maxEntry) {
+                data.removeEntry(ecgRemovalCounter.toFloat(), 0)
+                set.removeFirst()
+                ecgRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            ecgChart.notifyDataSetChanged()
+            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ecgChart.moveViewToX((set.entryCount + ecgRemovalCounter).toFloat())
+            ecgChart.invalidate()
         }
     }
 
-    fun addEntryADXL(ACCdata: SYNCPPGDataPacket, ADXLTimer: Stopwatch) {
+    fun addEntryADXL(ACCdata: SYNCPPGDataPacket) {
         var data: LineData = accChart.data
 
         if (data != null) {
@@ -571,45 +564,48 @@ class ChartFragment : Fragment() {
                 data.addDataSet(setZ)
             }
 
-            if (ADXLTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in ACCdata.payload.streamData) {
-                    if (i != null) {
-                        if (i.adxlX.toFloat() > 65000) {
-                            data.getDataSetByIndex(0).addEntry(Entry(prevADXLX++.toFloat(), 65000 - i.adxlX.toFloat()))
-                        }
-                        else {
-                            data.getDataSetByIndex(0).addEntry(Entry(prevADXLX++.toFloat(), i.adxlX.toFloat()))
-                        }
-                        if (i.adxlY.toFloat() > 65000) {
-                            data.getDataSetByIndex(1).addEntry(Entry(prevADXLX++.toFloat(), 65000 - i.adxlY.toFloat()))
-                        }
-                        else {
-                            data.getDataSetByIndex(1).addEntry(Entry(prevADXLX++.toFloat(), i.adxlY.toFloat()))
-                        }
-                        if (i.adxlZ.toFloat() > 65000) {
-                            data.getDataSetByIndex(2).addEntry(Entry(prevADXLX++.toFloat(), 65000 - i.adxlZ.toFloat()))
-                        }
-                        else {
-                            data.getDataSetByIndex(2).addEntry(Entry(prevADXLX++.toFloat(), i.adxlZ.toFloat()))
-                        }
+            for (i in ACCdata.payload.streamData) {
+                if (i != null) {
+                    if (i.adxlX.toFloat() > 65000) {
+                        data.getDataSetByIndex(0).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), 65000 - i.adxlX.toFloat()))
+                    }
+                    else {
+                        data.getDataSetByIndex(0).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), i.adxlX.toFloat()))
+                    }
+                    if (i.adxlY.toFloat() > 65000) {
+                        data.getDataSetByIndex(1).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), 65000 - i.adxlY.toFloat()))
+                    }
+                    else {
+                        data.getDataSetByIndex(1).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), i.adxlY.toFloat()))
+                    }
+                    if (i.adxlZ.toFloat() > 65000) {
+                        data.getDataSetByIndex(2).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), 65000 - i.adxlZ.toFloat()))
+                    }
+                    else {
+                        data.getDataSetByIndex(2).addEntry(Entry((setX.entryCount + adxlRemovalCounter).toFloat(), i.adxlZ.toFloat()))
                     }
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                accChart.notifyDataSetChanged()
-
-
-                // limit the number of visible entries
-                accChart.setVisibleXRangeMaximum((ppgSamp * adxlRange).toFloat())
-
-                // move to the latest entry
-                accChart.moveViewToX(data.xMax)
             }
+
+            if (setX.entryCount > maxEntry) {
+                data.removeEntry(adxlRemovalCounter.toFloat(), 0)
+                data.removeEntry(adxlRemovalCounter.toFloat(), 1)
+                data.removeEntry(adxlRemovalCounter.toFloat(), 2)
+                setX.removeFirst()
+                setY.removeFirst()
+                setZ.removeFirst()
+                adxlRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            accChart.notifyDataSetChanged()
+            accChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            accChart.moveViewToX((setX.entryCount + adxlRemovalCounter).toFloat())
+            accChart.invalidate()
         }
     }
 
-    fun addEntryMag(EDAdata: EDADataPacket, EDATimer: Stopwatch) {
+    fun addEntryMag(EDAdata: EDADataPacket) {
         val data: LineData = edaMagChart.data
 
         if (data != null) {
@@ -618,29 +614,29 @@ class ChartFragment : Fragment() {
                 set = createSet()
                 data.addDataSet(set)
             }
-            if (EDATimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in EDAdata.payload.streamData) {
-                    if (i != null) {
-                        val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                        data.addEntry(Entry(prevEDAMagX++.toFloat(), mag), 0)
-                    }
+
+            for (i in EDAdata.payload.streamData) {
+                if (i != null) {
+                    val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                    data.addEntry(Entry((set.entryCount + edaMagRemovalCounter).toFloat(), mag), 0)
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                edaMagChart.notifyDataSetChanged()
-
-
-                // limit the number of visible entries
-                edaMagChart.setVisibleXRangeMaximum((edaSamp * edaRange).toFloat())
-
-                // move to the latest entry
-                edaMagChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= 200) {
+                data.removeEntry(edaMagRemovalCounter.toFloat(), 0)
+                set.removeFirst()
+                edaMagRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            edaMagChart.notifyDataSetChanged()
+            edaMagChart.setVisibleXRangeMaximum(100f)
+            edaMagChart.moveViewToX((set.entryCount + edaMagRemovalCounter).toFloat())
+            edaMagChart.invalidate()
         }
     }
 
-    fun addEntryPhase(EDAdata: EDADataPacket, EDATimer: Stopwatch) {
+    fun addEntryPhase(EDAdata: EDADataPacket) {
         val data: LineData = edaPhaseChart.data
 
         if (data != null) {
@@ -649,28 +645,31 @@ class ChartFragment : Fragment() {
                 set = createSet()
                 data.addDataSet(set)
             }
-            if (EDATimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in EDAdata.payload.streamData) {
-                    if (i != null) {
-                        val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                        data.addEntry(Entry(prevEDAPhaseX++.toFloat(), mag), 0)
+
+            for (i in EDAdata.payload.streamData) {
+                if (i != null) {
+                    if (i.realData != 0) {
+                        val phase = atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
+                        data.addEntry(Entry((set.entryCount + edaPhaseRemovalCounter).toFloat(), phase), 0)
                     }
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                edaPhaseChart.notifyDataSetChanged()
-
-                // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum((edaSamp * edaRange).toFloat())
-
-                // move to the latest entry
-                edaPhaseChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= 200) {
+                data.removeEntry(edaPhaseRemovalCounter.toFloat(), 0)
+                set.removeFirst()
+                edaPhaseRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            edaPhaseChart.notifyDataSetChanged()
+            edaPhaseChart.setVisibleXRangeMaximum(100f)
+            edaPhaseChart.moveViewToX((set.entryCount + edaPhaseRemovalCounter).toFloat())
+            edaPhaseChart.invalidate()
         }
     }
 
-    fun addEntry(PPGdata: SYNCPPGDataPacket, PPGTimer: Stopwatch) {
+    fun addEntry(PPGdata: SYNCPPGDataPacket) {
         var data: LineData = ppgChart.data
 
         if (data != null) {
@@ -680,68 +679,56 @@ class ChartFragment : Fragment() {
                 data.addDataSet(set)
             }
 
-            if (PPGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in PPGdata.payload.streamData) {
-                    if (i != null) {
-                        data.addEntry(Entry((prevPPGX++).toFloat(), i.ppgData.toFloat()), 0)
-                    }
+            for (i in PPGdata.payload.streamData) {
+                if (i != null) {
+                    data.addEntry(Entry((set.entryCount + ppgRemovalCounter).toFloat(), i.ppgData.toFloat()), 0)
+                    val xval = set.entryCount + ppgRemovalCounter
+                    println("X:$xval")
+                    println("Y:" + i.ppgData)
+                    println("\n")
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                ppgChart.notifyDataSetChanged()
-
-                // limit the number of visible entries
-                ppgChart.setVisibleXRangeMaximum((ppgSamp * ppgRange).toFloat())
-
-                // move to the latest entry
-                ppgChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= maxPPGEntry) {
+                data.removeEntry(ppgRemovalCounter.toFloat(), 0)
+                set.removeFirst()
+                ppgRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            ppgChart.notifyDataSetChanged()
+            ppgChart.setVisibleXRangeMaximum(maxPPGEntry.toFloat() / 2)
+            ppgChart.moveViewToX((set.entryCount + ppgRemovalCounter).toFloat())
+            ppgChart.invalidate()
         }
     }
 
-    fun addEntry(TempData: TemperatureDataPacket, TempTimer: Stopwatch) {
+    fun addEntry(TempData: TemperatureDataPacket) {
         var data: LineData = tempChart.data
-        if(tempCel){
-             Temptitle?.text = "Temp. (C)"
-        }
-        else{
-            Temptitle?.text = "Temp. (F)"
-        }
+
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
             }
-            if (TempTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                if (TempData.payload != null) {
-                    if(tempCel){
-                        data.addEntry(Entry(prevTempX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
-                    }
-                    else{
-                        data.addEntry(Entry(prevTempX++.toFloat(), (TempData.payload.temperature1.toFloat() / 10)*(9/5) + 32), 0)
-                    }
-
-                }
 
 
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                tempChart.notifyDataSetChanged()
-
-//                var sampleRate: Long = 1
-//                if (TempTimer.elapsed(TimeUnit.SECONDS).toInt() != 0) {
-//                    sampleRate = prevTempX / TempTimer.elapsed(TimeUnit.SECONDS)
-//                }
-
-                // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((1 * tempRange).toFloat())
-
-                // move to the latest entry
-                tempChart.moveViewToX(data.xMax)
+            if (TempData.payload != null) {
+                data.addEntry(Entry((set.entryCount + tempRemovalCounter).toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
             }
+
+            if (set.entryCount >= maxEntry) {
+                data.removeEntry(tempRemovalCounter.toFloat(), 0)
+                set.removeFirst()
+                tempRemovalCounter++
+            }
+
+            data.notifyDataChanged()
+            tempChart.notifyDataSetChanged()
+            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            tempChart.moveViewToX((set.entryCount + tempRemovalCounter).toFloat())
+            tempChart.invalidate()
         }
     }
 

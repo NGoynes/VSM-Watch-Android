@@ -53,8 +53,4 @@
     <string name="title_settings">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="magnitude_ohms">Magnitude (Ohms)</string>
-    <string name="phase_rad">Phase (Rad)</string>
-    <string name="magnitude_lsbs">Magnitude (LSBs)</string>
-    <string name="amplitude_lsbs">Amplitude (LSBs)</string>
 </resources>

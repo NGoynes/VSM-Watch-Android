@@ -4,19 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.EDASetting">
+    tools:context=".ui.settings.PPGSetting">
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="373dp"
-        android:layout_height="29dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Decimation Factor:"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="112dp" />
 
     <Spinner
         android:id="@+id/spinner"
@@ -26,54 +24,6 @@
         android:prompt="@string/dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView2"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/textViewSampling"
-        android:layout_width="374dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="32dp"
-        android:text="Sampling Rate:"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
-        tools:ignore="MissingConstraints" />
-
-    <Spinner
-        android:id="@+id/spinnerSampling"
-        android:layout_width="368dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="148dp"
-        android:prompt="@string/dropdown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView2"
-        tools:ignore="MissingConstraints" />
-    <TextView
-        android:id="@+id/textViewRange"
-        android:layout_width="374dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="132dp"
-        android:text="Graph Interval (Seconds):"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.405"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
-        tools:ignore="MissingConstraints" />
-
-    <Spinner
-        android:id="@+id/spinnerRange"
-        android:layout_width="368dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="256dp"
-        android:prompt="@string/dropdown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView2"
         tools:ignore="MissingConstraints" />

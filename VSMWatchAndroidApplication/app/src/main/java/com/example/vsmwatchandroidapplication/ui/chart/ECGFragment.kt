@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.ECGApplication
 import com.analog.study_watch_sdk.core.packets.stream.ECGDataPacket
-import com.example.vsmwatchandroidapplication.*
+import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -18,18 +20,14 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.common.base.Stopwatch
-import java.util.concurrent.TimeUnit
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 class ECGFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    lateinit var ecgChart: LineChart
-    var prevX = 0
-    //private var range = 30
+    private lateinit var ecgChart: LineChart
+    private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -79,7 +77,6 @@ class ECGFragment : Fragment() {
         xl.textColor = Color.WHITE
         xl.setDrawGridLines(false)
         xl.setAvoidFirstLastClipping(true)
-        xl.setLabelCount(5, true)
         xl.isEnabled = true
 
         val leftAxis: YAxis = ecgChart.axisLeft
@@ -108,33 +105,34 @@ class ECGFragment : Fragment() {
         return set
     }
 
-    fun addEntry(ECGdata: ECGDataPacket, ECGTimer: Stopwatch) {
+    fun addEntry(ECGdata: ECGDataPacket) {
         var data: LineData = ecgChart.data
 
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
                 set = createSet()
+                set.setDrawFilled(false)
                 data.addDataSet(set)
             }
-            if (ECGTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in ECGdata.payload.streamData) {
-                    if (i != null) {
-                        data.addEntry(Entry(prevX++.toFloat(), i.ecgData.toFloat()), 0)
-                    }
+
+            for (i in ECGdata.payload.streamData) {
+                if (i != null) {
+                    data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), i.ecgData.toFloat()), 0)
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                ecgChart.notifyDataSetChanged()
-
-
-                // limit the number of visible entries
-                ecgChart.setVisibleXRangeMaximum((ecgSamp * ecgRange).toFloat())
-
-                // move to the latest entry
-                ecgChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
+                removalCounter++
+            }
+
+            data.notifyDataChanged()
+            ecgChart.notifyDataSetChanged()
+            ecgChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            ecgChart.moveViewToX((set.entryCount + removalCounter).toFloat())
+            ecgChart.invalidate()
         }
     }
 
