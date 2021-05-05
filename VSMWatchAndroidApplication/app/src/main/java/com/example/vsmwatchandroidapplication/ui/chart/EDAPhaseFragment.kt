@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.EDAApplication
 import com.analog.study_watch_sdk.core.packets.stream.EDADataPacket
-import com.example.vsmwatchandroidapplication.*
+import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -18,8 +20,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.common.base.Stopwatch
-import java.util.concurrent.TimeUnit
 import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -27,10 +27,10 @@ import kotlin.math.sqrt
 class EDAPhaseFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
-    lateinit var edaPhaseChart: LineChart
+    private lateinit var edaPhaseChart: LineChart
     private var thread: Thread = Thread()
-    var prevX = 0
-    //private var range = 60
+    private var maxEntry = 200
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -80,7 +80,6 @@ class EDAPhaseFragment : Fragment() {
         xl.textColor = Color.WHITE
         xl.setDrawGridLines(false)
         xl.setAvoidFirstLastClipping(true)
-        xl.setLabelCount(5, true)
         xl.isEnabled = true
 
         val leftAxis: YAxis = edaPhaseChart.axisLeft
@@ -112,7 +111,7 @@ class EDAPhaseFragment : Fragment() {
         return set
     }
 
-    fun addEntryPhase(EDAdata: EDADataPacket, EDATimer: Stopwatch) {
+    fun addEntryPhase(EDAdata: EDADataPacket) {
         val data: LineData = edaPhaseChart.data
 
         if (data != null) {
@@ -121,25 +120,27 @@ class EDAPhaseFragment : Fragment() {
                 set = createSet()
                 data.addDataSet(set)
             }
-            if (EDATimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                for (i in EDAdata.payload.streamData) {
-                    if (i != null) {
-                        val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
-                        data.addEntry(Entry(prevX++.toFloat(), mag), 0)
+
+            for (i in EDAdata.payload.streamData) {
+                if (i != null) {
+                    if (i.realData != 0) {
+                        val phase = atan((i.imaginaryData.toFloat() / i.realData.toFloat()))
+                        data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), phase), 0)
                     }
                 }
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                edaPhaseChart.notifyDataSetChanged()
-
-
-                // limit the number of visible entries
-                edaPhaseChart.setVisibleXRangeMaximum((edaSamp * edaRange).toFloat())
-
-                // move to the latest entry
-                edaPhaseChart.moveViewToX(data.xMax)
             }
+
+            if (set.entryCount >= maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
+                removalCounter++
+            }
+
+            data.notifyDataChanged()
+            edaPhaseChart.notifyDataSetChanged()
+            edaPhaseChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            edaPhaseChart.moveViewToX((set.entryCount + removalCounter).toFloat())
+            edaPhaseChart.invalidate()
         }
     }
 

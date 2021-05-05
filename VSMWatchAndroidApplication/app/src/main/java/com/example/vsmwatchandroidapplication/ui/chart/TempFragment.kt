@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.analog.study_watch_sdk.application.TemperatureApplication
 import com.analog.study_watch_sdk.core.packets.stream.TemperatureDataPacket
-import com.example.vsmwatchandroidapplication.*
+import com.example.vsmwatchandroidapplication.R
+import com.example.vsmwatchandroidapplication.cf
+import com.example.vsmwatchandroidapplication.fragman
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -19,18 +20,14 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.common.base.Stopwatch
-import kotlinx.android.synthetic.main.fragment_chart.*
-import java.util.concurrent.TimeUnit
 
 class TempFragment : Fragment() {
 
     private lateinit var chartViewModel: ChartViewModel
     private var thread: Thread = Thread()
-    lateinit var tempChart: LineChart
-    private var Temptitle: TextView? = null
-    var prevX = 0
-    //private var range = 60
+    private lateinit var tempChart: LineChart
+    private var maxEntry = 300
+    private var removalCounter: Long = 0
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -42,7 +39,6 @@ class TempFragment : Fragment() {
 
         tempChart = root.findViewById((R.id.tempChartInd))
 
-        Temptitle = root.findViewById((R.id.tempCurrInd))
         // enable description text
         tempChart.description.isEnabled = true
         tempChart.description.text = "Temperature Sensor Stream"
@@ -81,7 +77,6 @@ class TempFragment : Fragment() {
         tempXl.textColor = Color.WHITE
         tempXl.setDrawGridLines(false)
         tempXl.setAvoidFirstLastClipping(true)
-        tempXl.setLabelCount(5, true)
         tempXl.isEnabled = true
 
         val tempLeftAxis: YAxis = tempChart.axisLeft
@@ -113,39 +108,32 @@ class TempFragment : Fragment() {
         return set
     }
 
-    fun addEntry(TempData: TemperatureDataPacket, TempTimer: Stopwatch) {
+    fun addEntry(TempData: TemperatureDataPacket) {
         var data: LineData = tempChart.data
-        if(tempCel){
-            Temptitle!!.text = "Temp. (C)"
-        }
-        else{
 
-
-            Temptitle!!.text = "Temp. (F)"
-        }
         if (data != null) {
             var set = data.getDataSetByIndex(0)
             if (set == null) {
                 set = createSet()
                 data.addDataSet(set)
             }
-            if (TempTimer.elapsed(TimeUnit.MILLISECONDS) > 500) {
-                if (TempData.payload != null) {
-                    data.addEntry(Entry(prevX++.toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
-                }
 
 
-                data.notifyDataChanged()
-
-                // let the chart know it's data has changed
-                tempChart.notifyDataSetChanged()
-
-                // limit the number of visible entries
-                tempChart.setVisibleXRangeMaximum((1 * tempRange).toFloat())
-
-                // move to the latest entry
-                tempChart.moveViewToX(data.xMax)
+            if (TempData.payload != null) {
+                data.addEntry(Entry((set.entryCount + removalCounter).toFloat(), TempData.payload.temperature1.toFloat() / 10), 0)
             }
+
+            if (set.entryCount >= maxEntry) {
+                data.removeEntry(removalCounter.toFloat(), 0)
+                set.removeFirst()
+                removalCounter++
+            }
+
+            data.notifyDataChanged()
+            tempChart.notifyDataSetChanged()
+            tempChart.setVisibleXRangeMaximum(maxEntry.toFloat() / 2)
+            tempChart.moveViewToX((set.entryCount + removalCounter).toFloat())
+            tempChart.invalidate()
         }
     }
 
