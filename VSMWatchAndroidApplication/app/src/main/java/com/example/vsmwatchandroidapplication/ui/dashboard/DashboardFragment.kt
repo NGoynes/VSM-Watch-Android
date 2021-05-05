@@ -291,15 +291,15 @@ class DashboardFragment : Fragment() {
             Log.d("test", packet.toString())
             var ppgTimer: Stopwatch = Stopwatch.createUnstarted()
             ppg.setSyncPPGCallback{ PPGDataPacket ->
-                runOnUiThread {
-                    if (!ppgTimer.isRunning) {
-                        ppgTimer.start()
-                    }
-                    (cf as ChartFragment).addEntry(PPGDataPacket, ppgTimer)
-                    (ppgF as PPGFragment).addEntry(PPGDataPacket, ppgTimer)
-                    (cf as ChartFragment).addEntryADXL(PPGDataPacket, ppgTimer)
-                    (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket, ppgTimer)
+                if (!ppgTimer.isRunning) {
+                    ppgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(PPGDataPacket, ppgTimer)
+                (ppgF as PPGFragment).addEntry(PPGDataPacket, ppgTimer)
+                (cf as ChartFragment).addEntryADXL(PPGDataPacket, ppgTimer)
+                (adxlF as ADXLFragment).addEntryADXL(PPGDataPacket, ppgTimer)
 
+                runOnUiThread {
                     PPGtxt?.text = PPGDataPacket.payload.streamData.last().ppgData.toFloat().toString()
 
                     if (isLoggingOn && ppgOn) {
@@ -337,13 +337,13 @@ class DashboardFragment : Fragment() {
             Log.d("test", packet.toString())
             var ecgTimer: Stopwatch = Stopwatch.createUnstarted()
             ecg.setCallback { ECGdata ->
-                runOnUiThread {
-                    if (!ecgTimer.isRunning) {
-                        ecgTimer.start()
-                    }
-                    (cf as ChartFragment).addEntry(ECGdata, ecgTimer)
-                    (ecgF as ECGFragment).addEntry(ECGdata, ecgTimer)
+                if (!ecgTimer.isRunning) {
+                    ecgTimer.start()
+                }
+                (cf as ChartFragment).addEntry(ECGdata, ecgTimer)
+                (ecgF as ECGFragment).addEntry(ECGdata, ecgTimer)
 
+                runOnUiThread {
                     ECGtxt?.text = ECGdata.payload.ecgInfo.toString()
 
                     if (isLoggingOn && ecgOn) {
