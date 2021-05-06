@@ -441,7 +441,7 @@ class DashboardFragment : Fragment() {
                     (cf as ChartFragment).addEntry(TemperatureDataPacket, tempTimer)
                     (tempF as TempFragment).addEntry(TemperatureDataPacket, tempTimer)
                     var Celsius = TemperatureDataPacket.payload.temperature1.toFloat()/10
-                    var Fahrenheit = (Celsius*(9/5)+32)
+                    var Fahrenheit = (Celsius*(9/5.toFloat())+32)
                     if(tempCel == true){
                         temptxt?.text = Celsius.toString() + "°C"
                     }
