@@ -25,11 +25,9 @@ import com.example.vsmwatchandroidapplication.ui.logging.isLoggingOn
 import com.github.mikephil.charting.data.LineData
 import com.google.common.base.Stopwatch
 import kotlinx.android.synthetic.main.fragment_chart.*
-import org.jetbrains.anko.support.v4.find
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.lang.Math.atan
 import java.lang.Math.sqrt
-import java.time.LocalDateTime
 import kotlin.math.pow
 
 
@@ -50,15 +48,20 @@ class DashboardFragment : Fragment() {
     lateinit var tempsw: Switch
     lateinit var PPGsw: Switch
 
+    private var PPGCounter = false
+    private var ECGCounter = false
+    private var EDACounter = false
+    private var TempCounter = false
+
     val ppg: PPGApplication = watchSdk!!.ppgApplication
 
     private lateinit var dashboardViewModel: DashboardViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         (activity as MainActivity).supportActionBar?.title = "Dashboard"
 
@@ -72,7 +75,10 @@ class DashboardFragment : Fragment() {
 
         PPGtxt = root.findViewById(R.id.dbppg_data)
         PPGsw.setOnCheckedChangeListener { _, onSwitch ->
-            if(onSwitch) {
+            if(onSwitch && !PPGCounter) {
+                // Increment counter to tell user graph is messed up
+                PPGCounter = true
+
                 // Turn off other signals
                 EDAsw.isChecked = false
                 ECGsw.isChecked = false
@@ -101,9 +107,18 @@ class DashboardFragment : Fragment() {
                 readPPG()
                 ppgOn = true
 
+            } else if (onSwitch && PPGCounter) {
+                val popUpClass = PopUp()
+                this.view?.let { popUpClass.showPopupWindow(it) }
+                PPGCounter = false
+                PPGsw.isChecked = false
             } else {
                 if(isLoggingOn) {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context?.applicationContext,
+                        "Please Turn Off Logging First",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     PPGsw.isChecked = true
                 } else {
                     stopPPG(false)
@@ -114,7 +129,10 @@ class DashboardFragment : Fragment() {
 
         EDAtxt = root.findViewById(R.id.dbeda_data)
         EDAsw.setOnCheckedChangeListener { _, onSwitch ->
-            if(onSwitch) {
+            if(onSwitch && !EDACounter) {
+                // Increment counter to tell user graph is messed up
+                EDACounter = true
+
                 // Turn off other signals
                 ECGsw.isChecked = false
                 PPGsw.isChecked = false
@@ -155,9 +173,19 @@ class DashboardFragment : Fragment() {
                 // Begin reading EDA
                 readEDA()
                 edaOn = true
-            } else {
+            } else if (onSwitch && EDACounter) {
+                val popUpClass = PopUp()
+                this.view?.let { popUpClass.showPopupWindow(it) }
+                EDACounter = false
+                EDAsw.isChecked = false
+            }
+            else {
                 if(isLoggingOn) {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context?.applicationContext,
+                        "Please Turn Off Logging First",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     EDAsw.isChecked = true
                 } else {
                     stopEDA(false)
@@ -168,38 +196,49 @@ class DashboardFragment : Fragment() {
 
         ECGtxt = root.findViewById(R.id.dbecg_data)
         ECGsw.setOnCheckedChangeListener { _, onSwitch ->
-            if(onSwitch) {
+            if(onSwitch && !ECGCounter) {
+                // Increment counter to tell user graph is messed up
+                ECGCounter = true
+
                 // Turn off other signals
+                EDAsw.isChecked = false
+                PPGsw.isChecked = false
+                tempsw.isChecked = false
+                resetVal()
 
-                    EDAsw.isChecked = false
-                    PPGsw.isChecked = false
-                    tempsw.isChecked = false
-                    resetVal()
+                stopPPG(true)
+                stopEDA(true)
+                stopTemp(true)
 
-                    stopPPG(true)
-                    stopEDA(true)
-                    stopTemp(true)
+                //reset graph
+                val ecgData = LineData()
+                val ecgIndData = LineData()
+                (cf as ChartFragment).ecgChart.fitScreen()
+                (cf as ChartFragment).ecgChart.invalidate()
+                (cf as ChartFragment).ecgChart.clear()
+                (cf as ChartFragment).ecgChart.data = ecgData
+                (cf as ChartFragment).prevECGX = 0
+                (ecgF as ECGFragment).ecgChart.fitScreen()
+                (ecgF as ECGFragment).ecgChart.invalidate()
+                (ecgF as ECGFragment).ecgChart.clear()
+                (ecgF as ECGFragment).ecgChart.data = ecgIndData
+                (ecgF as ECGFragment).prevX = 0
 
-                    //reset graph
-                    val ecgData = LineData()
-                    val ecgIndData = LineData()
-                    (cf as ChartFragment).ecgChart.fitScreen()
-                    (cf as ChartFragment).ecgChart.invalidate()
-                    (cf as ChartFragment).ecgChart.clear()
-                    (cf as ChartFragment).ecgChart.data = ecgData
-                    (cf as ChartFragment).prevECGX = 0
-                    (ecgF as ECGFragment).ecgChart.fitScreen()
-                    (ecgF as ECGFragment).ecgChart.invalidate()
-                    (ecgF as ECGFragment).ecgChart.clear()
-                    (ecgF as ECGFragment).ecgChart.data = ecgIndData
-                    (ecgF as ECGFragment).prevX = 0
-
-                    // Begin reading ECG
-                    readECG()
-                    ecgOn = true
+                // Begin reading ECG
+                readECG()
+                ecgOn = true
+            } else if (onSwitch && ECGCounter) {
+                val popUpClass = PopUp()
+                this.view?.let { popUpClass.showPopupWindow(it) }
+                ECGCounter = false
+                ECGsw.isChecked = false
             } else {
                 if(isLoggingOn) {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context?.applicationContext,
+                        "Please Turn Off Logging First",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     ECGsw.isChecked = true
                 } else {
                     stopECG(false)
@@ -211,7 +250,10 @@ class DashboardFragment : Fragment() {
 
         temptxt = root.findViewById(R.id.dbtemp_data)
         tempsw.setOnCheckedChangeListener { _, onSwitch ->
-            if (onSwitch) {
+            if (onSwitch && !TempCounter) {
+                // Increment counter to tell user graph is messed up
+                TempCounter = true
+
                 // Turn off other signals
                 EDAsw.isChecked = false
                 ECGsw.isChecked = false
@@ -239,10 +281,19 @@ class DashboardFragment : Fragment() {
                 // Begin reading temperature
                 readTemp()
                 tempOn = true
+            } else if (onSwitch && TempCounter) {
+                val popUpClass = PopUp()
+                this.view?.let { popUpClass.showPopupWindow(it) }
+                TempCounter = false
+                tempsw.isChecked = false
             }
             else {
                 if(isLoggingOn) {
-                    Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context?.applicationContext,
+                        "Please Turn Off Logging First",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     tempsw.isChecked = true
                 }
                 else {
@@ -252,31 +303,9 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        //val Accsw: Switch = root.findViewById(R.id.dbAcc_switch)
-        //val Acctxt: TextView = root.findViewById(R.id.dbAcc_data)
-//        if (!isLoggingOn) {
-//            Accsw.setOnCheckedChangeListener { _, onSwitch ->
-//                if(onSwitch) {
-//                    //Acctxt.setText("x:" + latAccSeriesX + ",y:" + latAccSeriesY + ",z:" + latAccSeriesZ)
-//                    EDAsw.isChecked = false
-//                    ECGsw.isChecked = false
-//                    PPGsw.isChecked = false
-//                    tempsw.isChecked = false
-//
-//                    accOn = true
-//                }
-//                else {
-//                    Acctxt.text = "----"
-//                    accOn = false
-//                }
-//            }
-//        }
-//        else {
-//            Toast.makeText(context?.applicationContext, "Please Turn Off Logging First", Toast.LENGTH_SHORT).show()
-//        }
-
         val ScanButton: Button = root.findViewById(R.id.ScanButton)
         ScanButton.setOnClickListener {
+            watchSdk!!.disconnect()
             val intent: Intent = Intent(context?.applicationContext, ScanFragment::class.java)
             startActivity(intent)
         }
@@ -304,7 +333,10 @@ class DashboardFragment : Fragment() {
 
                     if (isLoggingOn && ppgOn) {
                         for (i in PPGDataPacket.payload.streamData) {
-                            if (i != null) (lf as LoggingFragment).recordVital(i.ppgTimestamp, i.ppgData)
+                            if (i != null) (lf as LoggingFragment).recordVital(
+                                i.ppgTimestamp,
+                                i.ppgData
+                            )
                         }
                     }
                 }
@@ -348,7 +380,10 @@ class DashboardFragment : Fragment() {
 
                     if (isLoggingOn && ecgOn) {
                         for ( i in ECGdata.payload.streamData) {
-                            if (i != null) (lf as LoggingFragment).recordVital(i.timestamp, i.ecgData)
+                            if (i != null) (lf as LoggingFragment).recordVital(
+                                i.timestamp,
+                                i.ecgData
+                            )
                         }
                     }
                 }
@@ -379,7 +414,11 @@ class DashboardFragment : Fragment() {
         if (watchSdk != null) {
             val eda = watchSdk!!.edaApplication
             eda.setDecimationFactor(edaDec)
-            eda.enableDynamicScaling(ScaleResistor.SCALE_RESISTOR_100K, ScaleResistor.SCALE_RESISTOR_512K, ScaleResistor.SCALE_RESISTOR_100K)
+            eda.enableDynamicScaling(
+                ScaleResistor.SCALE_RESISTOR_100K,
+                ScaleResistor.SCALE_RESISTOR_512K,
+                ScaleResistor.SCALE_RESISTOR_100K
+            )
             eda.setDiscreteFourierTransformation(EDADFTWindow.DFT_WINDOW_4)
             println(edaSamp)
             eda.writeDeviceConfigurationBlock(arrayOf(longArrayOf(0x00, edaSamp)))
@@ -402,10 +441,20 @@ class DashboardFragment : Fragment() {
                     if (isLoggingOn && edaOn) {
                         for (i in EDADataPacket.payload.streamData) {
                             if (i != null) {
-                                val mag = sqrt(i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(2.0)).toFloat()
+                                val mag = sqrt(
+                                    i.realData.toDouble().pow(2.0) + i.imaginaryData.toDouble().pow(
+                                        2.0
+                                    )
+                                ).toFloat()
                                 val phase = atan((i.imaginaryData / i.realData).toDouble()).toFloat()
 
-                                (lf as LoggingFragment).recordVital(i.timestamp, i.realData, i.imaginaryData, mag, phase)
+                                (lf as LoggingFragment).recordVital(
+                                    i.timestamp,
+                                    i.realData,
+                                    i.imaginaryData,
+                                    mag,
+                                    phase
+                                )
                             }
                         }
                     }
@@ -453,12 +502,14 @@ class DashboardFragment : Fragment() {
                         if(tempCel == true){
                             (lf as LoggingFragment).recordVital(
                                 TemperatureDataPacket.payload.timestamp,
-                                Celsius)
+                                Celsius
+                            )
                         }
                         else{
                             (lf as LoggingFragment).recordVital(
                                 TemperatureDataPacket.payload.timestamp,
-                                Fahrenheit)
+                                Fahrenheit
+                            )
                         }
 
                     }

@@ -57,4 +57,7 @@
     <string name="phase_rad">Phase (Rad)</string>
     <string name="magnitude_lsbs">Magnitude (LSBs)</string>
     <string name="amplitude_lsbs">Amplitude (LSBs)</string>
+
+    <string name="textTitle">Please Disconnect and Reconnect the Device or Data Will Be Inaccurate</string>
+    <string name="textButton">Okay</string>
 </resources>
